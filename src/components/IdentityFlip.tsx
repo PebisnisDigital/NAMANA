@@ -6,65 +6,30 @@ type Phase = 'welcome' | 'loading' | 'hero';
 const profileTabs = [
   {
     label: 'Identitas',
-    kicker: 'IDENTITAS DIGITAL',
-    title: 'KENAL',
-    accent: 'LEBIH DEKAT.',
-    description: 'Di balik setiap nama, ada perjalanan yang layak dikenal.',
-    sectionTitle: 'PROFIL SINGKAT',
     fields: ['Nama', 'Tempat, Tanggal Lahir', 'Alamat', 'Agama', 'Status', 'Pekerjaan'],
   },
   {
     label: 'Pendidikan',
-    kicker: 'RIWAYAT PENDIDIKAN',
-    title: 'JEJAK',
-    accent: 'PENDIDIKAN.',
-    description: 'Setiap proses belajar membentuk perjalanan dan cara kita berpikir.',
-    sectionTitle: 'LATAR PENDIDIKAN',
     fields: ['Jenjang', 'Sekolah / Kampus', 'Jurusan', 'Tahun Masuk', 'Tahun Lulus', 'Pendidikan Tambahan'],
   },
   {
     label: 'Hobi',
-    kicker: 'HOBI & MINAT',
-    title: 'CERITA',
-    accent: 'DI LUAR KERJA.',
-    description: 'Sisi personal yang membuat setiap orang punya warna tersendiri.',
-    sectionTitle: 'MINAT PERSONAL',
     fields: ['Hobi Utama', 'Aktivitas Favorit', 'Minat Kreatif', 'Kegiatan Outdoor', 'Komunitas', 'Hobi Lainnya'],
   },
   {
     label: 'Skill',
-    kicker: 'KEAHLIAN PERSONAL',
-    title: 'KEAHLIAN',
-    accent: '& POTENSI.',
-    description: 'Kemampuan yang diasah lewat latihan, proses, dan pengalaman.',
-    sectionTitle: 'DAFTAR KEAHLIAN',
     fields: ['Keahlian Utama', 'Keahlian Pendukung', 'Spesialisasi', 'Tools & Platform', 'Bahasa', 'Kompetensi Lain'],
   },
   {
     label: 'Pengalaman',
-    kicker: 'PERJALANAN PROFESIONAL',
-    title: 'JEJAK',
-    accent: 'PENGALAMAN.',
-    description: 'Cerita di balik pekerjaan, kolaborasi, dan pencapaian.',
-    sectionTitle: 'RIWAYAT PENGALAMAN',
     fields: ['Posisi', 'Perusahaan / Organisasi', 'Bidang', 'Periode', 'Tanggung Jawab', 'Pencapaian'],
   },
   {
     label: 'Karya',
-    kicker: 'PORTOFOLIO PERSONAL',
-    title: 'CERITA',
-    accent: 'DALAM KARYA.',
-    description: 'Hasil pemikiran dan proses kreatif yang bisa dibagikan.',
-    sectionTitle: 'KARYA PILIHAN',
     fields: ['Judul Karya', 'Kategori', 'Tahun', 'Deskripsi', 'Media', 'Tautan Karya'],
   },
   {
     label: 'Sertifikasi',
-    kicker: 'BUKTI KOMPETENSI',
-    title: 'REKAM',
-    accent: 'SERTIFIKASI.',
-    description: 'Pengakuan atas pembelajaran dan keahlian yang telah ditempuh.',
-    sectionTitle: 'DAFTAR SERTIFIKASI',
     fields: ['Nama Sertifikasi', 'Lembaga Penerbit', 'Bidang Kompetensi', 'Tahun Terbit', 'Masa Berlaku', 'Tautan Verifikasi'],
   },
 ];
@@ -198,10 +163,9 @@ export function IdentityFlip() {
             </aside>
 
             <div className="cinematic-hero__story">
-              <div className="cinematic-hero__intro" key={`intro-${activeTab}`}>
-                <span className="cinematic-kicker"><i aria-hidden="true" /> {currentTab.kicker}</span>
-                <h2 ref={heroHeading} tabIndex={-1}>{currentTab.title} <span>{currentTab.accent}</span></h2>
-                <p>{currentTab.description}</p>
+              <div className="cinematic-hero__identity">
+                <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
+                <h1 ref={heroHeading} tabIndex={-1}>TEH VINI <span>AI ENTHUSIAST</span></h1>
               </div>
               <div
                 key={activeTab}
@@ -212,7 +176,6 @@ export function IdentityFlip() {
                 tabIndex={0}
               >
                 <div className="cinematic-hero__profile">
-                  <h3>{currentTab.sectionTitle}</h3>
                   <dl className="cinematic-hero__fields">
                     {currentTab.fields.map((field, index) => (
                       <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${100 + index * 65}ms` }}>
