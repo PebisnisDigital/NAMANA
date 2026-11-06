@@ -67,7 +67,6 @@ export function IdentityFlip() {
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     pointerStart.current = event.clientX;
-    event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {

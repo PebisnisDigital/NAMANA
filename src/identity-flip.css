@@ -754,6 +754,7 @@
   letter-spacing: .07em;
   text-shadow: 0 1px 0 #765935,0 4px 18px rgba(0,0,0,.3);
 }
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger { height: 100%; }
 .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger strong {
   position: absolute;
   top: 45px;
