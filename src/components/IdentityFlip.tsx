@@ -4,6 +4,8 @@ import '../identity-flip.css';
 
 type Phase = 'welcome' | 'hero';
 type ShuffleStage = 'rest' | 'fan' | 'close' | 'tuck';
+type ProfileField = { label: string; value: string };
+type ProfileCard = { label: string; fields: ProfileField[]; note?: string };
 
 type SocialAccount = {
   label: string;
@@ -21,47 +23,65 @@ const socialAccounts: SocialAccount[] = [
   { label: 'TikTok', icon: 'tiktok' },
 ];
 
-const profileTabs = [
+const profileTabs: ProfileCard[] = [
   {
     label: 'Identitas',
-    fields: ['Nama', 'Tempat, Tanggal Lahir', 'Alamat', 'Agama', 'Status', 'Pekerjaan'],
+    fields: [
+      { label: 'Nama', value: 'Teh Vini' },
+      { label: 'Domisili', value: 'Bandung' },
+      { label: 'Aktivitas', value: 'Ibu rumah tangga' },
+    ],
   },
   {
     label: 'Pendidikan',
-    fields: ['Jenjang', 'Sekolah / Kampus', 'Jurusan', 'Tahun Masuk', 'Tahun Lulus', 'Pendidikan Tambahan'],
+    fields: [
+      { label: 'Jalur belajar', value: 'Eksplorasi mandiri' },
+      { label: 'Fokus', value: 'Prompt gambar AI' },
+    ],
+    note: 'Riwayat pendidikan formal belum dibagikan.',
   },
   {
     label: 'Hobi',
-    fields: ['Hobi Utama', 'Aktivitas Favorit', 'Minat Kreatif', 'Kegiatan Outdoor', 'Komunitas', 'Hobi Lainnya'],
+    fields: [
+      { label: 'Kreasi', value: 'Gambar AI' },
+      { label: 'Eksplorasi', value: 'Prompt visual' },
+      { label: 'Inspirasi', value: 'Threads' },
+    ],
   },
   {
     label: 'Skill',
-    fields: ['Keahlian Utama', 'Keahlian Pendukung', 'Spesialisasi', 'Tools & Platform', 'Bahasa', 'Kompetensi Lain'],
+    fields: [
+      { label: 'Marketing', value: 'WhatsApp marketing' },
+      { label: 'Digital', value: 'Konten & produk digital' },
+      { label: 'AI', value: 'Prompt gambar' },
+    ],
   },
   {
     label: 'Pengalaman',
-    fields: ['Posisi', 'Perusahaan / Organisasi', 'Bidang', 'Periode', 'Tanggung Jawab', 'Pencapaian'],
+    fields: [
+      { label: 'CEO', value: 'Cuanify ID' },
+      { label: 'Founder', value: 'Pebisnis.Digital' },
+      { label: 'Mentor', value: 'WhatsApp marketing' },
+    ],
   },
   {
     label: 'Karya',
-    fields: ['Judul Karya', 'Kategori', 'Tahun', 'Deskripsi', 'Media', 'Tautan Karya'],
+    fields: [
+      { label: 'Website', value: 'PESONAFLIX' },
+      { label: 'Proyek prompt', value: 'Promptional (prototipe)' },
+      { label: 'Kelas', value: 'KULWA' },
+    ],
   },
   {
     label: 'Sertifikasi',
-    fields: ['Nama Sertifikasi', 'Lembaga Penerbit', 'Bidang Kompetensi', 'Tahun Terbit', 'Masa Berlaku', 'Tautan Verifikasi'],
+    fields: [],
+    note: 'Belum ada informasi sertifikasi yang dibagikan.',
   },
   {
     label: 'Sosial Media',
-    fields: ['WhatsApp', 'Telegram', 'Threads', 'Instagram', 'YouTube', 'TikTok'],
+    fields: [],
   },
 ];
-
-// Only confirmed facts are populated in this prototype. The remaining cards
-// deliberately show an honest empty state until the owner supplies their data.
-const confirmedProfile: Record<string, string> = {
-  Nama: 'Teh Vini',
-  Pekerjaan: 'AI Enthusiast',
-};
 
 const totalCards = profileTabs.length;
 
@@ -125,8 +145,6 @@ const CARD_EXIT = {
         transition: { duration: .55, ease: [.24, .76, .22, 1] as [number, number, number, number] },
       },
 };
-
-type ProfileCard = (typeof profileTabs)[number];
 
 function SwipeProfileCard({
   item, index, offset, compact, shuffleStage, onSwipe, onSelect,
@@ -199,19 +217,7 @@ function SwipeProfileCard({
         )}
         {active && (
           <div className="cinematic-hero__card-body">
-            {index === 0 ? (
-              <>
-                <dl className="cinematic-hero__fields">
-                  {item.fields.filter((field) => confirmedProfile[field]).map((field) => (
-                    <div className="cinematic-hero__field" key={field}>
-                      <dt>{field}</dt>
-                      <dd>{confirmedProfile[field]}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="cinematic-hero__empty-note">Detail identitas lainnya belum tersedia.</p>
-              </>
-            ) : item.label === 'Sosial Media' ? (
+            {item.label === 'Sosial Media' ? (
               <div className="cinematic-hero__social">
                 <ul className="cinematic-hero__social-grid" aria-label="Daftar platform sosial media">
                   {socialAccounts.map(({ label, icon, url }) => (
@@ -240,9 +246,18 @@ function SwipeProfileCard({
                 {socialAccounts.some(({ url }) => !url) && <p className="cinematic-hero__social-note">Tautan akun belum ditambahkan.</p>}
               </div>
             ) : (
-              <div className="cinematic-hero__empty">
-                <p>Data {item.label.toLowerCase()} belum diisi.</p>
-                <span>{item.fields.slice(0, 3).join(' · ')} dan lainnya</span>
+              <div className={`cinematic-hero__profile${item.fields.length === 0 ? ' cinematic-hero__profile--empty' : ''}`}>
+                {item.fields.length > 0 && (
+                  <dl className="cinematic-hero__fields">
+                    {item.fields.map((field) => (
+                      <div className="cinematic-hero__field" key={field.label}>
+                        <dt>{field.label}</dt>
+                        <dd>{field.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+                {item.note && <p className="cinematic-hero__profile-note">{item.note}</p>}
               </div>
             )}
           </div>
