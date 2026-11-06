@@ -894,6 +894,12 @@
 }
 .cinematic-hero__card-arrows button:hover { background: #35291b; border-color: #f2d6aa; }
 .cinematic-hero__card-arrows button:focus-visible { outline-offset: 3px; }
+.cinematic-hero__card-arrows .cinematic-hero__shuffle-toggle {
+  font-family: Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+.cinematic-hero__shuffle-toggle[aria-pressed="true"] { color: #fff0d7; background: #3d3021; }
 .cinematic-hero__card-viewport {
   width: 100%;
   height: 394px;
