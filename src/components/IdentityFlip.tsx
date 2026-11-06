@@ -42,12 +42,32 @@ export function IdentityFlip() {
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeTab, setActiveTab] = useState(0);
+  const [stampRun, setStampRun] = useState(0);
+  const [stampPlaying, setStampPlaying] = useState(false);
+  const [stampManual, setStampManual] = useState(false);
   const currentTab = profileTabs[activeTab];
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
   }, []);
+
+  useEffect(() => {
+    if (phase !== 'hero') return;
+    // Let the full-screen transition settle before the titles hit the screen.
+    const timer = window.setTimeout(() => {
+      setStampRun((run) => run + 1);
+      setStampPlaying(true);
+    }, 850);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  const replayStamp = () => {
+    setStampManual(true);
+    setStampPlaying(true);
+    // Remounting the spans restarts both impacts, even after the first run ended.
+    setStampRun((run) => run + 1);
+  };
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -65,6 +85,8 @@ export function IdentityFlip() {
     if (focusTimer.current) clearTimeout(focusTimer.current);
     setPhase('welcome');
     setActiveTab(0);
+    setStampPlaying(false);
+    setStampManual(false);
     focusTimer.current = setTimeout(() => welcomeButton.current?.focus(), 80);
   };
 
@@ -137,10 +159,15 @@ export function IdentityFlip() {
 
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__identity">
-              <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
-              <h1 ref={heroHeading} tabIndex={-1}>
-                <span className="cinematic-hero__stamp cinematic-hero__stamp--name">TEH VINI</span>
-                <span className="cinematic-hero__stamp cinematic-hero__stamp--role">AI ENTHUSIAST</span>
+              <div className="cinematic-hero__identity-topline">
+                <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
+                <button type="button" className="cinematic-hero__replay" onClick={replayStamp} aria-label="Putar ulang animasi stempel judul">
+                  <span aria-hidden="true">↻</span> ULANG STAMPEL
+                </button>
+              </div>
+              <h1 ref={heroHeading} tabIndex={-1} className={stampPlaying ? 'cinematic-hero__heading--stamping' : 'cinematic-hero__heading--waiting'}>
+                <span key={`name-${stampRun}`} className={`cinematic-hero__stamp cinematic-hero__stamp--name${stampManual ? ' cinematic-hero__stamp--manual' : ''}`}>TEH VINI</span>
+                <span key={`role-${stampRun}`} className={`cinematic-hero__stamp cinematic-hero__stamp--role${stampManual ? ' cinematic-hero__stamp--manual' : ''}`}>AI ENTHUSIAST</span>
               </h1>
             </div>
 
