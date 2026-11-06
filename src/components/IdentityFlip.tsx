@@ -110,6 +110,7 @@ function SwipeProfileCard({
   const dragTilt = useTransform(dragX, [-280, 0, 280], [-21, 0, 21]);
   const leftStamp = useTransform(dragX, [-150, -42, 0], [1, 0, 0]);
   const rightStamp = useTransform(dragX, [0, 42, 150], [0, 0, 1]);
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
 
   return (
     <motion.article
@@ -130,10 +131,18 @@ function SwipeProfileCard({
         dragMomentum={false}
         style={{ x: dragX, rotateZ: dragTilt, touchAction: 'pan-y' }}
         whileDrag={{ scale: 1.025, cursor: 'grabbing' }}
-        onDragEnd={(_, info) => {
-          if (Math.abs(info.offset.x) < 100 && Math.abs(info.velocity.x) < 600) return;
-          onSwipe(info.offset.x > 0 || (info.offset.x === 0 && info.velocity.x > 0) ? 1 : -1);
+        onPointerDown={(event) => {
+          if (active) pointerStart.current = { x: event.clientX, y: event.clientY };
         }}
+        onPointerUp={(event) => {
+          const start = pointerStart.current;
+          pointerStart.current = null;
+          if (!active || !start) return;
+          const dx = event.clientX - start.x;
+          const dy = event.clientY - start.y;
+          if (Math.abs(dx) >= 90 && Math.abs(dx) > Math.abs(dy) * 1.15) onSwipe(dx > 0 ? 1 : -1);
+        }}
+        onPointerCancel={() => { pointerStart.current = null; }}
       >
         {active && (
           <>
