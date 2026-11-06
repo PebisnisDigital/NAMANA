@@ -236,7 +236,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 19px;
+  gap: clamp(16px,2.2vh,22px);
   padding: clamp(12px,2.5vh,26px) clamp(22px,7.2vw,118px) 55px;
   margin: 0 auto;
 }
@@ -288,7 +288,10 @@
   gap: clamp(22px,3vh,34px);
   animation: cinematic-tab-reveal .28s ease both;
 }
-.cinematic-hero__intro { max-width: 610px; }
+.cinematic-hero__intro {
+  width: min(100%,610px);
+  animation: cinematic-tab-reveal .28s ease both;
+}
 .cinematic-hero__intro h2 {
   max-width: 610px;
   margin: 17px 0 13px;
@@ -421,7 +424,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__panel { animation: none; }
+  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__intro, .cinematic-hero__panel { animation: none; }
   .cinematic-loader__bar span { animation-duration: .35s; }
   .cinematic-welcome__enter, .cinematic-hero__back { transition: none; }
 }

@@ -171,6 +171,11 @@ export function IdentityFlip() {
           </header>
 
           <div className="cinematic-hero__content">
+            <div className="cinematic-hero__intro" key={`intro-${activeTab}`}>
+              <span className="cinematic-kicker"><i aria-hidden="true" /> {currentTab.kicker}</span>
+              <h2 ref={heroHeading} tabIndex={-1}>{currentTab.title} <span>{currentTab.accent}</span></h2>
+              <p>{currentTab.description}</p>
+            </div>
             <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
               {profileTabs.map((item, index) => (
                 <button
@@ -197,11 +202,6 @@ export function IdentityFlip() {
               aria-labelledby={`cinematic-tab-${activeTab}`}
               tabIndex={0}
             >
-              <div className="cinematic-hero__intro">
-                <span className="cinematic-kicker"><i aria-hidden="true" /> {currentTab.kicker}</span>
-                <h2 ref={heroHeading} tabIndex={-1}>{currentTab.title} <span>{currentTab.accent}</span></h2>
-                <p>{currentTab.description}</p>
-              </div>
               <div className="cinematic-hero__profile">
                 <h3>{currentTab.sectionTitle}</h3>
                 <dl className="cinematic-hero__fields">
