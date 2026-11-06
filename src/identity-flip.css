@@ -286,7 +286,6 @@
   width: auto;
   max-width: 900px;
   margin-left: 0;
-  animation: cinematic-title-emerge .65s cubic-bezier(.2,.8,.2,1) both;
 }
 .cinematic-hero__identity h1 {
   max-width: none;
@@ -304,10 +303,7 @@
   width: fit-content;
   white-space: nowrap;
   transform-origin: 16% 60%;
-}
-.cinematic-hero__identity h1.cinematic-hero__heading--waiting .cinematic-hero__stamp { opacity: 0; }
-.cinematic-hero__identity h1.cinematic-hero__heading--stamping .cinematic-hero__stamp {
-  animation: cinematic-stamp-impact 1.4s cubic-bezier(.18,.8,.24,1) both;
+  animation: cinematic-stamp-cycle 8s linear infinite both;
 }
 .cinematic-hero__identity h1 .cinematic-hero__stamp::after {
   content: '';
@@ -317,19 +313,19 @@
   pointer-events: none;
   opacity: 0;
 }
-.cinematic-hero__identity h1.cinematic-hero__heading--stamping .cinematic-hero__stamp::after {
-  animation: cinematic-stamp-flash 1.4s ease-out both;
+.cinematic-hero__identity h1 .cinematic-hero__stamp::after {
+  animation: cinematic-stamp-cycle-flash 8s linear infinite both;
 }
-.cinematic-hero__identity h1.cinematic-hero__heading--stamping .cinematic-hero__stamp--name {
+.cinematic-hero__identity h1 .cinematic-hero__stamp--name {
   color: var(--cinematic-cream);
-  animation-delay: .15s;
+  animation-delay: .35s;
 }
-.cinematic-hero__identity h1.cinematic-hero__heading--stamping .cinematic-hero__stamp--role {
+.cinematic-hero__identity h1 .cinematic-hero__stamp--role {
   color: var(--cinematic-gold);
-  animation-delay: 1.5s;
+  animation-delay: 1.05s;
 }
-.cinematic-hero__identity h1.cinematic-hero__heading--stamping .cinematic-hero__stamp--name::after { animation-delay: .15s; }
-.cinematic-hero__identity h1.cinematic-hero__heading--stamping .cinematic-hero__stamp--role::after { animation-delay: 1.5s; }
+.cinematic-hero__identity h1 .cinematic-hero__stamp--name::after { animation-delay: .35s; }
+.cinematic-hero__identity h1 .cinematic-hero__stamp--role::after { animation-delay: 1.05s; }
 .cinematic-hero__identity h1:focus { outline: none; }
 .cinematic-hero__profile { width: min(100%,500px); }
 .cinematic-hero__profile h3 {
@@ -384,18 +380,17 @@
 @keyframes cinematic-rise { from {opacity:0; transform:translateY(25px)} to {opacity:1; transform:translateY(0)} }
 @keyframes cinematic-tab-reveal { from {opacity:.42;transform:translateY(7px)} to {opacity:1;transform:translateY(0)} }
 @keyframes cinematic-title-emerge { from {opacity:0;transform:translateX(-24px);filter:blur(3px)} to {opacity:1;transform:translateX(0);filter:blur(0)} }
-@keyframes cinematic-stamp-impact {
-  0%, 12% { opacity: 0; transform: translate3d(-25px,-95px,0) scale(1.65) rotate(-7deg); filter: blur(10px); text-shadow: none; }
-  30% { opacity: 1; transform: translate3d(5px,15px,0) scale(.75) rotate(1.8deg); filter: blur(0); text-shadow: 0 0 52px rgba(212,174,113,.8); }
-  42% { transform: translate3d(-4px,-9px,0) scale(1.13) rotate(-.9deg); text-shadow: 0 0 26px rgba(212,174,113,.4); }
-  55% { transform: translate3d(0,5px,0) scale(.95) rotate(.35deg); text-shadow: none; }
-  70% { transform: translate3d(0,-2px,0) scale(1.02) rotate(-.1deg); text-shadow: none; }
-  100% { opacity: 1; transform: translate3d(0,0,0) scale(1) rotate(0); filter: none; text-shadow: none; }
+@keyframes cinematic-stamp-cycle {
+  0% { opacity: 0; transform: translate3d(-16px,-95px,0) scale(1.65) rotate(-6deg); filter: blur(6px); text-shadow: none; }
+  4% { opacity: 1; transform: translate3d(4px,14px,0) scale(.78) rotate(1.5deg); filter: blur(0); text-shadow: 0 0 52px rgba(212,174,113,.8); }
+  7% { transform: translate3d(-3px,-8px,0) scale(1.1) rotate(-.7deg); text-shadow: 0 0 26px rgba(212,174,113,.4); }
+  10% { transform: translate3d(0,3px,0) scale(.97) rotate(.25deg); text-shadow: none; }
+  13%, 100% { opacity: 1; transform: translate3d(0,0,0) scale(1) rotate(0); filter: none; text-shadow: none; }
 }
-@keyframes cinematic-stamp-flash {
-  0%, 27% { opacity: 0; transform: scale(.75); }
-  31% { opacity: .85; transform: scale(1); box-shadow: 0 0 38px currentColor; }
-  60%, 100% { opacity: 0; transform: scale(1.12); box-shadow: none; }
+@keyframes cinematic-stamp-cycle-flash {
+  0%, 3% { opacity: 0; transform: scale(.75); }
+  4% { opacity: .85; transform: scale(1); box-shadow: 0 0 38px currentColor; }
+  10%, 100% { opacity: 0; transform: scale(1.12); box-shadow: none; }
 }
 @keyframes cinematic-panel-emerge { from {opacity:0;transform:translateX(-52px);clip-path:inset(0 100% 0 0)} to {opacity:1;transform:translateX(0);clip-path:inset(0 0 0 0)} }
 @keyframes cinematic-field-emerge { from {opacity:0;transform:translateX(-32px)} to {opacity:1;transform:translateX(0)} }
@@ -504,8 +499,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__identity, .cinematic-hero__stamp, .cinematic-hero__stamp::after, .cinematic-hero__panel, .cinematic-hero__field { animation: none !important; }
-  .cinematic-hero__identity h1 .cinematic-hero__stamp { opacity: 1 !important; }
+  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__identity, .cinematic-hero__panel, .cinematic-hero__field { animation: none !important; }
   .cinematic-loader__bar span { animation-duration: .35s; }
   .cinematic-welcome__enter, .cinematic-hero__tabs button { transition: none; }
 }

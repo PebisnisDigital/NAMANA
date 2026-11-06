@@ -41,29 +41,12 @@ export function IdentityFlip() {
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeTab, setActiveTab] = useState(0);
-  const [stampRun, setStampRun] = useState(0);
-  const [stampPlaying, setStampPlaying] = useState(false);
   const currentTab = profileTabs[activeTab];
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
   }, []);
-
-  useEffect(() => {
-    if (phase !== 'hero') return;
-    // Play automatically after the page reveal, then repeat so the impact is never missed.
-    const playStamp = () => {
-      setStampRun((run) => run + 1);
-      setStampPlaying(true);
-    };
-    const entrance = window.setTimeout(playStamp, 850);
-    const repeat = window.setInterval(playStamp, 10000);
-    return () => {
-      window.clearTimeout(entrance);
-      window.clearInterval(repeat);
-    };
-  }, [phase]);
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -141,9 +124,9 @@ export function IdentityFlip() {
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__identity">
               <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
-              <h1 ref={heroHeading} tabIndex={-1} className={stampPlaying ? 'cinematic-hero__heading--stamping' : 'cinematic-hero__heading--waiting'}>
-                <span key={`name-${stampRun}`} className="cinematic-hero__stamp cinematic-hero__stamp--name">TEH VINI</span>
-                <span key={`role-${stampRun}`} className="cinematic-hero__stamp cinematic-hero__stamp--role">AI ENTHUSIAST</span>
+              <h1 ref={heroHeading} tabIndex={-1}>
+                <span className="cinematic-hero__stamp cinematic-hero__stamp--name">TEH VINI</span>
+                <span className="cinematic-hero__stamp cinematic-hero__stamp--role">AI ENTHUSIAST</span>
               </h1>
             </div>
 
