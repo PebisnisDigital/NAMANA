@@ -1079,7 +1079,7 @@
     top: 8px;
     left: 0;
     width: calc(100% - 36px);
-    height: 220px;
+    height: 240px;
     aspect-ratio: 1.58;
     border-radius: 12px;
     transform-origin: 25% 50%;
@@ -1167,7 +1167,7 @@
   outline-offset: -4px;
 }
 @media (max-width: 600px) {
-  .cinematic-hero__card-viewport { height: 320px; }
+  .cinematic-hero__card-viewport { height: 340px; }
   .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger {
     inset: auto 0 0;
     display: flex;
