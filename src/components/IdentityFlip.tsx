@@ -78,20 +78,23 @@ export function IdentityFlip() {
               </video>
               <span className="identity-cinematic-card__shade" aria-hidden="true" />
               <span className="identity-cinematic-card__top">
-                <b>LOHITHA.</b>
-                <span>THE CINEMATIC SIDE</span>
+                <b>PESONAFLIX / CREATIVE ID</b>
+                <span>IDENTITAS DIGITAL</span>
               </span>
-              <span className="identity-cinematic-card__story">
-                <strong className="identity-cinematic-card__headline">
-                  <span>I BUILD</span>
-                  <span>DIGITAL</span>
-                  <span>EXPERIENCES</span>
-                </strong>
-                <span className="identity-cinematic-card__roles">FULL STACK DEVELOPER <i>•</i> UI/UX DESIGNER</span>
-                <span className="identity-cinematic-card__description">I turn bold ideas into seamless digital experiences.</span>
+              <span className="identity-cinematic-card__details">
+                <strong className="identity-cinematic-card__details-title">DATA PEMILIK KARTU</strong>
+                <span className="identity-cinematic-card__fields">
+                  {['Nama', 'Tempat, Tanggal Lahir', 'Alamat', 'Agama', 'Status', 'Pekerjaan'].map((field) => (
+                    <span className="identity-cinematic-card__field" key={field}>
+                      <span className="identity-cinematic-card__field-label">{field}</span>
+                      <span className="identity-cinematic-card__field-value">—</span>
+                    </span>
+                  ))}
+                </span>
               </span>
+              <span className="identity-cinematic-card__divider" aria-hidden="true" />
               <span className="identity-cinematic-card__bottom">
-                <span>PF / CINEMATIC PORTFOLIO</span>
+                <span>PF / KARTU IDENTITAS DIGITAL</span>
                 <span>↶ BALIK KARTU</span>
               </span>
             </button>
