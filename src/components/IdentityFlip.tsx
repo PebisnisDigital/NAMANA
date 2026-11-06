@@ -216,10 +216,8 @@ export function IdentityFlip() {
   const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(-1);
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
   const [shuffleStage, setShuffleStage] = useState<ShuffleStage>('rest');
-  const [shufflePlaying, setShufflePlaying] = useState(true);
   const [deckEngaged, setDeckEngaged] = useState(false);
   const [manualEpoch, setManualEpoch] = useState(0);
-  const shuffleRunning = shufflePlaying;
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -248,7 +246,7 @@ export function IdentityFlip() {
   }, [phase]);
 
   useEffect(() => {
-    if (phase !== 'hero' || !shuffleRunning || deckEngaged) {
+    if (phase !== 'hero' || deckEngaged) {
       setShuffleStage('rest');
       return;
     }
@@ -274,7 +272,7 @@ export function IdentityFlip() {
     // The idle loop gives each chapter reading time; interaction cancels every step.
     after(shuffle, manualEpoch === 0 ? 2300 : 6200);
     return () => timers.forEach(window.clearTimeout);
-  }, [phase, shuffleRunning, deckEngaged, manualEpoch]);
+  }, [phase, deckEngaged, manualEpoch]);
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -375,22 +373,6 @@ export function IdentityFlip() {
 
             <div className="cinematic-hero__details">
               <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
-                <div className="cinematic-hero__card-toolbar">
-                  <span>Geser kartu</span>
-                  <div className="cinematic-hero__card-arrows">
-                    <span className="cinematic-hero__card-position">{String(activeTab + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')}</span>
-                    <button
-                      type="button"
-                      className="cinematic-hero__shuffle-toggle"
-                      aria-label={shuffleRunning ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
-                      title={shuffleRunning ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
-                      aria-pressed={shuffleRunning}
-                      onClick={() => setShufflePlaying((playing) => !playing)}
-                    >{shuffleRunning ? 'Ⅱ' : '▶'}</button>
-                    <button type="button" aria-label="Kartu sebelumnya" onClick={() => navigateCards(-1)}>←</button>
-                    <button type="button" aria-label="Kartu berikutnya" onClick={() => navigateCards(1)}>→</button>
-                  </div>
-                </div>
                 <div
                   className="cinematic-hero__card-viewport"
                   aria-label="Tumpukan kartu profil, geser ke kiri atau kanan"

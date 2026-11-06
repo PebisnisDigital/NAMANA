@@ -284,32 +284,6 @@
   gap: 10px;
   animation: cinematic-panel-emerge .55s cubic-bezier(.18,.8,.22,1) both;
 }
-.cinematic-hero__card-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 8px;
-  color: rgba(228,200,154,.74);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .2em;
-}
-.cinematic-hero__card-toolbar > span span { margin-left: 6px; font-size: 15px; }
-.cinematic-hero__card-arrows { display: flex; gap: 6px; }
-.cinematic-hero__card-arrows button {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 29px;
-  border: 1px solid rgba(212,174,113,.35);
-  background: rgba(8,8,10,.75);
-  color: #f2c88e;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background .2s ease,border-color .2s ease;
-}
-.cinematic-hero__card-arrows button:hover:not(:disabled) { background: rgba(212,174,113,.2); border-color: var(--cinematic-gold); }
-.cinematic-hero__card-arrows button:disabled { opacity: .3; cursor: default; }
 .cinematic-hero__card-viewport {
   width: 100%;
   overflow-x: auto;
@@ -651,21 +625,6 @@
   gap: 5px;
   container-type: normal;
 }
-.cinematic-hero__card-toolbar {
-  max-width: 700px;
-  padding: 0 14px 0 84px;
-  font-size: 9px;
-  letter-spacing: .16em;
-}
-.cinematic-hero__card-toolbar > span span { margin: 0 5px; font-size: inherit; }
-.cinematic-hero__card-arrows { align-items: center; gap: 7px; }
-.cinematic-hero__card-position {
-  padding-right: 12px;
-  color: var(--cinematic-gold);
-  font-size: 10px;
-  letter-spacing: .12em;
-  white-space: nowrap;
-}
 .cinematic-hero__card-viewport {
   width: 100%;
   height: 425px;
@@ -839,13 +798,10 @@
   .cinematic-hero__details { width: min(100%,750px); }
   .cinematic-hero__card { width: min(490px,calc(100% - 155px)); left: 26px; }
   .cinematic-hero__card--active { width: min(490px,calc(100% - 155px)); }
-  .cinematic-hero__card-toolbar { padding-left: 26px; }
 }
 @media (max-width: 600px) {
   .cinematic-hero__details { gap: 0; width: 100%; }
   .cinematic-hero__panel { gap: 7px; }
-  .cinematic-hero__card-toolbar { padding: 0; font-size: 7px; letter-spacing: .08em; }
-  .cinematic-hero__card-position { padding-right: 3px; font-size: 9px; }
   .cinematic-hero__card-viewport { width: calc(100% + 26px); height: 434px; margin-left: -13px; perspective: 900px; }
   .cinematic-hero__card,
   .cinematic-hero__card--active {
@@ -873,33 +829,6 @@
 .cinematic-page button:active:not(:disabled) { transform: translateY(1px); }
 .cinematic-hero__content { gap: clamp(15px, 2vh, 24px); }
 .cinematic-hero__details { width: min(100%, 760px); }
-.cinematic-hero__card-toolbar {
-  max-width: 635px;
-  min-height: 44px;
-  padding: 0 3px 9px 0;
-  gap: 12px;
-  color: #d9c8b0;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .015em;
-}
-.cinematic-hero__card-arrows { gap: 8px; }
-.cinematic-hero__card-position { padding-right: 8px; font-size: 11px; color: #e3c99e; }
-.cinematic-hero__card-arrows button {
-  width: 44px;
-  height: 44px;
-  border-color: rgba(228,189,129,.7);
-  color: #f2d6aa;
-  background: rgba(10,10,11,.9);
-}
-.cinematic-hero__card-arrows button:hover { background: #35291b; border-color: #f2d6aa; }
-.cinematic-hero__card-arrows button:focus-visible { outline-offset: 3px; }
-.cinematic-hero__card-arrows .cinematic-hero__shuffle-toggle {
-  font-family: Arial, sans-serif;
-  font-size: 17px;
-  font-weight: 600;
-}
-.cinematic-hero__shuffle-toggle[aria-pressed="true"] { color: #fff0d7; background: #3d3021; }
 .cinematic-hero__card-viewport {
   width: 100%;
   height: 394px;
@@ -1000,7 +929,6 @@
   .cinematic-hero__details { width: min(100%, 690px); }
   .cinematic-hero__card,
   .cinematic-hero__card--active { left: 0; width: min(510px, calc(100% - 85px)); }
-  .cinematic-hero__card-toolbar { max-width: 595px; padding-left: 0; }
 }
 
 @media (max-width: 600px) {
@@ -1026,11 +954,6 @@
   .cinematic-hero__identity h1 { margin-top: 12px; font-size: clamp(51px, 12.8vw, 65px); }
   .cinematic-hero__details { width: 100%; }
   .cinematic-hero__panel { gap: 3px; }
-  .cinematic-hero__card-toolbar { gap: 9px; padding: 0 0 7px; font-size: 10px; line-height: 1.4; }
-  .cinematic-hero__card-toolbar > span { max-width: 142px; }
-  .cinematic-hero__card-position { padding-right: 2px; font-size: 10px; }
-  .cinematic-hero__card-arrows { gap: 7px; }
-  .cinematic-hero__card-arrows button { width: 44px; height: 44px; }
   .cinematic-hero__card-viewport { width: 100%; height: 285px; margin: 0; perspective: 940px; }
   .cinematic-hero__card,
   .cinematic-hero__card--active {
