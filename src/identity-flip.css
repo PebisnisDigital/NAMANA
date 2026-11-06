@@ -1227,7 +1227,7 @@
 .cinematic-hero__card--name .cinematic-hero__story-value { font-size: clamp(25px,2.6vw,36px); }
 .cinematic-hero__story-copy {
   grid-column: 1 / -1;
-  margin: 0;
+  margin: 38px 0 0;
   max-width: 49ch;
   color: #ead7bf;
   font-size: 16px;
@@ -1275,6 +1275,7 @@
   .cinematic-hero__story-value { font-size: clamp(16px,4.25vw,21px); }
   .cinematic-hero__card--name .cinematic-hero__story-value { font-size: clamp(19px,5vw,24px); }
   .cinematic-hero__story-copy { font-size: clamp(11px,2.9vw,13px); line-height: 1.42; }
+  .cinematic-hero__story-copy { margin-top: 16px; }
   .cinematic-hero__story-unlinked { font-size: 10px; }
   .cinematic-hero__card--long-title.cinematic-hero__card--active .cinematic-hero__card-trigger strong { font-size: 25px; }
   .cinematic-hero__card--social .cinematic-hero__card-trigger { height: 90px; }
