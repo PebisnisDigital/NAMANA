@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import '../identity-flip.css';
 
 type Phase = 'welcome' | 'loading' | 'hero';
@@ -34,15 +35,59 @@ const profileTabs = [
   },
 ];
 
+function cardPosition(offset: number, compact: boolean) {
+  const depth = Math.abs(offset);
+  if (depth === 0) {
+    return {
+      x: 0, y: -12, z: 88,
+      rotateX: -1.5, rotateY: -1.5, rotateZ: -.35,
+      scale: 1.015, opacity: 1,
+    };
+  }
+
+  const side = Math.sign(offset);
+  return {
+    x: side * (compact ? 42 + (depth - 1) * 29 : 111 + (depth - 1) * 69),
+    y: (compact ? 12 : 16) + depth * (compact ? 11 : 14),
+    z: -depth * (compact ? 82 : 118),
+    rotateX: 2 + depth * 1.7,
+    rotateY: -side * Math.min(9 + depth * 3.3, 34),
+    rotateZ: side * Math.min(depth * 2.15, 8),
+    scale: 1 - depth * (compact ? .03 : .04),
+    opacity: depth > 3 ? 0 : 1 - depth * .14,
+  };
+}
+
+const CARD_SPRING = {
+  type: 'spring' as const,
+  stiffness: 125,
+  damping: 20,
+  mass: 1.23,
+  restSpeed: .02,
+  restDelta: .02,
+};
+
 export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
   const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const pointerStart = useRef<number | null>(null);
+  const pointerStartY = useRef<number | null>(null);
+  const cardDeck = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
   const suppressClick = useRef(false);
   const lastWheelAt = useRef(0);
   const [activeTab, setActiveTab] = useState(0);
+  const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 600px)');
+    const onChange = () => setCompactDeck(media.matches);
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
@@ -67,12 +112,36 @@ export function IdentityFlip() {
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     pointerStart.current = event.clientX;
+    pointerStartY.current = event.clientY;
+  };
+
+  const resetCardDrag = () => {
+    cardDeck.current?.style.setProperty('--deck-drag', '0px');
+    cardDeck.current?.classList.remove('cinematic-hero__card-track--dragging');
+    pointerStart.current = null;
+    pointerStartY.current = null;
+    isDragging.current = false;
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (pointerStart.current === null || pointerStartY.current === null) return;
+    const movement = event.clientX - pointerStart.current;
+    const vertical = event.clientY - pointerStartY.current;
+    if (!isDragging.current && (Math.abs(movement) < 10 || Math.abs(movement) < Math.abs(vertical) * 1.15)) return;
+    if (!isDragging.current) {
+      isDragging.current = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      cardDeck.current?.classList.add('cinematic-hero__card-track--dragging');
+    }
+    const atEdge = (activeTab === 0 && movement > 0) || (activeTab === profileTabs.length - 1 && movement < 0);
+    const dragged = Math.max(-145, Math.min(145, movement * (atEdge ? .2 : .64)));
+    cardDeck.current?.style.setProperty('--deck-drag', `${dragged}px`);
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
     if (pointerStart.current === null) return;
     const movement = event.clientX - pointerStart.current;
-    pointerStart.current = null;
+    resetCardDrag();
     if (Math.abs(movement) < 45) return;
     suppressClick.current = true;
     navigateCards(movement < 0 ? 1 : -1);
@@ -159,36 +228,36 @@ export function IdentityFlip() {
                   className="cinematic-hero__card-viewport"
                   aria-label="Tumpukan kartu profil, geser ke kiri atau kanan"
                   onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
-                  onPointerCancel={() => { pointerStart.current = null; }}
+                  onPointerCancel={resetCardDrag}
                   onWheel={handleCardWheel}
                   onKeyDown={(event) => {
                     if (event.key === 'ArrowRight') { event.preventDefault(); navigateCards(1); }
                     if (event.key === 'ArrowLeft') { event.preventDefault(); navigateCards(-1); }
                   }}
                 >
-                  <div className="cinematic-hero__card-track" aria-live="polite">
+                  <div ref={cardDeck} className="cinematic-hero__card-track" aria-live="polite">
                     {profileTabs.map((item, index) => {
                       const active = activeTab === index;
                       const offset = index - activeTab;
                       const depth = Math.abs(offset);
                       return (
-                        <article
+                        <motion.article
                           key={item.label}
                           className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : offset < 0 ? ' cinematic-hero__card--previous' : ' cinematic-hero__card--next'}`}
+                          initial={false}
+                          animate={cardPosition(offset, compactDeck)}
+                          transition={reducedMotion ? { duration: 0 } : CARD_SPRING}
                           onPointerUp={(event) => {
                             if (pointerStart.current !== null && Math.abs(event.clientX - pointerStart.current) < 45 && !active) {
                               setActiveTab(index);
                             }
                           }}
                           style={{
-                            '--card-offset': offset,
-                            '--card-depth': depth,
-                            '--card-side': Math.sign(offset),
                             zIndex: profileTabs.length - depth,
-                            opacity: depth > 3 ? 0 : 1 - depth * .14,
                             pointerEvents: depth > 3 ? 'none' : 'auto',
-                          } as React.CSSProperties}
+                          }}
                         >
                           <button
                             type="button"
@@ -212,7 +281,7 @@ export function IdentityFlip() {
                               ))}
                             </dl>
                           </div>
-                        </article>
+                        </motion.article>
                       );
                     })}
                   </div>
