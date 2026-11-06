@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type WheelEvent } from 'react';
-import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import '../identity-flip.css';
 
 type Phase = 'welcome' | 'hero';
@@ -109,13 +109,12 @@ const CARD_EXIT = {
 type ProfileCard = (typeof profileTabs)[number];
 
 function SwipeProfileCard({
-  item, index, offset, compact, reducedMotion, shuffleStage, onSwipe, onSelect,
+  item, index, offset, compact, shuffleStage, onSwipe, onSelect,
 }: {
   item: ProfileCard;
   index: number;
   offset: number;
   compact: boolean;
-  reducedMotion: boolean;
   shuffleStage: ShuffleStage;
   onSwipe: (direction: -1 | 1) => void;
   onSelect: (index: number) => void;
@@ -131,16 +130,16 @@ function SwipeProfileCard({
     <motion.article
       className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}`}
       initial={cardPosition(Math.max(offset, 1), compact)}
-      animate={cardPosition(offset, compact, shuffleStage === 'fan' && !reducedMotion)}
+      animate={cardPosition(offset, compact, shuffleStage === 'fan')}
       exit="exit"
       variants={CARD_EXIT}
-      transition={reducedMotion ? { duration: 0 } : CARD_SPRING}
+      transition={CARD_SPRING}
       style={{ zIndex: 12 - offset, pointerEvents: active || offset < 3 ? 'auto' : 'none' }}
       aria-label={`Kartu ${item.label}, ${index + 1} dari ${totalCards}`}
     >
       <motion.div
         className="cinematic-hero__card-swipe"
-        drag={active && !reducedMotion ? 'x' : false}
+        drag={active ? 'x' : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={.95}
         dragMomentum={false}
@@ -218,13 +217,9 @@ export function IdentityFlip() {
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
   const [shuffleStage, setShuffleStage] = useState<ShuffleStage>('rest');
   const [shufflePlaying, setShufflePlaying] = useState(true);
-  // Reduced-motion visitors can explicitly opt in to the card motion.
-  const [motionOptIn, setMotionOptIn] = useState(false);
   const [deckEngaged, setDeckEngaged] = useState(false);
   const [manualEpoch, setManualEpoch] = useState(0);
-  const reducedMotion = useReducedMotion();
-  const effectiveReducedMotion = !!reducedMotion && !motionOptIn;
-  const shuffleRunning = shufflePlaying && !effectiveReducedMotion;
+  const shuffleRunning = shufflePlaying;
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -240,11 +235,17 @@ export function IdentityFlip() {
   useEffect(() => {
     if (phase !== 'hero') return;
     heroHeading.current?.focus({ preventScroll: true });
-    if (reducedMotion) {
-      videoRef.current?.pause();
-      setVideoPlaying(false);
-    }
-  }, [phase, reducedMotion]);
+    const video = videoRef.current;
+    if (!video) return;
+
+    let active = true;
+    void video.play().then(() => {
+      if (active) setVideoPlaying(true);
+    }).catch(() => {
+      if (active) setVideoPlaying(false);
+    });
+    return () => { active = false; };
+  }, [phase]);
 
   useEffect(() => {
     if (phase !== 'hero' || !shuffleRunning || deckEngaged) {
@@ -353,7 +354,7 @@ export function IdentityFlip() {
 
       {phase === 'hero' && (
         <section className="cinematic-hero" aria-label="Profil digital cinematic">
-          <video ref={videoRef} className="cinematic-hero__video" autoPlay={!reducedMotion} muted loop playsInline preload="metadata" width={1280} height={720} aria-hidden="true">
+          <video ref={videoRef} className="cinematic-hero__video" autoPlay muted loop playsInline preload="metadata" width={1280} height={720} aria-hidden="true" onPlaying={() => setVideoPlaying(true)} onPause={() => setVideoPlaying(false)} onError={() => setVideoPlaying(false)}>
             <source src="/videos/hero.mp4" type="video/mp4" />
           </video>
           <div className="cinematic-hero__shade" aria-hidden="true" />
@@ -384,14 +385,7 @@ export function IdentityFlip() {
                       aria-label={shuffleRunning ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
                       title={shuffleRunning ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
                       aria-pressed={shuffleRunning}
-                      onClick={() => {
-                        if (effectiveReducedMotion) {
-                          setMotionOptIn(true);
-                          setShufflePlaying(true);
-                        } else {
-                          setShufflePlaying((playing) => !playing);
-                        }
-                      }}
+                      onClick={() => setShufflePlaying((playing) => !playing)}
                     >{shuffleRunning ? 'Ⅱ' : '▶'}</button>
                     <button type="button" aria-label="Kartu sebelumnya" onClick={() => navigateCards(-1)}>←</button>
                     <button type="button" aria-label="Kartu berikutnya" onClick={() => navigateCards(1)}>→</button>
@@ -427,7 +421,6 @@ export function IdentityFlip() {
                             index={index}
                             offset={relativeIndex}
                             compact={compactDeck}
-                            reducedMotion={effectiveReducedMotion}
                             shuffleStage={shuffleStage}
                             onSwipe={swipeCard}
                             onSelect={(selected) => { interruptShuffle(); setSwipeDirection(-1); setActiveTab(selected); }}
