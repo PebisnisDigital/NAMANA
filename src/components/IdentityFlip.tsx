@@ -1,111 +1,137 @@
 import { useEffect, useRef, useState } from 'react';
 import '../identity-flip.css';
 
-type Phase = 'front' | 'loading' | 'back';
+type Phase = 'welcome' | 'loading' | 'hero';
+
+const profileFields = [
+  'Nama',
+  'Tempat, Tanggal Lahir',
+  'Alamat',
+  'Agama',
+  'Status',
+  'Pekerjaan',
+];
 
 export function IdentityFlip() {
-  const [phase, setPhase] = useState<Phase>('front');
+  const [phase, setPhase] = useState<Phase>('welcome');
   const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const returnButton = useRef<HTMLButtonElement>(null);
+  const welcomeButton = useRef<HTMLButtonElement>(null);
+  const heroHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
   }, []);
 
-  const openIdentity = () => {
-    if (phase !== 'front') return;
-
+  const enterExperience = () => {
+    if (phase !== 'welcome') return;
     setPhase('loading');
+
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     loadingTimer.current = setTimeout(() => {
-      setPhase('back');
-      focusTimer.current = setTimeout(() => returnButton.current?.focus(), reduceMotion ? 0 : 1450);
-    }, reduceMotion ? 350 : 1450);
+      setPhase('hero');
+      focusTimer.current = setTimeout(() => heroHeading.current?.focus(), reduceMotion ? 0 : 450);
+    }, reduceMotion ? 350 : 1550);
   };
 
-  const returnToCard = () => {
+  const returnToWelcome = () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
-    setPhase('front');
+    setPhase('welcome');
+    focusTimer.current = setTimeout(() => welcomeButton.current?.focus(), 80);
   };
 
   return (
-    <main className={`identity-experience identity-experience--${phase}`}>
-      <div className="identity-front-glow" aria-hidden="true" />
-      <div className="identity-front-corner identity-front-corner--left" aria-hidden="true" />
-      <div className="identity-front-corner identity-front-corner--right" aria-hidden="true" />
+    <main className={`cinematic-page cinematic-page--${phase}`}>
+      {phase !== 'hero' && (
+        <section className="cinematic-welcome" aria-label="Selamat datang di PESONAFLIX">
+          <div className="cinematic-welcome__beam cinematic-welcome__beam--left" aria-hidden="true" />
+          <div className="cinematic-welcome__beam cinematic-welcome__beam--right" aria-hidden="true" />
 
-      <div className="identity-front-content">
-        <div className="identity-flip-stage">
-          <div className="identity-flip-pages">
-            <button
-              type="button"
-              className="identity-face identity-card identity-face--front"
-              onClick={openIdentity}
-              inert={phase === 'back'}
-              tabIndex={phase === 'back' ? -1 : 0}
-              aria-label="Balik kartu identitas digital untuk melihat sisi cinematic"
-            >
-              <span className="identity-card__heading">
-                <span className="identity-card__eyebrow">KARTU IDENTITAS DIGITAL</span>
-                <strong>PESONAFLIX</strong>
-                <span className="identity-card__subhead">REPUBLIK KREATIF INDONESIA</span>
-              </span>
-              <span className="identity-card__rule" aria-hidden="true" />
-              <span className="identity-card__edition">CREATIVE ID <b>PF — 2026</b></span>
-              <span className="identity-card__bottom">
-                <span>BUKAN DOKUMEN RESMI</span>
-                <span>KLIK UNTUK BALIK ↗</span>
-              </span>
-              <span className="identity-card__glint" aria-hidden="true" />
-            </button>
+          <div className="cinematic-welcome__nav">
+            <span className="cinematic-brand">PESONA<span>FLIX</span></span>
+            <span className="cinematic-welcome__edition">A CINEMATIC IDENTITY EXPERIENCE</span>
+          </div>
 
+          <div className="cinematic-welcome__content">
+            <span className="cinematic-kicker"><i aria-hidden="true" /> SEBUAH CERITA DIMULAI</span>
+            <h1 className="cinematic-welcome__title">
+              <span>WELCOME</span>
+              <small>TO</small>
+              <strong>PESONAFLIX</strong>
+            </h1>
+            <p>Setiap orang punya cerita. Sekarang, biarkan dunia mengenal siapa Anda.</p>
             <button
+              ref={welcomeButton}
               type="button"
-              ref={returnButton}
-              className="identity-face identity-face--back identity-cinematic-card"
-              onClick={returnToCard}
-              inert={phase !== 'back'}
-              tabIndex={phase !== 'back' ? -1 : 0}
-              aria-label="Balik kembali ke sisi depan kartu identitas digital"
+              className="cinematic-welcome__enter"
+              onClick={enterExperience}
+              disabled={phase === 'loading'}
             >
-              <video className="identity-cinematic-card__video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true">
-                <source src="/videos/hero.mp4" type="video/mp4" />
-              </video>
-              <span className="identity-cinematic-card__shade" aria-hidden="true" />
-              <span className="identity-cinematic-card__details">
-                <strong className="identity-cinematic-card__details-title">DATA PEMILIK KARTU</strong>
-                <span className="identity-cinematic-card__fields">
-                  {['Nama', 'Tempat, Tanggal Lahir', 'Alamat', 'Agama', 'Status', 'Pekerjaan'].map((field) => (
-                    <span className="identity-cinematic-card__field" key={field}>
-                      <span className="identity-cinematic-card__field-label">{field}</span>
-                      <span className="identity-cinematic-card__field-value">—</span>
-                    </span>
-                  ))}
-                </span>
-              </span>
+              <span>MASUK</span>
+              <span className="cinematic-welcome__enter-arrow" aria-hidden="true">↗</span>
             </button>
           </div>
-        </div>
 
-        <div className="identity-front-actions">
-          <button type="button" className="identity-enter" onClick={phase === 'back' ? returnToCard : openIdentity} disabled={phase === 'loading'}>
-            <span>{phase === 'back' ? 'BALIK KARTU' : 'MASUK'}</span>
-            <span className="identity-enter__arrow" aria-hidden="true">{phase === 'back' ? '↶' : '↗'}</span>
-          </button>
-        </div>
-      </div>
+          <div className="cinematic-welcome__footer">
+            <span>PERSONAL BRANDING, REIMAGINED.</span>
+            <span>EST. 2026 / INDONESIA</span>
+          </div>
+        </section>
+      )}
+
+      {phase === 'hero' && (
+        <section className="cinematic-hero" aria-label="Profil digital cinematic">
+          <video className="cinematic-hero__video" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
+          <div className="cinematic-hero__shade" aria-hidden="true" />
+          <div className="cinematic-hero__grain" aria-hidden="true" />
+
+          <header className="cinematic-hero__nav">
+            <span className="cinematic-brand">PESONA<span>FLIX</span></span>
+            <span className="cinematic-hero__nav-caption">CINEMATIC PROFILE <b>01 / 01</b></span>
+            <button type="button" className="cinematic-hero__back" onClick={returnToWelcome}>
+              <span aria-hidden="true">←</span> KEMBALI
+            </button>
+          </header>
+
+          <div className="cinematic-hero__content">
+            <div className="cinematic-hero__intro">
+              <span className="cinematic-kicker"><i aria-hidden="true" /> IDENTITAS DIGITAL</span>
+              <h2 ref={heroHeading} tabIndex={-1}>KENAL <span>LEBIH DEKAT.</span></h2>
+              <p>Di balik setiap nama, ada perjalanan yang layak dikenal.</p>
+            </div>
+
+            <div className="cinematic-hero__profile">
+              <h3>PROFIL SINGKAT</h3>
+              <dl className="cinematic-hero__fields">
+                {profileFields.map((field) => (
+                  <div className="cinematic-hero__field" key={field}>
+                    <dt>{field}</dt>
+                    <dd>—</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+
+          <footer className="cinematic-hero__footer" aria-label="Identitas pengalaman">
+            <span>THE STORY BEHIND THE PERSON</span>
+            <span>PESONAFLIX ORIGINALS</span>
+          </footer>
+        </section>
+      )}
 
       {phase === 'loading' && (
-        <div className="identity-loader" role="status" aria-live="polite" aria-label="Menyiapkan tampilan cinematic">
-          <div className="identity-loader__content">
-            <span className="identity-loader__badge">PF / DIGITAL EXPERIENCE</span>
-            <div className="identity-loader__name">PESONA<span>FLIX</span></div>
-            <p>MEMBUKA CERITA DI BALIK KARTU</p>
-            <div className="identity-loader__bar"><span /></div>
-            <span className="identity-loader__caption">PLEASE WAIT · THE STORY IS LOADING</span>
+        <div className="cinematic-loader" role="status" aria-live="polite" aria-label="Menyiapkan profil cinematic">
+          <div className="cinematic-loader__content">
+            <span className="cinematic-loader__badge">PF / ORIGINAL EXPERIENCE</span>
+            <div className="cinematic-loader__name">PESONA<span>FLIX</span></div>
+            <p>MEMBUKA CERITA ANDA</p>
+            <div className="cinematic-loader__bar"><span /></div>
+            <span className="cinematic-loader__caption">PLEASE WAIT · YOUR STORY IS LOADING</span>
           </div>
         </div>
       )}
