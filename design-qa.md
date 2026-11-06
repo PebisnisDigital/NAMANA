@@ -2,7 +2,16 @@
 
 **Final result: passed**
 
-## Latest QA — larger, left-aligned static heading (2026-11-06)
+## Latest QA — sequential stamp-impact heading motion (2026-11-06)
+
+- **User intent and source:** preserve the previous accepted cinematic screenshot `/workspace/scratch/f1f0427e572e/upload/image(20261106-052139).png` (1824 × 874) and existing staging experience, but add a short *motion stempel* to the two large heading lines when entering from WELCOME. No new layout or image is requested.
+- **Implementation:** `src/components/IdentityFlip.tsx` wraps each heading line in its own class. `src/identity-flip.css` applies `cinematic-stamp-impact` with an initial downward strike from above at 1.42× scale, a brief compressed impact, then a crisp rebound to the unchanged rest position; delays are `.22s` for TEH VINI and `.74s` for AI ENTHUSIAST, duration `.78s` each. `prefers-reduced-motion` disables the animation. No sound or repeating motion added.
+- **Deployed evidence:** Vercel staging `dpl_HK21HjFZz9t5emvN9cQA9VNPwWnk` is READY on the user's unchanged preview alias `https://pesonaflix-cinematic-replica-git-card-both-s-0cbdad-jualdigital.vercel.app/`, code commit `35051b3eaa69162db9b1c36bbc9e4168db1ad5fb`. Cloud Browser tab 1 opened that alias and captured WELCOME → MASUK → hero, including an entry-frame screenshot and settled hero screenshots at 1363 × 936 (1×). The screenshot output is inline in the browser call. This compares the accepted layout against the new moving/settled states, not pixel-perfect motion reference footage (none was supplied).
+- **Focused checks:** browser-computed styles confirmed `animation-name: cinematic-stamp-impact`, duration `.78s`, delays `.22s` / `.74s`, and final `opacity:1`, `transform:matrix(1,0,0,1,0,0)` for both lines. The final text remains two lines at the same left x-position as PILIH BAB; gold/cream colors and font size were unchanged. Original video plays normally. Switching to Pengalaman changes six data labels without changing the heading; rail and panel stay at the same y-coordinate. No horizontal overflow or application console errors; logged errors come solely from a browser extension.
+- **Five fidelity surfaces:** display font remains Bebas Neue with the prior line-height/scale at rest; spacing and layout return to the verified geometry; gold and off-white tokens remain the same; video asset and exposure remain original; copy is unchanged. No new icons or raster assets were needed for a code-native text animation.
+- **Build and findings:** `npm run build` passed, `npm run lint` passed with one unrelated pre-existing ScrollStack hook warning. No actionable P0/P1/P2 issues in the tested desktop flow. P3: physical-mobile and shorter-height motion QA remain for a later pass. **Final result: passed**.
+
+## Previous QA — larger, left-aligned static heading (2026-11-06)
 
 - **Source visual truth:** `/workspace/scratch/f1f0427e572e/upload/image(20261106-052139).png`, 1824 × 874 PNG, user's red annotation showing the title block should move from x≈403 to the left edge of the vertical tab rail at x≈205, and the two large lines should become larger. This is a request for a targeted composition correction, not a new design.
 - **Implementation:** `src/identity-flip.css` on GitHub branch `card-both-sides-preview`, commit `6a1c87672d60817b941337e8e8db7eea324a4719`, Vercel staging deployment `dpl_Bq2iCYhcZqE3jq3YUESJbv5kH7yC` READY on the **same existing alias** `https://pesonaflix-cinematic-replica-git-card-both-s-0cbdad-jualdigital.vercel.app/`.
