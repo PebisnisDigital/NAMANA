@@ -169,14 +169,12 @@ function SwipeProfileCard({
             <span className="cinematic-hero__card-eyebrow">PESONAFLIX</span>
             <span className="cinematic-hero__card-chip" aria-hidden="true" />
             <strong>{item.label}</strong>
-            <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')}</span>
           </div>
         ) : (
           <button type="button" className="cinematic-hero__card-trigger" aria-label={`Buka kartu ${item.label}`} onClick={() => onSelect(index)}>
             <span className="cinematic-hero__card-eyebrow">PESONAFLIX</span>
             <span className="cinematic-hero__card-chip" aria-hidden="true" />
             <strong>{item.label}</strong>
-            <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')}</span>
           </button>
         )}
         {active && (
