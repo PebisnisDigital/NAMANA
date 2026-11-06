@@ -9,6 +9,7 @@ type ProfileCard = {
   label: string;
   value: string;
   story: string;
+  animatedIcon: number;
   icon?: ProfileIcon;
   brandIcon?: string;
   kind?: 'name' | 'work' | 'social';
@@ -17,75 +18,75 @@ type ProfileCard = {
 
 const profileTabs: ProfileCard[] = [
   {
-    label: 'Nama', value: 'Vini Junia N', icon: 'person', kind: 'name',
+    label: 'Nama', value: 'Vini Junia N', icon: 'person', animatedIcon: 8121295, kind: 'name',
     story: 'Aku diberi nama Junia karena lahir pada bulan Juni. Bagiku, nama ini bisa menjadi pengingat sekaligus doa: terus tumbuh dan membawa kebaikan lewat karya.',
   },
   {
-    label: 'Bandung', value: 'Kota tempatku tinggal', icon: 'pin',
+    label: 'Bandung', value: 'Kota tempatku tinggal', icon: 'pin', animatedIcon: 8121270,
     story: 'Di Bandung aku menjalani hari sebagai ibu rumah tangga sambil merintis dan mengerjakan proyek-proyek digital.',
   },
   {
-    label: 'Rumah', value: 'Ibu rumah tangga', icon: 'home',
+    label: 'Rumah', value: 'Ibu rumah tangga', icon: 'home', animatedIcon: 8121302,
     story: 'Di sela urusan rumah, aku terus belajar, membuat konten, dan membangun sesuatu yang bisa dibagikan.',
   },
   {
-    label: 'Cuanify', value: 'CEO Cuanify ID', icon: 'building',
+    label: 'Cuanify', value: 'CEO Cuanify ID', icon: 'building', animatedIcon: 8121313,
     story: 'Kini aku dipercaya mengelola sebuah rintisan bernama Cuanify ID.',
   },
   {
-    label: 'Pebisnis', value: 'Founder Pebisnis.Digital', icon: 'flag',
+    label: 'Pebisnis', value: 'Founder Pebisnis.Digital', icon: 'flag', animatedIcon: 8121307,
     story: 'Lewat Pebisnis.Digital aku berbagi pembelajaran digital marketing, terutama yang dekat dengan keseharian pemula.',
   },
   {
-    label: 'Mentor', value: 'WhatsApp marketing', icon: 'mentor',
+    label: 'Mentor', value: 'WhatsApp marketing', icon: 'mentor', animatedIcon: 8121279,
     story: 'Aku mendampingi pemula, ibu rumah tangga, dan pelaku usaha kecil memahami cara memakai WhatsApp untuk pemasaran.',
   },
   {
-    label: 'Produk', value: 'Produk digital', icon: 'screens',
+    label: 'Produk', value: 'Produk digital', icon: 'screens', animatedIcon: 8121304,
     story: 'Aku membuat materi dan produk digital yang bisa dipelajari dan dipraktikkan oleh orang lain.',
   },
   {
-    label: 'Belajar', value: 'Belajar lewat praktik', icon: 'book',
+    label: 'Belajar', value: 'Belajar lewat praktik', icon: 'book', animatedIcon: 8121312,
     story: 'Aku banyak mengulik prompt gambar AI lewat eksperimen mandiri. Riwayat pendidikan formalku belum dibagikan di sini.',
   },
   {
-    label: 'Visual AI', value: 'Gambar dan prompt AI', icon: 'palette',
+    label: 'Visual AI', value: 'Gambar dan prompt AI', icon: 'palette', animatedIcon: 8121272,
     story: 'Mulanya iseng membuat gambar-gambar lucu. Rasa penasaran itu membawaku terus mencoba berbagai prompt dan gaya visual.',
   },
   {
-    label: 'PESONAFLIX', value: 'Website personal sinematik', icon: 'website', kind: 'work',
+    label: 'PESONAFLIX', value: 'Website personal sinematik', icon: 'website', animatedIcon: 8121309, kind: 'work',
     story: 'Salah satu karya yang kubangun: halaman profil personal dengan pengalaman visual terinspirasi Netflix.',
   },
   {
-    label: 'Promptional', value: 'Koleksi prompt visual', icon: 'pencil', kind: 'work',
+    label: 'Promptional', value: 'Koleksi prompt visual', icon: 'pencil', animatedIcon: 8121277, kind: 'work',
     story: 'Prototipe untuk menjelajahi prompt gambar beserta previewnya, supaya ide visual lebih mudah dicoba.',
   },
   {
-    label: 'KULWA', value: 'Kelas via WhatsApp', icon: 'class', kind: 'work',
+    label: 'KULWA', value: 'Kelas via WhatsApp', icon: 'class', animatedIcon: 8121297, kind: 'work',
     story: 'Aku berbagi materi lewat kelas WhatsApp. Sesi KULWA biasanya dimulai pukul 19.30 WIB.',
   },
   {
-    label: 'WhatsApp', value: 'Komunitas dan pemasaran', brandIcon: 'whatsapp', kind: 'social',
+    label: 'WhatsApp', value: 'Komunitas dan pemasaran', brandIcon: 'whatsapp', animatedIcon: 8121267, kind: 'social',
     story: 'Status, grup, dan channel adalah ruang yang sering kupakai untuk berbagi materi dan praktik marketing.',
   },
   {
-    label: 'Telegram', value: 'Bot, grup, dan channel', brandIcon: 'telegram', kind: 'social',
+    label: 'Telegram', value: 'Bot, grup, dan channel', brandIcon: 'telegram', animatedIcon: 8121290, kind: 'social',
     story: 'Aku menggunakan Telegram untuk aktivitas komunitas dan distribusi konten digital.',
   },
   {
-    label: 'Threads', value: 'Prompt dan cerita', brandIcon: 'threads', kind: 'social',
+    label: 'Threads', value: 'Prompt dan cerita', brandIcon: 'threads', animatedIcon: 8121316, kind: 'social',
     story: 'Di sini aku mencari inspirasi dan berbagi eksperimen gambar AI.',
   },
   {
-    label: 'Instagram', value: 'Konten digital', brandIcon: 'instagram', kind: 'social',
+    label: 'Instagram', value: 'Konten digital', brandIcon: 'instagram', animatedIcon: 8121262, kind: 'social',
     story: 'Salah satu tempatku berbagi ide visual dan konten kreatif.',
   },
   {
-    label: 'YouTube', value: 'Akun belum ditautkan', brandIcon: 'youtube', kind: 'social',
+    label: 'YouTube', value: 'Akun belum ditautkan', brandIcon: 'youtube', animatedIcon: 8121299, kind: 'social',
     story: 'Belum ada tautan channel YouTube yang dibagikan untuk kartu ini.',
   },
   {
-    label: 'TikTok', value: 'Konten singkat', brandIcon: 'tiktok', kind: 'social',
+    label: 'TikTok', value: 'Konten singkat', brandIcon: 'tiktok', animatedIcon: 8121311, kind: 'social',
     story: 'Kanal lain yang kupakai untuk mengeksplorasi konten digital.',
   },
 ];
@@ -266,9 +267,17 @@ function SwipeProfileCard({
           <div className="cinematic-hero__card-body">
             <div className="cinematic-hero__story" key={item.label}>
               <span className="cinematic-hero__story-icon" aria-hidden="true">
+                <img
+                  className="cinematic-hero__flaticon"
+                  src={`/animated-icons/${item.animatedIcon}.webp`}
+                  width={64}
+                  height={64}
+                  alt=""
+                  decoding="async"
+                />
                 {item.brandIcon ? (
-                  <span className={`cinematic-hero__social-icon cinematic-hero__social-icon--${item.brandIcon}`} />
-                ) : item.icon ? <ProfileGlyph name={item.icon} /> : null}
+                  <span className={`cinematic-hero__social-icon cinematic-hero__story-brand cinematic-hero__social-icon--${item.brandIcon}`} />
+                ) : item.icon ? <span className="cinematic-hero__story-static"><ProfileGlyph name={item.icon} /></span> : null}
               </span>
               <p className="cinematic-hero__story-value">{item.value}</p>
               <p className="cinematic-hero__story-copy">{item.story}</p>
@@ -477,6 +486,9 @@ export function IdentityFlip() {
 
           <header className="cinematic-hero__nav">
             <span className="cinematic-brand">PESONA<span>FLIX</span></span>
+            <span className="cinematic-hero__icon-credit">
+              Ikon animasi <a href="https://www.flaticon.com/authors/magnific" target="_blank" rel="noopener noreferrer">Magnific</a> via <a href="https://www.flaticon.com/" target="_blank" rel="noopener noreferrer">Flaticon</a>
+            </span>
           </header>
 
           <div className="cinematic-hero__content">
