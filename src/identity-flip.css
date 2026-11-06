@@ -832,11 +832,28 @@
   border-radius: 15px;
   transform-origin: 30% 50%;
 }
+.cinematic-hero__card::before { content: none; }
 .cinematic-hero__card-swipe,
 .cinematic-hero__card--active .cinematic-hero__card-swipe {
   border: 1px solid rgba(233,198,143,.8);
   background: linear-gradient(118deg, #3b3026 0%, #161619 39%, #0e0f12 70%, #31251c 100%);
-  box-shadow: 11px 23px 34px rgba(0,0,0,.67), inset 0 0 0 1px rgba(243,224,190,.2), inset -18px -10px 28px rgba(0,0,0,.32);
+  box-shadow:
+    1px 2px 0 rgba(188,145,87,.7),
+    3px 5px 0 rgba(43,33,25,.95),
+    7px 13px 18px rgba(0,0,0,.72),
+    19px 30px 39px rgba(0,0,0,.66),
+    inset 1px 1px 0 rgba(255,237,204,.2),
+    inset -18px -13px 29px rgba(0,0,0,.4);
+}
+.cinematic-hero__card--active .cinematic-hero__card-swipe {
+  box-shadow:
+    1px 2px 0 rgba(227,184,117,.86),
+    3px 6px 0 rgba(65,48,34,.98),
+    5px 9px 0 rgba(21,18,17,.94),
+    13px 23px 25px rgba(0,0,0,.85),
+    28px 47px 54px rgba(0,0,0,.73),
+    inset 1px 1px 0 rgba(255,238,208,.28),
+    inset -20px -15px 33px rgba(0,0,0,.38);
 }
 .cinematic-hero__card-swipe:active { cursor: grabbing; }
 .cinematic-hero__card-swipe::before {
