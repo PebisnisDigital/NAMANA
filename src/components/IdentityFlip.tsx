@@ -176,6 +176,11 @@ export function IdentityFlip() {
                         <article
                           key={item.label}
                           className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : offset < 0 ? ' cinematic-hero__card--previous' : ' cinematic-hero__card--next'}`}
+                          onPointerUp={(event) => {
+                            if (pointerStart.current !== null && Math.abs(event.clientX - pointerStart.current) < 45 && !active) {
+                              setActiveTab(index);
+                            }
+                          }}
                           style={{
                             '--card-offset': offset,
                             '--card-depth': depth,
