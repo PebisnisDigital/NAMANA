@@ -218,9 +218,13 @@ export function IdentityFlip() {
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
   const [shuffleStage, setShuffleStage] = useState<ShuffleStage>('rest');
   const [shufflePlaying, setShufflePlaying] = useState(true);
+  // Reduced-motion visitors can explicitly opt in to the card motion.
+  const [motionOptIn, setMotionOptIn] = useState(false);
   const [deckEngaged, setDeckEngaged] = useState(false);
   const [manualEpoch, setManualEpoch] = useState(0);
   const reducedMotion = useReducedMotion();
+  const effectiveReducedMotion = !!reducedMotion && !motionOptIn;
+  const shuffleRunning = shufflePlaying && !effectiveReducedMotion;
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -243,7 +247,7 @@ export function IdentityFlip() {
   }, [phase, reducedMotion]);
 
   useEffect(() => {
-    if (phase !== 'hero' || reducedMotion || !shufflePlaying || deckEngaged) {
+    if (phase !== 'hero' || !shuffleRunning || deckEngaged) {
       setShuffleStage('rest');
       return;
     }
@@ -269,7 +273,7 @@ export function IdentityFlip() {
     // The idle loop gives each chapter reading time; interaction cancels every step.
     after(shuffle, manualEpoch === 0 ? 2300 : 6200);
     return () => timers.forEach(window.clearTimeout);
-  }, [phase, reducedMotion, shufflePlaying, deckEngaged, manualEpoch]);
+  }, [phase, shuffleRunning, deckEngaged, manualEpoch]);
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -377,12 +381,18 @@ export function IdentityFlip() {
                     <button
                       type="button"
                       className="cinematic-hero__shuffle-toggle"
-                      aria-label={shufflePlaying && !reducedMotion ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
-                      title={shufflePlaying && !reducedMotion ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
-                      aria-pressed={!shufflePlaying || !!reducedMotion}
-                      disabled={!!reducedMotion}
-                      onClick={() => setShufflePlaying((playing) => !playing)}
-                    >{shufflePlaying && !reducedMotion ? 'Ⅱ' : '▶'}</button>
+                      aria-label={shuffleRunning ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
+                      title={shuffleRunning ? 'Jeda kocokan kartu' : 'Putar kocokan kartu'}
+                      aria-pressed={shuffleRunning}
+                      onClick={() => {
+                        if (effectiveReducedMotion) {
+                          setMotionOptIn(true);
+                          setShufflePlaying(true);
+                        } else {
+                          setShufflePlaying((playing) => !playing);
+                        }
+                      }}
+                    >{shuffleRunning ? 'Ⅱ' : '▶'}</button>
                     <button type="button" aria-label="Kartu sebelumnya" onClick={() => navigateCards(-1)}>←</button>
                     <button type="button" aria-label="Kartu berikutnya" onClick={() => navigateCards(1)}>→</button>
                   </div>
@@ -416,7 +426,7 @@ export function IdentityFlip() {
                             index={index}
                             offset={relativeIndex}
                             compact={compactDeck}
-                            reducedMotion={!!reducedMotion}
+                            reducedMotion={effectiveReducedMotion}
                             shuffleStage={shuffleStage}
                             onSwipe={swipeCard}
                             onSelect={(selected) => { interruptShuffle(); setSwipeDirection(-1); setActiveTab(selected); }}
