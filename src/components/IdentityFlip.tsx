@@ -5,6 +5,22 @@ import '../identity-flip.css';
 type Phase = 'welcome' | 'hero';
 type ShuffleStage = 'rest' | 'fan' | 'close' | 'tuck';
 
+type SocialAccount = {
+  label: string;
+  icon: string;
+  url?: string;
+};
+
+// Add verified profile URLs here. Unconfigured accounts stay non-interactive.
+const socialAccounts: SocialAccount[] = [
+  { label: 'WhatsApp', icon: 'whatsapp' },
+  { label: 'Telegram', icon: 'telegram' },
+  { label: 'Threads', icon: 'threads' },
+  { label: 'Instagram', icon: 'instagram' },
+  { label: 'YouTube', icon: 'youtube' },
+  { label: 'TikTok', icon: 'tiktok' },
+];
+
 const profileTabs = [
   {
     label: 'Identitas',
@@ -132,7 +148,7 @@ function SwipeProfileCard({
 
   return (
     <motion.article
-      className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}`}
+      className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}${item.label === 'Sosial Media' ? ' cinematic-hero__card--social' : ''}`}
       initial={cardPosition(Math.max(offset, 1), compact)}
       animate={cardPosition(offset, compact, shuffleStage === 'fan')}
       exit="exit"
@@ -198,9 +214,30 @@ function SwipeProfileCard({
             ) : item.label === 'Sosial Media' ? (
               <div className="cinematic-hero__social">
                 <ul className="cinematic-hero__social-grid" aria-label="Daftar platform sosial media">
-                  {item.fields.map((platform) => <li key={platform}>{platform}</li>)}
+                  {socialAccounts.map(({ label, icon, url }) => (
+                    <li key={label}>
+                      {url ? (
+                        <a
+                          className="cinematic-hero__social-platform cinematic-hero__social-platform--linked"
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Buka akun ${label} Teh Vini`}
+                          onPointerDown={(event) => event.stopPropagation()}
+                        >
+                          <span className={`cinematic-hero__social-icon cinematic-hero__social-icon--${icon}`} aria-hidden="true" />
+                          <span>{label}</span>
+                        </a>
+                      ) : (
+                        <span className="cinematic-hero__social-platform cinematic-hero__social-platform--pending" title="Tautan akun belum tersedia">
+                          <span className={`cinematic-hero__social-icon cinematic-hero__social-icon--${icon}`} aria-hidden="true" />
+                          <span>{label}</span>
+                        </span>
+                      )}
+                    </li>
+                  ))}
                 </ul>
-                <p className="cinematic-hero__social-note">Tautan akun belum ditambahkan.</p>
+                {socialAccounts.some(({ url }) => !url) && <p className="cinematic-hero__social-note">Tautan akun belum ditambahkan.</p>}
               </div>
             ) : (
               <div className="cinematic-hero__empty">
