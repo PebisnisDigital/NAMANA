@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState, type WheelEvent } from 'react';
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
 import '../identity-flip.css';
 
 type Phase = 'welcome' | 'loading' | 'hero';
@@ -36,7 +36,7 @@ const profileTabs = [
 ];
 
 function cardPosition(offset: number, compact: boolean) {
-  const depth = Math.abs(offset);
+  const depth = Math.max(0, offset);
   if (depth === 0) {
     return {
       x: 0, y: -12, z: 88,
@@ -45,16 +45,15 @@ function cardPosition(offset: number, compact: boolean) {
     };
   }
 
-  const side = Math.sign(offset);
   return {
-    x: side * (compact ? 42 + (depth - 1) * 29 : 111 + (depth - 1) * 69),
-    y: (compact ? 12 : 16) + depth * (compact ? 11 : 14),
-    z: -depth * (compact ? 82 : 118),
-    rotateX: 2 + depth * 1.7,
-    rotateY: -side * Math.min(9 + depth * 3.3, 34),
-    rotateZ: side * Math.min(depth * 2.15, 8),
-    scale: 1 - depth * (compact ? .03 : .04),
-    opacity: depth > 3 ? 0 : 1 - depth * .14,
+    x: depth * (compact ? 24 : 32),
+    y: depth * (compact ? 14 : 18),
+    z: -depth * (compact ? 85 : 110),
+    rotateX: 1 + depth * 1.6,
+    rotateY: -depth * 6.5,
+    rotateZ: depth * 1.2,
+    scale: 1 - depth * .055,
+    opacity: depth > 3 ? 0 : 1 - depth * .13,
   };
 }
 
@@ -67,18 +66,104 @@ const CARD_SPRING = {
   restDelta: .02,
 };
 
+const CARD_EXIT = {
+  exit: ({ direction, compact }: { direction: -1 | 1; compact: boolean }) => ({
+    x: direction * (compact ? 570 : 930),
+    y: -150,
+    z: 240,
+    rotateX: -9,
+    rotateY: direction * 17,
+    rotateZ: direction * 24,
+    scale: 1.08,
+    opacity: 0,
+    zIndex: 70,
+    transition: { duration: .55, ease: [.24, .76, .22, 1] as [number, number, number, number] },
+  }),
+};
+
+type ProfileCard = (typeof profileTabs)[number];
+
+function SwipeProfileCard({
+  item, index, offset, compact, reducedMotion, onSwipe, onSelect,
+}: {
+  item: ProfileCard;
+  index: number;
+  offset: number;
+  compact: boolean;
+  reducedMotion: boolean;
+  onSwipe: (direction: -1 | 1) => void;
+  onSelect: (index: number) => void;
+}) {
+  const active = offset === 0;
+  const dragX = useMotionValue(0);
+  const dragTilt = useTransform(dragX, [-280, 0, 280], [-21, 0, 21]);
+  const leftStamp = useTransform(dragX, [-150, -42, 0], [1, 0, 0]);
+  const rightStamp = useTransform(dragX, [0, 42, 150], [0, 0, 1]);
+
+  return (
+    <motion.article
+      className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}`}
+      initial={cardPosition(Math.max(offset, 1), compact)}
+      animate={cardPosition(offset, compact)}
+      exit="exit"
+      variants={CARD_EXIT}
+      transition={reducedMotion ? { duration: 0 } : CARD_SPRING}
+      style={{ zIndex: 12 - offset, pointerEvents: active || offset < 3 ? 'auto' : 'none' }}
+    >
+      <motion.div
+        className="cinematic-hero__card-swipe"
+        drag={active && !reducedMotion ? 'x' : false}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={.95}
+        dragMomentum={false}
+        style={{ x: dragX, rotateZ: dragTilt, touchAction: 'pan-y' }}
+        whileDrag={{ scale: 1.045, cursor: 'grabbing' }}
+        onDragEnd={(_, info) => {
+          if (Math.abs(info.offset.x) < 100 && Math.abs(info.velocity.x) < 600) return;
+          onSwipe(info.offset.x > 0 || (info.offset.x === 0 && info.velocity.x > 0) ? 1 : -1);
+        }}
+      >
+        {active && (
+          <>
+            <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--left" style={{ opacity: leftStamp }} aria-hidden="true">← NEXT</motion.span>
+            <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--right" style={{ opacity: rightStamp }} aria-hidden="true">NEXT →</motion.span>
+          </>
+        )}
+        <button
+          type="button"
+          className="cinematic-hero__card-trigger"
+          aria-expanded={active}
+          aria-controls={`cinematic-card-data-${index}`}
+          onClick={() => { if (!active) onSelect(index); }}
+        >
+          <span className="cinematic-hero__card-eyebrow">PESONAFLIX <span> / ORIGINALS</span></span>
+          <span className="cinematic-hero__card-chip" aria-hidden="true" />
+          <strong>{item.label}</strong>
+          <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 07</span>
+        </button>
+        <div id={`cinematic-card-data-${index}`} className="cinematic-hero__card-body" hidden={!active}>
+          <dl className="cinematic-hero__fields">
+            {item.fields.map((field, fieldIndex) => (
+              <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${70 + fieldIndex * 65}ms` }}>
+                <dt>{field}</dt>
+                <dd>—</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </motion.div>
+    </motion.article>
+  );
+}
+
 export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
   const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
-  const pointerStart = useRef<number | null>(null);
-  const pointerStartY = useRef<number | null>(null);
-  const cardDeck = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const suppressClick = useRef(false);
   const lastWheelAt = useRef(0);
   const [activeTab, setActiveTab] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(-1);
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
   const reducedMotion = useReducedMotion();
 
@@ -106,46 +191,14 @@ export function IdentityFlip() {
   };
 
   const navigateCards = (direction: -1 | 1) => {
+    setSwipeDirection(direction === 1 ? -1 : 1);
     setActiveTab((index) => Math.max(0, Math.min(profileTabs.length - 1, index + direction)));
   };
 
-  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
-    pointerStart.current = event.clientX;
-    pointerStartY.current = event.clientY;
-  };
-
-  const resetCardDrag = () => {
-    cardDeck.current?.style.setProperty('--deck-drag', '0px');
-    cardDeck.current?.classList.remove('cinematic-hero__card-track--dragging');
-    pointerStart.current = null;
-    pointerStartY.current = null;
-    isDragging.current = false;
-  };
-
-  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (pointerStart.current === null || pointerStartY.current === null) return;
-    const movement = event.clientX - pointerStart.current;
-    const vertical = event.clientY - pointerStartY.current;
-    if (!isDragging.current && (Math.abs(movement) < 10 || Math.abs(movement) < Math.abs(vertical) * 1.15)) return;
-    if (!isDragging.current) {
-      isDragging.current = true;
-      event.currentTarget.setPointerCapture(event.pointerId);
-      cardDeck.current?.classList.add('cinematic-hero__card-track--dragging');
-    }
-    const atEdge = (activeTab === 0 && movement > 0) || (activeTab === profileTabs.length - 1 && movement < 0);
-    const dragged = Math.max(-145, Math.min(145, movement * (atEdge ? .2 : .64)));
-    cardDeck.current?.style.setProperty('--deck-drag', `${dragged}px`);
-  };
-
-  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
-    if (pointerStart.current === null) return;
-    const movement = event.clientX - pointerStart.current;
-    resetCardDrag();
-    if (Math.abs(movement) < 45) return;
-    suppressClick.current = true;
-    navigateCards(movement < 0 ? 1 : -1);
-    window.setTimeout(() => { suppressClick.current = false; }, 0);
+  const swipeToNext = (direction: -1 | 1) => {
+    if (activeTab >= profileTabs.length - 1) return;
+    setSwipeDirection(direction);
+    setActiveTab((index) => Math.min(profileTabs.length - 1, index + 1));
   };
 
   const handleCardWheel = (event: WheelEvent<HTMLDivElement>) => {
@@ -217,7 +270,7 @@ export function IdentityFlip() {
             <div className="cinematic-hero__details">
               <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
                 <div className="cinematic-hero__card-toolbar">
-                  <span>KOLEKSI KARTU <span aria-hidden="true">·</span> GESER UNTUK MEMILIH</span>
+                  <span>KOLEKSI KARTU <span aria-hidden="true">·</span> SWIPE KIRI / KANAN</span>
                   <div className="cinematic-hero__card-arrows">
                     <span className="cinematic-hero__card-position">{String(activeTab + 1).padStart(2, '0')} / 07</span>
                     <button type="button" aria-label="Kartu sebelumnya" disabled={activeTab === 0} onClick={() => navigateCards(-1)}>←</button>
@@ -227,63 +280,30 @@ export function IdentityFlip() {
                 <div
                   className="cinematic-hero__card-viewport"
                   aria-label="Tumpukan kartu profil, geser ke kiri atau kanan"
-                  onPointerDown={handlePointerDown}
-                  onPointerMove={handlePointerMove}
-                  onPointerUp={handlePointerUp}
-                  onPointerCancel={resetCardDrag}
                   onWheel={handleCardWheel}
                   onKeyDown={(event) => {
                     if (event.key === 'ArrowRight') { event.preventDefault(); navigateCards(1); }
                     if (event.key === 'ArrowLeft') { event.preventDefault(); navigateCards(-1); }
                   }}
                 >
-                  <div ref={cardDeck} className="cinematic-hero__card-track" aria-live="polite">
-                    {profileTabs.map((item, index) => {
-                      const active = activeTab === index;
-                      const offset = index - activeTab;
-                      const depth = Math.abs(offset);
-                      return (
-                        <motion.article
-                          key={item.label}
-                          className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : offset < 0 ? ' cinematic-hero__card--previous' : ' cinematic-hero__card--next'}`}
-                          initial={false}
-                          animate={cardPosition(offset, compactDeck)}
-                          transition={reducedMotion ? { duration: 0 } : CARD_SPRING}
-                          onPointerUp={(event) => {
-                            if (pointerStart.current !== null && Math.abs(event.clientX - pointerStart.current) < 45 && !active) {
-                              setActiveTab(index);
-                            }
-                          }}
-                          style={{
-                            zIndex: profileTabs.length - depth,
-                            pointerEvents: depth > 3 ? 'none' : 'auto',
-                          }}
-                        >
-                          <button
-                            type="button"
-                            className="cinematic-hero__card-trigger"
-                            aria-expanded={active}
-                            aria-controls={`cinematic-card-data-${index}`}
-                            onClick={() => { if (!suppressClick.current) setActiveTab(index); }}
-                          >
-                            <span className="cinematic-hero__card-eyebrow">PESONAFLIX <span> / ORIGINALS</span></span>
-                            <span className="cinematic-hero__card-chip" aria-hidden="true" />
-                            <strong>{item.label}</strong>
-                            <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 07</span>
-                          </button>
-                          <div id={`cinematic-card-data-${index}`} className="cinematic-hero__card-body" hidden={!active}>
-                            <dl className="cinematic-hero__fields">
-                              {item.fields.map((field, fieldIndex) => (
-                                <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${70 + fieldIndex * 65}ms` }}>
-                                  <dt>{field}</dt>
-                                  <dd>—</dd>
-                                </div>
-                              ))}
-                            </dl>
-                          </div>
-                        </motion.article>
-                      );
-                    })}
+                  <div className="cinematic-hero__card-track" aria-live="polite">
+                    <AnimatePresence initial={false} mode="sync" custom={{ direction: swipeDirection, compact: compactDeck }}>
+                      {profileTabs.slice(activeTab, activeTab + 4).map((item, relativeIndex) => {
+                        const index = activeTab + relativeIndex;
+                        return (
+                          <SwipeProfileCard
+                            key={item.label}
+                            item={item}
+                            index={index}
+                            offset={relativeIndex}
+                            compact={compactDeck}
+                            reducedMotion={!!reducedMotion}
+                            onSwipe={swipeToNext}
+                            onSelect={(selected) => { setSwipeDirection(-1); setActiveTab(selected); }}
+                          />
+                        );
+                      })}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
