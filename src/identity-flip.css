@@ -1093,10 +1093,20 @@
   outline-offset: -4px;
 }
 @media (max-width: 600px) {
-  .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger { width: 45px; }
+  .cinematic-hero__card-viewport { height: 320px; }
+  .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger {
+    inset: auto 0 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 58px;
+    padding: 0 12px 12px;
+  }
   .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger strong {
-    top: 19px;
-    right: 14px;
-    font-size: 13px;
+    position: static;
+    writing-mode: horizontal-tb;
+    font-size: 12px;
+    transform: none;
   }
 }

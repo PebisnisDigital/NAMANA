@@ -57,13 +57,13 @@ function cardPosition(offset: number, compact: boolean) {
   return {
     // Leave a genuine, selectable edge on each physical card. The former
     // offset and scale cancelled each other out, hiding the entire stack.
-    x: depth * (compact ? 43 : 66),
-    y: depth * (compact ? 13 : 6),
-    z: -depth * (compact ? 66 : 90),
+    x: depth * (compact ? 7 : 120),
+    y: depth * (compact ? 61 : 5),
+    z: -depth * (compact ? 5 : 15),
     rotateX: depth * .7,
     rotateY: -depth * 3,
     rotateZ: depth * .4,
-    scale: 1 - depth * (compact ? .015 : .028),
+    scale: 1 - depth * .012,
     opacity: 1 - depth * .12,
   };
 }
@@ -327,7 +327,7 @@ export function IdentityFlip() {
                 >
                   <div className="cinematic-hero__card-track">
                     <AnimatePresence initial={false} mode="sync" custom={{ direction: swipeDirection, compact: compactDeck }}>
-                      {Array.from({ length: compactDeck ? 2 : 4 }, (_, relativeIndex) => {
+                      {Array.from({ length: compactDeck ? 2 : 3 }, (_, relativeIndex) => {
                         const index = (activeTab + relativeIndex) % totalCards;
                         const item = profileTabs[index];
                         return (
