@@ -4,7 +4,8 @@ import '../identity-flip.css';
 
 type Phase = 'welcome' | 'hero';
 type ShuffleStage = 'rest' | 'fan' | 'close' | 'tuck';
-type ProfileField = { label: string; value: string };
+type ProfileIcon = 'person' | 'pin' | 'home' | 'book' | 'image' | 'palette' | 'compass' | 'chat' | 'screens' | 'building' | 'flag' | 'mentor' | 'website' | 'pencil' | 'class' | 'certificate';
+type ProfileField = { label: string; value: string; icon: ProfileIcon };
 type ProfileCard = { label: string; fields: ProfileField[]; note?: string };
 
 type SocialAccount = {
@@ -27,49 +28,49 @@ const profileTabs: ProfileCard[] = [
   {
     label: 'Identitas',
     fields: [
-      { label: 'Nama', value: 'Teh Vini' },
-      { label: 'Domisili', value: 'Bandung' },
-      { label: 'Aktivitas', value: 'Ibu rumah tangga' },
+      { label: 'Nama', value: 'Teh Vini', icon: 'person' },
+      { label: 'Domisili', value: 'Bandung', icon: 'pin' },
+      { label: 'Aktivitas', value: 'Ibu rumah tangga', icon: 'home' },
     ],
   },
   {
     label: 'Pendidikan',
     fields: [
-      { label: 'Jalur belajar', value: 'Eksplorasi mandiri' },
-      { label: 'Fokus', value: 'Prompt gambar AI' },
+      { label: 'Jalur belajar', value: 'Eksplorasi mandiri', icon: 'book' },
+      { label: 'Fokus', value: 'Prompt gambar AI', icon: 'image' },
     ],
     note: 'Riwayat pendidikan formal belum dibagikan.',
   },
   {
     label: 'Hobi',
     fields: [
-      { label: 'Kreasi', value: 'Gambar AI' },
-      { label: 'Eksplorasi', value: 'Prompt visual' },
-      { label: 'Inspirasi', value: 'Threads' },
+      { label: 'Kreasi', value: 'Gambar AI', icon: 'palette' },
+      { label: 'Eksplorasi', value: 'Prompt visual', icon: 'image' },
+      { label: 'Inspirasi', value: 'Threads', icon: 'compass' },
     ],
   },
   {
     label: 'Skill',
     fields: [
-      { label: 'Marketing', value: 'WhatsApp marketing' },
-      { label: 'Digital', value: 'Konten & produk digital' },
-      { label: 'AI', value: 'Prompt gambar' },
+      { label: 'Marketing', value: 'WhatsApp marketing', icon: 'chat' },
+      { label: 'Digital', value: 'Konten & produk digital', icon: 'screens' },
+      { label: 'AI', value: 'Prompt gambar', icon: 'image' },
     ],
   },
   {
     label: 'Pengalaman',
     fields: [
-      { label: 'CEO', value: 'Cuanify ID' },
-      { label: 'Founder', value: 'Pebisnis.Digital' },
-      { label: 'Mentor', value: 'WhatsApp marketing' },
+      { label: 'CEO', value: 'Cuanify ID', icon: 'building' },
+      { label: 'Founder', value: 'Pebisnis.Digital', icon: 'flag' },
+      { label: 'Mentor', value: 'WhatsApp marketing', icon: 'mentor' },
     ],
   },
   {
     label: 'Karya',
     fields: [
-      { label: 'Website', value: 'PESONAFLIX' },
-      { label: 'Proyek prompt', value: 'Promptional (prototipe)' },
-      { label: 'Kelas', value: 'KULWA' },
+      { label: 'Website', value: 'PESONAFLIX', icon: 'website' },
+      { label: 'Proyek prompt', value: 'Promptional (prototipe)', icon: 'pencil' },
+      { label: 'Kelas', value: 'KULWA', icon: 'class' },
     ],
   },
   {
@@ -84,6 +85,29 @@ const profileTabs: ProfileCard[] = [
 ];
 
 const totalCards = profileTabs.length;
+
+function ProfileGlyph({ name }: { name: ProfileIcon }) {
+  const symbols = {
+    person: <><circle cx="16" cy="10" r="4.5" /><path d="M6.5 26v-2.5c0-5 4-8 9.5-8s9.5 3 9.5 8V26" /></>,
+    pin: <><path d="M25 13c0 7-9 14-9 14S7 20 7 13a9 9 0 1 1 18 0Z" /><circle cx="16" cy="13" r="3" /></>,
+    home: <><path d="m4 14 12-9 12 9M7 13v14h18V13" /><path d="M13 27v-9h6v9" /></>,
+    book: <><path d="M16 27c-3-2-7-2.5-12-2V6c5-.5 9 0 12 2 3-2 7-2.5 12-2v18.5c-5-.5-9 0-12 2.5Z" /><path d="M16 8v19M8 12h4M20 12h4" /></>,
+    image: <><rect x="4" y="6" width="24" height="20" rx="2" /><circle cx="11" cy="12" r="2" /><path d="m5 23 7-7 5 5 4-4 6 6" /></>,
+    palette: <><path d="M16 4C9 4 4 9 4 16s5 12 12 12c2.5 0 4-2 3-4-.5-1.5 0-3 2-3h2c3 0 5-2.5 5-5C28 9 22 4 16 4Z" /><circle cx="10" cy="14" r="1.4" /><circle cx="15" cy="9" r="1.4" /><circle cx="21" cy="12" r="1.4" /><circle cx="10.5" cy="20" r="1.4" /></>,
+    compass: <><circle cx="16" cy="16" r="11" /><path d="m20 12-3 7-5 1 3-7 5-1Z" /><path d="M16 3v2M16 27v2M3 16h2M27 16h2" /></>,
+    chat: <><path d="M6 7h20v15H13l-7 5V7Z" /><path d="M10 13h12M10 17h8" /></>,
+    screens: <><rect x="3" y="6" width="19" height="16" rx="2" /><path d="M7 26h13M12.5 22v4" /><rect x="23" y="13" width="6" height="14" rx="1.5" /></>,
+    building: <><path d="M7 27V5h15v22M22 13h4v14M4 27h24" /><path d="M11 10h2M17 10h2M11 15h2M17 15h2M11 20h2M17 20h2" /></>,
+    flag: <><path d="M7 28V5M7 6c4-3 7 3 11 0s6 0 8 1v13c-4-2-6-4-10-1s-6-2-9 0" /></>,
+    mentor: <><circle cx="12" cy="10" r="4" /><path d="M4 26v-3c0-4 3-7 8-7s8 3 8 7v3" /><path d="M22 6h6v9h-6l-3 3V9c0-2 1-3 3-3Z" /></>,
+    website: <><rect x="3" y="6" width="26" height="20" rx="2" /><path d="M3 12h26M7 9h.5M11 9h.5M8 18h8M8 22h13" /></>,
+    pencil: <><path d="M7 4h14l4 4v18H7V4Z" /><path d="M20 4v5h5M11 14h9M11 18h7M11 22h4" /><path d="m18 25 8-8 2 2-8 8-4 1 2-3Z" /></>,
+    class: <><rect x="4" y="5" width="24" height="18" rx="2" /><path d="m14 10 7 4-7 4v-8ZM10 27h12M16 23v4" /></>,
+    certificate: <><rect x="6" y="4" width="20" height="19" rx="2" /><path d="M10 9h12M10 13h9M10 17h6" /><circle cx="22" cy="22" r="5" /><path d="m19 26-1 4 4-2 4 2-1-4" /></>,
+  };
+
+  return <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{symbols[name]}</svg>;
+}
 
 function cardPosition(offset: number, compact: boolean, fanned = false) {
   const depth = Math.max(0, offset);
@@ -248,16 +272,24 @@ function SwipeProfileCard({
             ) : (
               <div className={`cinematic-hero__profile${item.fields.length === 0 ? ' cinematic-hero__profile--empty' : ''}`}>
                 {item.fields.length > 0 && (
-                  <dl className="cinematic-hero__fields">
-                    {item.fields.map((field) => (
-                      <div className="cinematic-hero__field" key={field.label}>
+                  <dl className={`cinematic-hero__icon-grid${item.fields.length === 2 ? ' cinematic-hero__icon-grid--two' : ''}`}>
+                    {item.fields.map((field, fieldIndex) => (
+                      <div className="cinematic-hero__icon-tile" key={field.label} style={{ animationDelay: `${fieldIndex * 90}ms` }}>
+                        <span className="cinematic-hero__icon-medallion" aria-hidden="true"><ProfileGlyph name={field.icon} /></span>
                         <dt>{field.label}</dt>
                         <dd>{field.value}</dd>
                       </div>
                     ))}
                   </dl>
                 )}
-                {item.note && <p className="cinematic-hero__profile-note">{item.note}</p>}
+                {item.fields.length === 0 && item.note ? (
+                  <div className="cinematic-hero__icon-grid cinematic-hero__icon-grid--empty">
+                    <div className="cinematic-hero__icon-tile">
+                      <span className="cinematic-hero__icon-medallion" aria-hidden="true"><ProfileGlyph name="certificate" /></span>
+                      <p className="cinematic-hero__profile-note">{item.note}</p>
+                    </div>
+                  </div>
+                ) : item.note ? <p className="cinematic-hero__profile-note">{item.note}</p> : null}
               </div>
             )}
           </div>
