@@ -1065,3 +1065,38 @@
   .cinematic-hero__card-body { animation: none; }
   .cinematic-hero__card--active .cinematic-hero__card-swipe::after { animation: none; }
 }
+
+/* The visible spines of stacked cards are their actual click targets. */
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: block;
+  width: 66px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-eyebrow,
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-chip,
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-open { display: none; }
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger strong {
+  top: 25px;
+  right: 21px;
+  font-size: 17px;
+  letter-spacing: .035em;
+  color: #f3d5aa;
+}
+.cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger:focus-visible {
+  outline: 2px solid #ffe0a5;
+  outline-offset: -4px;
+}
+@media (max-width: 600px) {
+  .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger { width: 45px; }
+  .cinematic-hero__card:not(.cinematic-hero__card--active) .cinematic-hero__card-trigger strong {
+    top: 19px;
+    right: 14px;
+    font-size: 13px;
+  }
+}
