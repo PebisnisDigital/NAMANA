@@ -279,8 +279,138 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: clamp(22px,3vh,34px);
+  min-width: 0;
+  container-type: inline-size;
+  gap: 10px;
   animation: cinematic-panel-emerge .55s cubic-bezier(.18,.8,.22,1) both;
+}
+.cinematic-hero__card-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  color: rgba(228,200,154,.74);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .2em;
+}
+.cinematic-hero__card-toolbar > span span { margin-left: 6px; font-size: 15px; }
+.cinematic-hero__card-arrows { display: flex; gap: 6px; }
+.cinematic-hero__card-arrows button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 29px;
+  border: 1px solid rgba(212,174,113,.35);
+  background: rgba(8,8,10,.75);
+  color: #f2c88e;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s ease,border-color .2s ease;
+}
+.cinematic-hero__card-arrows button:hover:not(:disabled) { background: rgba(212,174,113,.2); border-color: var(--cinematic-gold); }
+.cinematic-hero__card-arrows button:disabled { opacity: .3; cursor: default; }
+.cinematic-hero__card-viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,174,113,.55) rgba(15,15,18,.4);
+}
+.cinematic-hero__card-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 9px 8px 17px;
+}
+.cinematic-hero__card {
+  position: relative;
+  flex: 0 0 285px;
+  width: 285px;
+  height: 90px;
+  aspect-ratio: 19 / 6;
+  scroll-snap-align: center;
+  overflow: hidden;
+  border: 1px solid rgba(212,174,113,.3);
+  background: linear-gradient(120deg,rgba(44,36,26,.92),rgba(14,14,16,.96) 60%),#0a0a0c;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+  transition: flex-basis .56s cubic-bezier(.2,.85,.2,1),width .56s cubic-bezier(.2,.85,.2,1),height .56s cubic-bezier(.2,.85,.2,1),border-color .3s ease,box-shadow .3s ease;
+}
+.cinematic-hero__card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--cinematic-gold);
+  opacity: .45;
+}
+.cinematic-hero__card--active {
+  flex-basis: min(480px,calc(100cqw - 16px));
+  width: min(480px,calc(100cqw - 16px));
+  height: 356px;
+  aspect-ratio: auto;
+  border-color: rgba(223,177,107,.92);
+  background: linear-gradient(138deg,rgba(44,34,24,.98),rgba(11,11,13,.98) 52%);
+  box-shadow: 0 0 30px rgba(206,149,75,.15),inset 0 0 0 1px rgba(236,186,116,.17);
+}
+.cinematic-hero__card--active::before { opacity: 1; }
+.cinematic-hero__card-trigger {
+  display: grid;
+  position: relative;
+  grid-template-columns: 1fr auto;
+  align-content: center;
+  width: 100%;
+  height: 90px;
+  gap: 3px 8px;
+  padding: 13px 19px;
+  border: 0;
+  background: transparent;
+  color: var(--cinematic-cream);
+  cursor: pointer;
+  text-align: left;
+}
+.cinematic-hero__card--active .cinematic-hero__card-trigger { height: 79px; }
+.cinematic-hero__card-trigger:focus-visible { outline: 2px solid var(--cinematic-gold); outline-offset: -4px; }
+.cinematic-hero__card-eyebrow {
+  grid-column: 1;
+  color: #d9b47d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+.cinematic-hero__card-eyebrow span { color: rgba(217,180,125,.52); }
+.cinematic-hero__card-trigger strong {
+  grid-column: 1;
+  color: #f4eee7;
+  font-family: 'Bebas Neue',Impact,sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.cinematic-hero__card-open {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  color: #d4ae71;
+  font-size: 29px;
+  font-weight: 300;
+}
+.cinematic-hero__card-body {
+  padding: 0 19px 20px;
+  animation: cinematic-card-unfold .5s cubic-bezier(.16,1,.3,1) both;
+}
+.cinematic-hero__card-body[hidden] { display: none; }
+.cinematic-hero__card .cinematic-hero__field { min-height: 42px; }
+.cinematic-hero__card .cinematic-hero__field dt { font-size: 11px; }
+@keyframes cinematic-card-unfold {
+  from { opacity: 0; transform: translateY(16px); clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; transform: translateY(0); clip-path: inset(0 0 0 0); }
 }
 .cinematic-hero__identity {
   width: auto;
@@ -474,7 +604,13 @@
     transform: none;
     box-shadow: inset 0 -3px 0 var(--cinematic-gold);
   }
-  .cinematic-hero__panel { gap: 32px; }
+  .cinematic-hero__panel { width: 100%; gap: 10px; }
+  .cinematic-hero__card { flex-basis: 247px; width: 247px; height: 78px; }
+  .cinematic-hero__card--active { flex-basis: min(480px,calc(100cqw - 16px)); width: min(480px,calc(100cqw - 16px)); height: 369px; }
+  .cinematic-hero__card-trigger { height: 78px; }
+  .cinematic-hero__card--active .cinematic-hero__card-trigger { height: 74px; }
+  .cinematic-hero__card .cinematic-hero__field { grid-template-columns: minmax(120px,1.1fr) minmax(30px,.45fr); min-height: 46px; }
+  .cinematic-hero__card .cinematic-hero__field dt { font-size: 10px; }
   .cinematic-kicker { gap: 10px; font-size: 9px; letter-spacing: .2em; }
   .cinematic-kicker i { width: 20px; }
   .cinematic-hero__identity h1 { margin-top: 15px; font-size: clamp(54px,13.2vw,83px); }

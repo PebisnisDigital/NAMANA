@@ -40,13 +40,28 @@ export function IdentityFlip() {
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
+  const cardViewport = useRef<HTMLDivElement>(null);
+  const cardNodes = useRef<Array<HTMLElement | null>>([]);
   const [activeTab, setActiveTab] = useState(0);
-  const currentTab = profileTabs[activeTab];
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
   }, []);
+
+  useEffect(() => {
+    if (phase !== 'hero') return;
+    const viewport = cardViewport.current;
+    const card = cardNodes.current[activeTab];
+    if (!viewport || !card) return;
+    const viewportBox = viewport.getBoundingClientRect();
+    const cardBox = card.getBoundingClientRect();
+    const cardCenter = cardBox.left - viewportBox.left + viewport.scrollLeft + cardBox.width / 2;
+    viewport.scrollTo({
+      left: Math.max(0, cardCenter - viewport.clientWidth / 2),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+  }, [activeTab, phase]);
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -154,22 +169,54 @@ export function IdentityFlip() {
             </aside>
 
               <div
-                key={activeTab}
                 id="cinematic-tab-panel"
                 className="cinematic-hero__panel"
                 role="tabpanel"
                 aria-labelledby={`cinematic-tab-${activeTab}`}
                 tabIndex={0}
               >
-                <div className="cinematic-hero__profile">
-                  <dl className="cinematic-hero__fields">
-                    {currentTab.fields.map((field, index) => (
-                      <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${100 + index * 65}ms` }}>
-                        <dt>{field}</dt>
-                        <dd>—</dd>
-                      </div>
-                    ))}
-                  </dl>
+                <div className="cinematic-hero__card-toolbar">
+                  <span>GESER KARTU <span aria-hidden="true">↔</span></span>
+                  <div className="cinematic-hero__card-arrows">
+                    <button type="button" aria-label="Kartu sebelumnya" disabled={activeTab === 0} onClick={() => setActiveTab((index) => Math.max(0, index - 1))}>←</button>
+                    <button type="button" aria-label="Kartu berikutnya" disabled={activeTab === profileTabs.length - 1} onClick={() => setActiveTab((index) => Math.min(profileTabs.length - 1, index + 1))}>→</button>
+                  </div>
+                </div>
+                <div className="cinematic-hero__card-viewport" ref={cardViewport} aria-label="Slider kartu profil">
+                  <div className="cinematic-hero__card-track">
+                    {profileTabs.map((item, index) => {
+                      const active = activeTab === index;
+                      return (
+                        <article
+                          key={item.label}
+                          ref={(node) => { cardNodes.current[index] = node; }}
+                          className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ''}`}
+                        >
+                          <button
+                            type="button"
+                            className="cinematic-hero__card-trigger"
+                            aria-expanded={active}
+                            aria-controls={`cinematic-card-data-${index}`}
+                            onClick={() => setActiveTab(index)}
+                          >
+                            <span className="cinematic-hero__card-eyebrow">BAB {String(index + 1).padStart(2, '0')} <span> / 07</span></span>
+                            <strong>{item.label}</strong>
+                            <span className="cinematic-hero__card-open" aria-hidden="true">{active ? '−' : '+'}</span>
+                          </button>
+                          <div id={`cinematic-card-data-${index}`} className="cinematic-hero__card-body" hidden={!active}>
+                            <dl className="cinematic-hero__fields">
+                              {item.fields.map((field, fieldIndex) => (
+                                <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${70 + fieldIndex * 65}ms` }}>
+                                  <dt>{field}</dt>
+                                  <dd>—</dd>
+                                </div>
+                              ))}
+                            </dl>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
