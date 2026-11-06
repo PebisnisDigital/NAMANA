@@ -38,13 +38,11 @@ export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
   const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const welcomeButton = useRef<HTMLButtonElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeTab, setActiveTab] = useState(0);
   const [stampRun, setStampRun] = useState(0);
   const [stampPlaying, setStampPlaying] = useState(false);
-  const [stampManual, setStampManual] = useState(false);
   const currentTab = profileTabs[activeTab];
 
   useEffect(() => () => {
@@ -54,20 +52,18 @@ export function IdentityFlip() {
 
   useEffect(() => {
     if (phase !== 'hero') return;
-    // Let the full-screen transition settle before the titles hit the screen.
-    const timer = window.setTimeout(() => {
+    // Play automatically after the page reveal, then repeat so the impact is never missed.
+    const playStamp = () => {
       setStampRun((run) => run + 1);
       setStampPlaying(true);
-    }, 850);
-    return () => window.clearTimeout(timer);
+    };
+    const entrance = window.setTimeout(playStamp, 850);
+    const repeat = window.setInterval(playStamp, 10000);
+    return () => {
+      window.clearTimeout(entrance);
+      window.clearInterval(repeat);
+    };
   }, [phase]);
-
-  const replayStamp = () => {
-    setStampManual(true);
-    setStampPlaying(true);
-    // Remounting the spans restarts both impacts, even after the first run ended.
-    setStampRun((run) => run + 1);
-  };
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -78,16 +74,6 @@ export function IdentityFlip() {
       setPhase('hero');
       focusTimer.current = setTimeout(() => heroHeading.current?.focus(), reduceMotion ? 0 : 450);
     }, reduceMotion ? 350 : 1550);
-  };
-
-  const returnToWelcome = () => {
-    if (loadingTimer.current) clearTimeout(loadingTimer.current);
-    if (focusTimer.current) clearTimeout(focusTimer.current);
-    setPhase('welcome');
-    setActiveTab(0);
-    setStampPlaying(false);
-    setStampManual(false);
-    focusTimer.current = setTimeout(() => welcomeButton.current?.focus(), 80);
   };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -123,7 +109,6 @@ export function IdentityFlip() {
             </h1>
             <p>Setiap orang punya cerita. Sekarang, biarkan dunia mengenal siapa Anda.</p>
             <button
-              ref={welcomeButton}
               type="button"
               className="cinematic-welcome__enter"
               onClick={enterExperience}
@@ -151,29 +136,19 @@ export function IdentityFlip() {
 
           <header className="cinematic-hero__nav">
             <span className="cinematic-brand">PESONA<span>FLIX</span></span>
-            <span className="cinematic-hero__nav-caption">CINEMATIC PROFILE <b>01 / 01</b></span>
-            <button type="button" className="cinematic-hero__back" onClick={returnToWelcome}>
-              <span aria-hidden="true">←</span> KEMBALI
-            </button>
           </header>
 
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__identity">
-              <div className="cinematic-hero__identity-topline">
-                <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
-                <button type="button" className="cinematic-hero__replay" onClick={replayStamp} aria-label="Putar ulang animasi stempel judul">
-                  <span aria-hidden="true">↻</span> ULANG STAMPEL
-                </button>
-              </div>
+              <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
               <h1 ref={heroHeading} tabIndex={-1} className={stampPlaying ? 'cinematic-hero__heading--stamping' : 'cinematic-hero__heading--waiting'}>
-                <span key={`name-${stampRun}`} className={`cinematic-hero__stamp cinematic-hero__stamp--name${stampManual ? ' cinematic-hero__stamp--manual' : ''}`}>TEH VINI</span>
-                <span key={`role-${stampRun}`} className={`cinematic-hero__stamp cinematic-hero__stamp--role${stampManual ? ' cinematic-hero__stamp--manual' : ''}`}>AI ENTHUSIAST</span>
+                <span key={`name-${stampRun}`} className="cinematic-hero__stamp cinematic-hero__stamp--name">TEH VINI</span>
+                <span key={`role-${stampRun}`} className="cinematic-hero__stamp cinematic-hero__stamp--role">AI ENTHUSIAST</span>
               </h1>
             </div>
 
             <div className="cinematic-hero__details">
             <aside className="cinematic-hero__rail" aria-label="Pilih kategori profil">
-              <div className="cinematic-hero__rail-heading">PILIH BAB <span>01 — 07</span></div>
               <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
                 {profileTabs.map((item, index) => (
                   <button
@@ -192,9 +167,6 @@ export function IdentityFlip() {
                     <span>{item.label}</span>
                   </button>
                 ))}
-              </div>
-              <div className="cinematic-hero__rail-progress" aria-hidden="true">
-                <span>{String(activeTab + 1).padStart(2, '0')}</span> / 07
               </div>
             </aside>
 
