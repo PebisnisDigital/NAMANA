@@ -485,6 +485,15 @@
   .cinematic-hero__footer { flex-wrap: wrap; padding: 0 23px 22px; font-size: 8px; letter-spacing: .15em; }
 }
 
+@media (max-height: 900px) and (min-width: 851px) {
+  .cinematic-hero__nav { padding-top: 22px; padding-bottom: 22px; }
+  .cinematic-hero__content { padding-top: 8px; padding-bottom: 22px; gap: 16px; }
+  .cinematic-hero__identity h1 { font-size: clamp(92px,8.6vw,134px); }
+  .cinematic-hero__rail { gap: 11px; }
+  .cinematic-hero__tabs { gap: 4px; }
+  .cinematic-hero__tabs button { min-height: 44px; padding-block: 9px; }
+}
+
 @media (max-height: 730px) and (min-width: 601px) {
   .cinematic-hero__content { justify-content: flex-start; padding-top: 10px; }
   .cinematic-hero__identity h1 { font-size: clamp(54px,6.4vw,89px); }
