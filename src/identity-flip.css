@@ -23,7 +23,6 @@
   transform: rotateY(0deg);
   transition: transform 1.5s cubic-bezier(.22,.68,0,1.04);
   will-change: transform;
-  filter: drop-shadow(0 20px 28px rgba(0,0,0,.45));
 }
 .identity-experience--back .identity-flip-pages { transform: rotateY(180deg); }
 .identity-face {
@@ -38,6 +37,7 @@
   display: block;
   padding: 0;
   cursor: pointer;
+  box-shadow: 0 20px 35px rgba(0,0,0,.45), 0 45px 95px rgba(0,0,0,.2);
 }
 .identity-face--front {
   background: #1b98d7 url('/identity-card-art.webp') center / cover no-repeat;
