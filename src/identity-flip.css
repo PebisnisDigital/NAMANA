@@ -234,11 +234,59 @@
   width: min(100%,1600px);
   flex: 1;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
-  gap: clamp(25px,3vh,42px);
-  padding: 10px clamp(22px,7.2vw,118px) 55px;
+  gap: 19px;
+  padding: clamp(12px,2.5vh,26px) clamp(22px,7.2vw,118px) 55px;
   margin: 0 auto;
+}
+.cinematic-hero__tabs {
+  display: flex;
+  width: min(100%,660px);
+  max-width: 100%;
+  min-height: 40px;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid rgba(212,174,113,.38);
+  background: rgba(5,5,7,.68);
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.cinematic-hero__tabs::-webkit-scrollbar { display: none; }
+.cinematic-hero__tabs button {
+  position: relative;
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 12px;
+  border: 0;
+  border-right: 1px solid rgba(212,174,113,.22);
+  background: transparent;
+  color: #beb2a5;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .055em;
+  scroll-snap-align: start;
+  transition: background .2s ease,color .2s ease;
+}
+.cinematic-hero__tabs button:last-child { border-right: 0; }
+.cinematic-hero__tabs button:hover { background: rgba(212,174,113,.12); color: #f4eee7; }
+.cinematic-hero__tabs button[aria-selected="true"] {
+  background: rgba(212,174,113,.19);
+  box-shadow: inset 0 -2px 0 var(--cinematic-gold);
+  color: #f1cd94;
+}
+.cinematic-hero__tabs button:focus-visible { outline-offset: -3px; }
+.cinematic-hero__panel {
+  display: flex;
+  width: min(100%,610px);
+  flex-direction: column;
+  gap: clamp(22px,3vh,34px);
+  animation: cinematic-tab-reveal .28s ease both;
 }
 .cinematic-hero__intro { max-width: 610px; }
 .cinematic-hero__intro h2 {
@@ -310,6 +358,7 @@
 @keyframes cinematic-load-progress { from {transform:scaleX(0)} to {transform:scaleX(1)} }
 @keyframes cinematic-hero-reveal { from {opacity:0} to {opacity:1} }
 @keyframes cinematic-rise { from {opacity:0; transform:translateY(25px)} to {opacity:1; transform:translateY(0)} }
+@keyframes cinematic-tab-reveal { from {opacity:.42;transform:translateY(7px)} to {opacity:1;transform:translateY(0)} }
 
 @media (max-width: 850px) {
   .cinematic-hero__nav { grid-template-columns: 1fr auto; }
@@ -351,8 +400,11 @@
   .cinematic-hero__back { padding: 11px 12px; font-size: 9px !important; }
   .cinematic-hero__content {
     padding: max(38svh,220px) 23px 44px;
-    gap: 32px;
+    gap: 24px;
   }
+  .cinematic-hero__tabs { width: 100%; min-height: 44px; }
+  .cinematic-hero__tabs button { flex: 0 0 auto; min-height: 44px; padding: 11px 15px; }
+  .cinematic-hero__panel { gap: 32px; }
   .cinematic-kicker { gap: 10px; font-size: 9px; letter-spacing: .2em; }
   .cinematic-kicker i { width: 20px; }
   .cinematic-hero__intro h2 { margin-top: 15px; font-size: clamp(61px,15vw,95px); }
@@ -369,7 +421,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader { animation: none; }
+  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__panel { animation: none; }
   .cinematic-loader__bar span { animation-duration: .35s; }
   .cinematic-welcome__enter, .cinematic-hero__back { transition: none; }
 }

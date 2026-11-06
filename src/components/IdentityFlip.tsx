@@ -1,15 +1,72 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import '../identity-flip.css';
 
 type Phase = 'welcome' | 'loading' | 'hero';
 
-const profileFields = [
-  'Nama',
-  'Tempat, Tanggal Lahir',
-  'Alamat',
-  'Agama',
-  'Status',
-  'Pekerjaan',
+const profileTabs = [
+  {
+    label: 'Identitas',
+    kicker: 'IDENTITAS DIGITAL',
+    title: 'KENAL',
+    accent: 'LEBIH DEKAT.',
+    description: 'Di balik setiap nama, ada perjalanan yang layak dikenal.',
+    sectionTitle: 'PROFIL SINGKAT',
+    fields: ['Nama', 'Tempat, Tanggal Lahir', 'Alamat', 'Agama', 'Status', 'Pekerjaan'],
+  },
+  {
+    label: 'Pendidikan',
+    kicker: 'RIWAYAT PENDIDIKAN',
+    title: 'JEJAK',
+    accent: 'PENDIDIKAN.',
+    description: 'Setiap proses belajar membentuk perjalanan dan cara kita berpikir.',
+    sectionTitle: 'LATAR PENDIDIKAN',
+    fields: ['Jenjang', 'Sekolah / Kampus', 'Jurusan', 'Tahun Masuk', 'Tahun Lulus', 'Pendidikan Tambahan'],
+  },
+  {
+    label: 'Hobi',
+    kicker: 'HOBI & MINAT',
+    title: 'CERITA',
+    accent: 'DI LUAR KERJA.',
+    description: 'Sisi personal yang membuat setiap orang punya warna tersendiri.',
+    sectionTitle: 'MINAT PERSONAL',
+    fields: ['Hobi Utama', 'Aktivitas Favorit', 'Minat Kreatif', 'Kegiatan Outdoor', 'Komunitas', 'Hobi Lainnya'],
+  },
+  {
+    label: 'Skill',
+    kicker: 'KEAHLIAN PERSONAL',
+    title: 'KEAHLIAN',
+    accent: '& POTENSI.',
+    description: 'Kemampuan yang diasah lewat latihan, proses, dan pengalaman.',
+    sectionTitle: 'DAFTAR KEAHLIAN',
+    fields: ['Keahlian Utama', 'Keahlian Pendukung', 'Spesialisasi', 'Tools & Platform', 'Bahasa', 'Kompetensi Lain'],
+  },
+  {
+    label: 'Pengalaman',
+    kicker: 'PERJALANAN PROFESIONAL',
+    title: 'JEJAK',
+    accent: 'PENGALAMAN.',
+    description: 'Cerita di balik pekerjaan, kolaborasi, dan pencapaian.',
+    sectionTitle: 'RIWAYAT PENGALAMAN',
+    fields: ['Posisi', 'Perusahaan / Organisasi', 'Bidang', 'Periode', 'Tanggung Jawab', 'Pencapaian'],
+  },
+  {
+    label: 'Karya',
+    kicker: 'PORTOFOLIO PERSONAL',
+    title: 'CERITA',
+    accent: 'DALAM KARYA.',
+    description: 'Hasil pemikiran dan proses kreatif yang bisa dibagikan.',
+    sectionTitle: 'KARYA PILIHAN',
+    fields: ['Judul Karya', 'Kategori', 'Tahun', 'Deskripsi', 'Media', 'Tautan Karya'],
+  },
+  {
+    label: 'Sertifikasi',
+    kicker: 'BUKTI KOMPETENSI',
+    title: 'REKAM',
+    accent: 'SERTIFIKASI.',
+    description: 'Pengakuan atas pembelajaran dan keahlian yang telah ditempuh.',
+    sectionTitle: 'DAFTAR SERTIFIKASI',
+    fields: ['Nama Sertifikasi', 'Lembaga Penerbit', 'Bidang Kompetensi', 'Tahun Terbit', 'Masa Berlaku', 'Tautan Verifikasi'],
+  },
 ];
 
 export function IdentityFlip() {
@@ -18,6 +75,9 @@ export function IdentityFlip() {
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const welcomeButton = useRef<HTMLButtonElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
+  const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
+  const [activeTab, setActiveTab] = useState(0);
+  const currentTab = profileTabs[activeTab];
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
@@ -39,7 +99,20 @@ export function IdentityFlip() {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
     setPhase('welcome');
+    setActiveTab(0);
     focusTimer.current = setTimeout(() => welcomeButton.current?.focus(), 80);
+  };
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let next = index;
+    if (event.key === 'ArrowRight') next = (index + 1) % profileTabs.length;
+    else if (event.key === 'ArrowLeft') next = (index - 1 + profileTabs.length) % profileTabs.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = profileTabs.length - 1;
+    else return;
+    event.preventDefault();
+    setActiveTab(next);
+    tabButtons.current[next]?.focus();
   };
 
   return (
@@ -98,22 +171,48 @@ export function IdentityFlip() {
           </header>
 
           <div className="cinematic-hero__content">
-            <div className="cinematic-hero__intro">
-              <span className="cinematic-kicker"><i aria-hidden="true" /> IDENTITAS DIGITAL</span>
-              <h2 ref={heroHeading} tabIndex={-1}>KENAL <span>LEBIH DEKAT.</span></h2>
-              <p>Di balik setiap nama, ada perjalanan yang layak dikenal.</p>
+            <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
+              {profileTabs.map((item, index) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  id={`cinematic-tab-${index}`}
+                  ref={(node) => { tabButtons.current[index] = node; }}
+                  role="tab"
+                  aria-selected={activeTab === index}
+                  aria-controls="cinematic-tab-panel"
+                  tabIndex={activeTab === index ? 0 : -1}
+                  onClick={() => setActiveTab(index)}
+                  onKeyDown={(event) => handleTabKeyDown(event, index)}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
-
-            <div className="cinematic-hero__profile">
-              <h3>PROFIL SINGKAT</h3>
-              <dl className="cinematic-hero__fields">
-                {profileFields.map((field) => (
-                  <div className="cinematic-hero__field" key={field}>
-                    <dt>{field}</dt>
-                    <dd>—</dd>
-                  </div>
-                ))}
-              </dl>
+            <div
+              key={activeTab}
+              id="cinematic-tab-panel"
+              className="cinematic-hero__panel"
+              role="tabpanel"
+              aria-labelledby={`cinematic-tab-${activeTab}`}
+              tabIndex={0}
+            >
+              <div className="cinematic-hero__intro">
+                <span className="cinematic-kicker"><i aria-hidden="true" /> {currentTab.kicker}</span>
+                <h2 ref={heroHeading} tabIndex={-1}>{currentTab.title} <span>{currentTab.accent}</span></h2>
+                <p>{currentTab.description}</p>
+              </div>
+              <div className="cinematic-hero__profile">
+                <h3>{currentTab.sectionTitle}</h3>
+                <dl className="cinematic-hero__fields">
+                  {currentTab.fields.map((field) => (
+                    <div className="cinematic-hero__field" key={field}>
+                      <dt>{field}</dt>
+                      <dd>—</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
             </div>
           </div>
 
