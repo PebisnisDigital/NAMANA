@@ -105,8 +105,8 @@ export function IdentityFlip() {
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let next = index;
-    if (event.key === 'ArrowRight') next = (index + 1) % profileTabs.length;
-    else if (event.key === 'ArrowLeft') next = (index - 1 + profileTabs.length) % profileTabs.length;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % profileTabs.length;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + profileTabs.length) % profileTabs.length;
     else if (event.key === 'Home') next = 0;
     else if (event.key === 'End') next = profileTabs.length - 1;
     else return;
@@ -171,47 +171,57 @@ export function IdentityFlip() {
           </header>
 
           <div className="cinematic-hero__content">
-            <div className="cinematic-hero__intro" key={`intro-${activeTab}`}>
-              <span className="cinematic-kicker"><i aria-hidden="true" /> {currentTab.kicker}</span>
-              <h2 ref={heroHeading} tabIndex={-1}>{currentTab.title} <span>{currentTab.accent}</span></h2>
-              <p>{currentTab.description}</p>
-            </div>
-            <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
-              {profileTabs.map((item, index) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  id={`cinematic-tab-${index}`}
-                  ref={(node) => { tabButtons.current[index] = node; }}
-                  role="tab"
-                  aria-selected={activeTab === index}
-                  aria-controls="cinematic-tab-panel"
-                  tabIndex={activeTab === index ? 0 : -1}
-                  onClick={() => setActiveTab(index)}
-                  onKeyDown={(event) => handleTabKeyDown(event, index)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            <div
-              key={activeTab}
-              id="cinematic-tab-panel"
-              className="cinematic-hero__panel"
-              role="tabpanel"
-              aria-labelledby={`cinematic-tab-${activeTab}`}
-              tabIndex={0}
-            >
-              <div className="cinematic-hero__profile">
-                <h3>{currentTab.sectionTitle}</h3>
-                <dl className="cinematic-hero__fields">
-                  {currentTab.fields.map((field) => (
-                    <div className="cinematic-hero__field" key={field}>
-                      <dt>{field}</dt>
-                      <dd>—</dd>
-                    </div>
-                  ))}
-                </dl>
+            <aside className="cinematic-hero__rail" aria-label="Pilih kategori profil">
+              <div className="cinematic-hero__rail-heading">PILIH BAB <span>01 — 07</span></div>
+              <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
+                {profileTabs.map((item, index) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    id={`cinematic-tab-${index}`}
+                    ref={(node) => { tabButtons.current[index] = node; }}
+                    role="tab"
+                    aria-selected={activeTab === index}
+                    aria-controls="cinematic-tab-panel"
+                    tabIndex={activeTab === index ? 0 : -1}
+                    onClick={() => setActiveTab(index)}
+                    onKeyDown={(event) => handleTabKeyDown(event, index)}
+                  >
+                    <span className="cinematic-hero__tab-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="cinematic-hero__rail-progress" aria-hidden="true">
+                <span>{String(activeTab + 1).padStart(2, '0')}</span> / 07
+              </div>
+            </aside>
+
+            <div className="cinematic-hero__story">
+              <div className="cinematic-hero__intro" key={`intro-${activeTab}`}>
+                <span className="cinematic-kicker"><i aria-hidden="true" /> {currentTab.kicker}</span>
+                <h2 ref={heroHeading} tabIndex={-1}>{currentTab.title} <span>{currentTab.accent}</span></h2>
+                <p>{currentTab.description}</p>
+              </div>
+              <div
+                key={activeTab}
+                id="cinematic-tab-panel"
+                className="cinematic-hero__panel"
+                role="tabpanel"
+                aria-labelledby={`cinematic-tab-${activeTab}`}
+                tabIndex={0}
+              >
+                <div className="cinematic-hero__profile">
+                  <h3>{currentTab.sectionTitle}</h3>
+                  <dl className="cinematic-hero__fields">
+                    {currentTab.fields.map((field, index) => (
+                      <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${100 + index * 65}ms` }}>
+                        <dt>{field}</dt>
+                        <dd>—</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
