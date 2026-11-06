@@ -232,13 +232,7 @@ function SwipeProfileCard({
             <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--right" style={{ opacity: rightStamp }} aria-hidden="true">SEBELUMNYA</motion.span>
           </>
         )}
-        {active ? (
-          <div className="cinematic-hero__card-trigger cinematic-hero__card-trigger--static">
-            <span className="cinematic-hero__card-eyebrow">PESONAFLIX</span>
-            <span className="cinematic-hero__card-chip" aria-hidden="true" />
-            <strong>{item.label}</strong>
-          </div>
-        ) : (
+        {!active && (
           <button type="button" className="cinematic-hero__card-trigger" aria-label={`Buka kartu ${item.label}`} onClick={() => onSelect(index)}>
             <span className="cinematic-hero__card-eyebrow">PESONAFLIX</span>
             <span className="cinematic-hero__card-chip" aria-hidden="true" />
