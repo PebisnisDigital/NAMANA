@@ -32,5 +32,10 @@ The visitor should immediately recognize the person, understand the story, and b
 
 - Short Indonesian text with personality and meaning. Remove placeholder marketing hype, unnecessary chapter counters, fake premium claims and ornamental headings that repeat content.
 - Every visible badge, line, glow and motion effect must improve identity, hierarchy, orientation or interaction feedback. If it has no purpose, remove it.
-- Energy: 3/5. Rhythm: 3/5. Motion: 4/5 in interactions, 1/5 while reading a static card.
+- Design read: personal cinematic profile for first-time visitors, with dark editorial typography and tangible cards. ENERGY 3 / RHYTHM 2 / MOTION 3.
+- Black stage: separates the identity text from the photographed subject and lets the cards retain their material contrast.
+- Warm gold accent: signifies the active card edge and directions, where interaction needs a clear affordance.
+- Condensed typography: behaves like a film title at large scale and leaves room for legible profile fields.
+- One card stack: each chapter is both content and navigation, so no second navigation rail is needed.
+- Short stamp-in and swipe depth: show an arrival and directional transfer. Static text does not pulse while being read.
 - Treat the current prototype as a starting point to critique, not a design to defend. Verify with real browser interaction, readable mobile layout, keyboard navigation, and honest QA notes.

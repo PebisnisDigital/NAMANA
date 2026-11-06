@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type WheelEvent } from 'react';
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
 import '../identity-flip.css';
 
-type Phase = 'welcome' | 'loading' | 'hero';
+type Phase = 'welcome' | 'hero';
 
 const profileTabs = [
   {
@@ -35,33 +35,42 @@ const profileTabs = [
   },
 ];
 
+// Only confirmed facts are populated in this prototype. The remaining cards
+// deliberately show an honest empty state until the owner supplies their data.
+const confirmedProfile: Record<string, string> = {
+  Nama: 'Teh Vini',
+  Pekerjaan: 'AI Enthusiast',
+};
+
+const totalCards = profileTabs.length;
+
 function cardPosition(offset: number, compact: boolean) {
   const depth = Math.max(0, offset);
   if (depth === 0) {
     return {
-      x: 0, y: -12, z: 88,
-      rotateX: -1.5, rotateY: -1.5, rotateZ: -.35,
-      scale: 1.015, opacity: 1,
+      x: 0, y: 0, z: 88,
+      rotateX: -1, rotateY: 0, rotateZ: 0,
+      scale: 1, opacity: 1,
     };
   }
 
   return {
-    x: compact ? 44 + (depth - 1) * 34 : 122 + (depth - 1) * 77,
-    y: depth * (compact ? 14 : 18),
-    z: -depth * (compact ? 85 : 110),
-    rotateX: 1 + depth * 1.6,
-    rotateY: -depth * 6.5,
-    rotateZ: depth * 1.2,
-    scale: 1 - depth * .055,
-    opacity: depth > 3 ? 0 : 1 - depth * .13,
+    x: depth * (compact ? 14 : 25),
+    y: depth * (compact ? 8 : 10),
+    z: -depth * (compact ? 72 : 90),
+    rotateX: depth * .7,
+    rotateY: -depth * 4,
+    rotateZ: depth * .65,
+    scale: 1 - depth * .045,
+    opacity: 1 - depth * .12,
   };
 }
 
 const CARD_SPRING = {
   type: 'spring' as const,
-  stiffness: 125,
-  damping: 20,
-  mass: 1.23,
+  stiffness: 190,
+  damping: 27,
+  mass: 1.08,
   restSpeed: .02,
   restDelta: .02,
 };
@@ -109,6 +118,7 @@ function SwipeProfileCard({
       variants={CARD_EXIT}
       transition={reducedMotion ? { duration: 0 } : CARD_SPRING}
       style={{ zIndex: 12 - offset, pointerEvents: active || offset < 3 ? 'auto' : 'none' }}
+      aria-label={`Kartu ${item.label}, ${index + 1} dari ${totalCards}`}
     >
       <motion.div
         className="cinematic-hero__card-swipe"
@@ -117,7 +127,7 @@ function SwipeProfileCard({
         dragElastic={.95}
         dragMomentum={false}
         style={{ x: dragX, rotateZ: dragTilt, touchAction: 'pan-y' }}
-        whileDrag={{ scale: 1.045, cursor: 'grabbing' }}
+        whileDrag={{ scale: 1.025, cursor: 'grabbing' }}
         onDragEnd={(_, info) => {
           if (Math.abs(info.offset.x) < 100 && Math.abs(info.velocity.x) < 600) return;
           onSwipe(info.offset.x > 0 || (info.offset.x === 0 && info.velocity.x > 0) ? 1 : -1);
@@ -125,32 +135,47 @@ function SwipeProfileCard({
       >
         {active && (
           <>
-            <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--left" style={{ opacity: leftStamp }} aria-hidden="true">← NEXT</motion.span>
-            <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--right" style={{ opacity: rightStamp }} aria-hidden="true">NEXT →</motion.span>
+            <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--left" style={{ opacity: leftStamp }} aria-hidden="true">BERIKUTNYA</motion.span>
+            <motion.span className="cinematic-hero__swipe-stamp cinematic-hero__swipe-stamp--right" style={{ opacity: rightStamp }} aria-hidden="true">SEBELUMNYA</motion.span>
           </>
         )}
-        <button
-          type="button"
-          className="cinematic-hero__card-trigger"
-          aria-expanded={active}
-          aria-controls={`cinematic-card-data-${index}`}
-          onClick={() => { if (!active) onSelect(index); }}
-        >
-          <span className="cinematic-hero__card-eyebrow">PESONAFLIX <span> / ORIGINALS</span></span>
-          <span className="cinematic-hero__card-chip" aria-hidden="true" />
-          <strong>{item.label}</strong>
-          <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 07</span>
-        </button>
-        <div id={`cinematic-card-data-${index}`} className="cinematic-hero__card-body" hidden={!active}>
-          <dl className="cinematic-hero__fields">
-            {item.fields.map((field, fieldIndex) => (
-              <div className="cinematic-hero__field" key={field} style={{ animationDelay: `${70 + fieldIndex * 65}ms` }}>
-                <dt>{field}</dt>
-                <dd>—</dd>
+        {active ? (
+          <div className="cinematic-hero__card-trigger cinematic-hero__card-trigger--static">
+            <span className="cinematic-hero__card-eyebrow">PESONAFLIX</span>
+            <span className="cinematic-hero__card-chip" aria-hidden="true" />
+            <strong>{item.label}</strong>
+            <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')}</span>
+          </div>
+        ) : (
+          <button type="button" className="cinematic-hero__card-trigger" aria-label={`Buka kartu ${item.label}`} onClick={() => onSelect(index)}>
+            <span className="cinematic-hero__card-eyebrow">PESONAFLIX</span>
+            <span className="cinematic-hero__card-chip" aria-hidden="true" />
+            <strong>{item.label}</strong>
+            <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')}</span>
+          </button>
+        )}
+        {active && (
+          <div className="cinematic-hero__card-body">
+            {index === 0 ? (
+              <>
+                <dl className="cinematic-hero__fields">
+                  {item.fields.filter((field) => confirmedProfile[field]).map((field) => (
+                    <div className="cinematic-hero__field" key={field}>
+                      <dt>{field}</dt>
+                      <dd>{confirmedProfile[field]}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="cinematic-hero__empty-note">Detail identitas lainnya belum tersedia.</p>
+              </>
+            ) : (
+              <div className="cinematic-hero__empty">
+                <p>Data {item.label.toLowerCase()} belum diisi.</p>
+                <span>{item.fields.slice(0, 3).join(' · ')} dan lainnya</span>
               </div>
-            ))}
-          </dl>
-        </div>
+            )}
+          </div>
+        )}
       </motion.div>
     </motion.article>
   );
@@ -158,8 +183,8 @@ function SwipeProfileCard({
 
 export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
-  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoPlaying, setVideoPlaying] = useState(true);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const lastWheelAt = useRef(0);
   const [activeTab, setActiveTab] = useState(0);
@@ -175,30 +200,43 @@ export function IdentityFlip() {
   }, []);
 
   useEffect(() => () => {
-    if (loadingTimer.current) clearTimeout(loadingTimer.current);
-    if (focusTimer.current) clearTimeout(focusTimer.current);
+    videoRef.current?.pause();
   }, []);
+
+  useEffect(() => {
+    if (phase !== 'hero') return;
+    heroHeading.current?.focus({ preventScroll: true });
+    if (reducedMotion) {
+      videoRef.current?.pause();
+      setVideoPlaying(false);
+    }
+  }, [phase, reducedMotion]);
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
-    setPhase('loading');
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    loadingTimer.current = setTimeout(() => {
-      setPhase('hero');
-      focusTimer.current = setTimeout(() => heroHeading.current?.focus(), reduceMotion ? 0 : 450);
-    }, reduceMotion ? 350 : 1550);
+    setPhase('hero');
   };
 
   const navigateCards = (direction: -1 | 1) => {
     setSwipeDirection(direction === 1 ? -1 : 1);
-    setActiveTab((index) => Math.max(0, Math.min(profileTabs.length - 1, index + direction)));
+    setActiveTab((index) => (index + direction + totalCards) % totalCards);
   };
 
-  const swipeToNext = (direction: -1 | 1) => {
-    if (activeTab >= profileTabs.length - 1) return;
+  const swipeCard = (direction: -1 | 1) => {
     setSwipeDirection(direction);
-    setActiveTab((index) => Math.min(profileTabs.length - 1, index + 1));
+    setActiveTab((index) => (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
+  };
+
+  const toggleVideo = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      try { await video.play(); setVideoPlaying(true); }
+      catch { setVideoPlaying(false); }
+    } else {
+      video.pause();
+      setVideoPlaying(false);
+    }
   };
 
   const handleCardWheel = (event: WheelEvent<HTMLDivElement>) => {
@@ -217,7 +255,7 @@ export function IdentityFlip() {
 
           <div className="cinematic-welcome__nav">
             <span className="cinematic-brand">PESONA<span>FLIX</span></span>
-            <span className="cinematic-welcome__edition">A CINEMATIC IDENTITY EXPERIENCE</span>
+            <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
           </div>
 
           <div className="cinematic-welcome__content">
@@ -227,28 +265,25 @@ export function IdentityFlip() {
               <small>TO</small>
               <strong>PESONAFLIX</strong>
             </h1>
-            <p>Setiap orang punya cerita. Sekarang, biarkan dunia mengenal siapa Anda.</p>
+            <p>Kenali Teh Vini lewat tujuh kartu profil yang bisa digeser.</p>
             <button
               type="button"
               className="cinematic-welcome__enter"
               onClick={enterExperience}
               disabled={phase === 'loading'}
             >
-              <span>MASUK</span>
+              <span>LIHAT PROFIL</span>
               <span className="cinematic-welcome__enter-arrow" aria-hidden="true">↗</span>
             </button>
           </div>
 
-          <div className="cinematic-welcome__footer">
-            <span>PERSONAL BRANDING, REIMAGINED.</span>
-            <span>EST. 2026 / INDONESIA</span>
-          </div>
+          <div className="cinematic-welcome__footer"><span>TEH VINI</span><span>AI ENTHUSIAST</span></div>
         </section>
       )}
 
       {phase === 'hero' && (
         <section className="cinematic-hero" aria-label="Profil digital cinematic">
-          <video className="cinematic-hero__video" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
+          <video ref={videoRef} className="cinematic-hero__video" autoPlay={!reducedMotion} muted loop playsInline preload="metadata" width={1280} height={720} aria-hidden="true">
             <source src="/videos/hero.mp4" type="video/mp4" />
           </video>
           <div className="cinematic-hero__shade" aria-hidden="true" />
@@ -270,26 +305,29 @@ export function IdentityFlip() {
             <div className="cinematic-hero__details">
               <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
                 <div className="cinematic-hero__card-toolbar">
-                  <span>KOLEKSI KARTU <span aria-hidden="true">·</span> SWIPE KIRI / KANAN</span>
+                  <span>Geser kartu untuk mengenal lebih jauh</span>
                   <div className="cinematic-hero__card-arrows">
-                    <span className="cinematic-hero__card-position">{String(activeTab + 1).padStart(2, '0')} / 07</span>
-                    <button type="button" aria-label="Kartu sebelumnya" disabled={activeTab === 0} onClick={() => navigateCards(-1)}>←</button>
-                    <button type="button" aria-label="Kartu berikutnya" disabled={activeTab === profileTabs.length - 1} onClick={() => navigateCards(1)}>→</button>
+                    <span className="cinematic-hero__card-position">{String(activeTab + 1).padStart(2, '0')} / {String(totalCards).padStart(2, '0')}</span>
+                    <button type="button" aria-label="Kartu sebelumnya" onClick={() => navigateCards(-1)}>←</button>
+                    <button type="button" aria-label="Kartu berikutnya" onClick={() => navigateCards(1)}>→</button>
                   </div>
                 </div>
                 <div
                   className="cinematic-hero__card-viewport"
                   aria-label="Tumpukan kartu profil, geser ke kiri atau kanan"
+                    role="group"
+                    tabIndex={0}
                   onWheel={handleCardWheel}
                   onKeyDown={(event) => {
                     if (event.key === 'ArrowRight') { event.preventDefault(); navigateCards(1); }
                     if (event.key === 'ArrowLeft') { event.preventDefault(); navigateCards(-1); }
                   }}
                 >
-                  <div className="cinematic-hero__card-track" aria-live="polite">
+                  <div className="cinematic-hero__card-track">
                     <AnimatePresence initial={false} mode="sync" custom={{ direction: swipeDirection, compact: compactDeck }}>
-                      {profileTabs.slice(activeTab, activeTab + 4).map((item, relativeIndex) => {
-                        const index = activeTab + relativeIndex;
+                      {Array.from({ length: 4 }, (_, relativeIndex) => {
+                        const index = (activeTab + relativeIndex) % totalCards;
+                        const item = profileTabs[index];
                         return (
                           <SwipeProfileCard
                             key={item.label}
@@ -298,7 +336,7 @@ export function IdentityFlip() {
                             offset={relativeIndex}
                             compact={compactDeck}
                             reducedMotion={!!reducedMotion}
-                            onSwipe={swipeToNext}
+                            onSwipe={swipeCard}
                             onSelect={(selected) => { setSwipeDirection(-1); setActiveTab(selected); }}
                           />
                         );
@@ -306,27 +344,16 @@ export function IdentityFlip() {
                     </AnimatePresence>
                   </div>
                 </div>
+                <span className="cinematic-hero__sr-only" role="status" aria-live="polite">Kartu {profileTabs[activeTab].label}, {activeTab + 1} dari {totalCards}</span>
               </div>
             </div>
           </div>
 
           <footer className="cinematic-hero__footer" aria-label="Identitas pengalaman">
-            <span>THE STORY BEHIND THE PERSON</span>
-            <span>PESONAFLIX ORIGINALS</span>
+            <span>Profil Teh Vini</span>
+            <button type="button" className="cinematic-hero__motion-toggle" onClick={toggleVideo}>{videoPlaying ? 'Jeda video latar' : 'Putar video latar'}</button>
           </footer>
         </section>
-      )}
-
-      {phase === 'loading' && (
-        <div className="cinematic-loader" role="status" aria-live="polite" aria-label="Menyiapkan profil cinematic">
-          <div className="cinematic-loader__content">
-            <span className="cinematic-loader__badge">PF / ORIGINAL EXPERIENCE</span>
-            <div className="cinematic-loader__name">PESONA<span>FLIX</span></div>
-            <p>MEMBUKA CERITA ANDA</p>
-            <div className="cinematic-loader__bar"><span /></div>
-            <span className="cinematic-loader__caption">PLEASE WAIT · YOUR STORY IS LOADING</span>
-          </div>
-        </div>
       )}
     </main>
   );
