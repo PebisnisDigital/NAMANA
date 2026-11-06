@@ -403,8 +403,9 @@ export function IdentityFlip() {
                     role="group"
                     tabIndex={0}
                   onWheel={handleCardWheel}
-                  onPointerEnter={(event) => { if (event.pointerType === 'mouse') setDeckEngaged(true); }}
-                  onPointerLeave={(event) => { if (event.pointerType === 'mouse') setDeckEngaged(false); }}
+                  onPointerDownCapture={() => setDeckEngaged(true)}
+                  onPointerUpCapture={() => setDeckEngaged(false)}
+                  onPointerCancelCapture={() => setDeckEngaged(false)}
                   onFocusCapture={() => setDeckEngaged(true)}
                   onBlurCapture={(event) => {
                     if (!event.currentTarget.contains(event.relatedTarget)) setDeckEngaged(false);
