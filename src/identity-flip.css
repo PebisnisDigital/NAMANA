@@ -1194,6 +1194,7 @@
   row-gap: 13px;
   min-width: 0;
 }
+.cinematic-hero__card--active .cinematic-hero__card-body { padding-top: 27px; }
 .cinematic-hero__story-icon {
   display: grid;
   grid-column: 1;
@@ -1277,6 +1278,7 @@
   .cinematic-hero__story-unlinked { font-size: 10px; }
   .cinematic-hero__card--long-title.cinematic-hero__card--active .cinematic-hero__card-trigger strong { font-size: 25px; }
   .cinematic-hero__card--social .cinematic-hero__card-trigger { height: 90px; }
+  .cinematic-hero__card--active .cinematic-hero__card-body { padding-top: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cinematic-hero__story-icon,
