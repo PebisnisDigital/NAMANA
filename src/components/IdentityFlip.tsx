@@ -209,7 +209,6 @@ function SwipeProfileCard({
 export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoPlaying, setVideoPlaying] = useState(true);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const lastWheelAt = useRef(0);
   const [activeTab, setActiveTab] = useState(0);
@@ -236,13 +235,27 @@ export function IdentityFlip() {
     const video = videoRef.current;
     if (!video) return;
 
-    let active = true;
-    void video.play().then(() => {
-      if (active) setVideoPlaying(true);
-    }).catch(() => {
-      if (active) setVideoPlaying(false);
-    });
-    return () => { active = false; };
+    // Keep the background silent and inline so mobile browsers permit autoplay.
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    const resumeVideo = () => {
+      if (document.visibilityState !== 'visible') return;
+      void video.play().catch(() => {
+        // Browser-level autoplay restrictions cannot be overridden by the page.
+      });
+    };
+
+    resumeVideo();
+    video.addEventListener('canplay', resumeVideo);
+    window.addEventListener('pageshow', resumeVideo);
+    document.addEventListener('visibilitychange', resumeVideo);
+    return () => {
+      video.removeEventListener('canplay', resumeVideo);
+      window.removeEventListener('pageshow', resumeVideo);
+      document.removeEventListener('visibilitychange', resumeVideo);
+    };
   }, [phase]);
 
   useEffect(() => {
@@ -296,18 +309,6 @@ export function IdentityFlip() {
     setActiveTab((index) => (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
   };
 
-  const toggleVideo = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      try { await video.play(); setVideoPlaying(true); }
-      catch { setVideoPlaying(false); }
-    } else {
-      video.pause();
-      setVideoPlaying(false);
-    }
-  };
-
   const handleCardWheel = (event: WheelEvent<HTMLDivElement>) => {
     if (Math.abs(event.deltaX) < 18 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
     if (Date.now() - lastWheelAt.current < 550) return;
@@ -352,7 +353,7 @@ export function IdentityFlip() {
 
       {phase === 'hero' && (
         <section className="cinematic-hero" aria-label="Profil digital cinematic">
-          <video ref={videoRef} className="cinematic-hero__video" autoPlay muted loop playsInline preload="metadata" width={1280} height={720} aria-hidden="true" onPlaying={() => setVideoPlaying(true)} onPause={() => setVideoPlaying(false)} onError={() => setVideoPlaying(false)}>
+          <video ref={videoRef} className="cinematic-hero__video" autoPlay muted loop playsInline preload="auto" width={1280} height={720} aria-hidden="true">
             <source src="/videos/hero.mp4" type="video/mp4" />
           </video>
           <div className="cinematic-hero__shade" aria-hidden="true" />
@@ -417,9 +418,6 @@ export function IdentityFlip() {
             </div>
           </div>
 
-          <footer className="cinematic-hero__footer" aria-label="Kontrol video latar">
-            <button type="button" className="cinematic-hero__motion-toggle" onClick={toggleVideo}>{videoPlaying ? 'Jeda video latar' : 'Putar video latar'}</button>
-          </footer>
         </section>
       )}
     </main>
