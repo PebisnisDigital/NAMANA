@@ -336,20 +336,32 @@
   text-transform: uppercase;
 }
 .cinematic-hero__identity h1 .cinematic-hero__stamp {
+  position: relative;
   display: block;
   width: fit-content;
   white-space: nowrap;
-  transform-origin: 17% 65%;
-  animation: cinematic-stamp-impact .78s cubic-bezier(.18,.8,.24,1) both;
+  transform-origin: 16% 60%;
+  animation: cinematic-stamp-impact 1.2s cubic-bezier(.2,.8,.24,1) both;
+}
+.cinematic-hero__identity h1 .cinematic-hero__stamp::after {
+  content: '';
+  position: absolute;
+  inset: 0 -12px;
+  border: 2px solid currentColor;
+  pointer-events: none;
+  opacity: 0;
+  animation: cinematic-stamp-flash 1.2s ease-out both;
 }
 .cinematic-hero__identity h1 .cinematic-hero__stamp--name {
   color: var(--cinematic-cream);
-  animation-delay: .22s;
+  animation-delay: .9s;
 }
 .cinematic-hero__identity h1 .cinematic-hero__stamp--role {
   color: var(--cinematic-gold);
-  animation-delay: .74s;
+  animation-delay: 2.15s;
 }
+.cinematic-hero__identity h1 .cinematic-hero__stamp--name::after { animation-delay: .9s; }
+.cinematic-hero__identity h1 .cinematic-hero__stamp--role::after { animation-delay: 2.15s; }
 .cinematic-hero__identity h1:focus { outline: none; }
 .cinematic-hero__profile { width: min(100%,500px); }
 .cinematic-hero__profile h3 {
@@ -405,11 +417,16 @@
 @keyframes cinematic-tab-reveal { from {opacity:.42;transform:translateY(7px)} to {opacity:1;transform:translateY(0)} }
 @keyframes cinematic-title-emerge { from {opacity:0;transform:translateX(-24px);filter:blur(3px)} to {opacity:1;transform:translateX(0);filter:blur(0)} }
 @keyframes cinematic-stamp-impact {
-  0% { opacity: 0; transform: translate3d(-10px,-42px,0) scale(1.42) rotate(-4deg); filter: blur(6px); text-shadow: none; }
-  38% { opacity: .3; filter: blur(2px); }
-  56% { opacity: 1; transform: translate3d(2px,6px,0) scale(.93) rotate(.8deg); filter: blur(0); text-shadow: 0 0 28px rgba(212,174,113,.28); }
-  74% { transform: translate3d(-2px,-3px,0) scale(1.025) rotate(-.25deg); text-shadow: 0 0 10px rgba(212,174,113,.12); }
+  0%, 24% { opacity: 0; transform: translate3d(-12px,-64px,0) scale(1.48) rotate(-5deg); filter: blur(8px); text-shadow: none; }
+  40% { opacity: 1; transform: translate3d(1px,10px,0) scale(.88) rotate(.8deg); filter: blur(0); text-shadow: 0 0 35px rgba(212,174,113,.55); }
+  55% { transform: translate3d(-2px,-6px,0) scale(1.055) rotate(-.35deg); text-shadow: 0 0 16px rgba(212,174,113,.18); }
+  72% { transform: translate3d(0,2px,0) scale(.99) rotate(.1deg); text-shadow: none; }
   100% { opacity: 1; transform: translate3d(0,0,0) scale(1) rotate(0); filter: none; text-shadow: none; }
+}
+@keyframes cinematic-stamp-flash {
+  0%, 35% { opacity: 0; transform: scale(.88); }
+  42% { opacity: .65; transform: scale(1); }
+  67%, 100% { opacity: 0; transform: scale(1.14); }
 }
 @keyframes cinematic-panel-emerge { from {opacity:0;transform:translateX(-52px);clip-path:inset(0 100% 0 0)} to {opacity:1;transform:translateX(0);clip-path:inset(0 0 0 0)} }
 @keyframes cinematic-field-emerge { from {opacity:0;transform:translateX(-32px)} to {opacity:1;transform:translateX(0)} }
@@ -522,7 +539,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__identity, .cinematic-hero__stamp, .cinematic-hero__panel, .cinematic-hero__field { animation: none !important; }
+  .cinematic-welcome__content, .cinematic-hero, .cinematic-loader, .cinematic-hero__identity, .cinematic-hero__stamp, .cinematic-hero__stamp::after, .cinematic-hero__panel, .cinematic-hero__field { animation: none !important; }
   .cinematic-loader__bar span { animation-duration: .35s; }
   .cinematic-welcome__enter, .cinematic-hero__back, .cinematic-hero__tabs button { transition: none; }
 }
