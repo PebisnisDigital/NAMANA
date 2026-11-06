@@ -364,7 +364,7 @@ export function IdentityFlip() {
 
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__identity">
-              <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
+              <span className="cinematic-kicker">Hello, kenalain saya</span>
               <h1 ref={heroHeading} tabIndex={-1}>
                 <span className="cinematic-hero__stamp cinematic-hero__stamp--name">TEH VINI</span>
                 <span className="cinematic-hero__stamp cinematic-hero__stamp--role">AI ENTHUSIAST</span>
@@ -417,8 +417,7 @@ export function IdentityFlip() {
             </div>
           </div>
 
-          <footer className="cinematic-hero__footer" aria-label="Identitas pengalaman">
-            <span>Profil Teh Vini</span>
+          <footer className="cinematic-hero__footer" aria-label="Kontrol video latar">
             <button type="button" className="cinematic-hero__motion-toggle" onClick={toggleVideo}>{videoPlaying ? 'Jeda video latar' : 'Putar video latar'}</button>
           </footer>
         </section>

@@ -391,6 +391,13 @@
   max-width: 900px;
   margin-left: 0;
 }
+.cinematic-hero__identity .cinematic-kicker {
+  color: #f2d7aa;
+  font-size: clamp(14px, 1vw, 16px);
+  font-weight: 700;
+  letter-spacing: .09em;
+  line-height: 1.4;
+}
 .cinematic-hero__identity h1 {
   max-width: none;
   margin: 14px 0 0;
@@ -453,7 +460,7 @@
 .cinematic-hero__field dd { margin: 0; color: #c6a77c; font-size: 16px; font-weight: 300; }
 .cinematic-hero__footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 20px;
   padding: 0 clamp(22px,5vw,80px) 24px;
   color: rgba(234,220,201,.7);
@@ -950,6 +957,10 @@
   .cinematic-hero__content {
     padding: min(27svh, 220px) 20px 12px;
     gap: 19px;
+  }
+  .cinematic-hero__identity .cinematic-kicker {
+    font-size: 13px;
+    letter-spacing: .055em;
   }
   .cinematic-hero__identity h1 { margin-top: 12px; font-size: clamp(51px, 12.8vw, 65px); }
   .cinematic-hero__details { width: 100%; }
