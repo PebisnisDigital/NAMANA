@@ -138,7 +138,10 @@ export function IdentityFlip() {
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__identity">
               <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
-              <h1 ref={heroHeading} tabIndex={-1}>TEH VINI <span>AI ENTHUSIAST</span></h1>
+              <h1 ref={heroHeading} tabIndex={-1}>
+                <span className="cinematic-hero__stamp cinematic-hero__stamp--name">TEH VINI</span>
+                <span className="cinematic-hero__stamp cinematic-hero__stamp--role">AI ENTHUSIAST</span>
+              </h1>
             </div>
 
             <div className="cinematic-hero__details">
