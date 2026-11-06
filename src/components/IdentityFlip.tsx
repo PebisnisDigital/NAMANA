@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type WheelEvent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import '../identity-flip.css';
 
@@ -193,6 +193,8 @@ function SwipeProfileCard({
   const leftStamp = useTransform(dragX, [-150, -42, 0], [1, 0, 0]);
   const rightStamp = useTransform(dragX, [0, 42, 150], [0, 0, 1]);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
+  const gestureNavigated = useRef(false);
 
   return (
     <motion.article
@@ -214,17 +216,38 @@ function SwipeProfileCard({
         style={{ x: dragX, rotateZ: dragTilt, touchAction: 'pan-y' }}
         whileDrag={{ scale: 1.025, cursor: 'grabbing' }}
         onPointerDown={(event) => {
-          if (active) pointerStart.current = { x: event.clientX, y: event.clientY };
+          if (!active) return;
+          pointerStart.current = { x: event.clientX, y: event.clientY };
+          suppressClick.current = false;
+          gestureNavigated.current = false;
         }}
         onPointerUp={(event) => {
           const start = pointerStart.current;
           pointerStart.current = null;
-          if (!active || !start) return;
+          if (!active || !start || gestureNavigated.current) return;
           const dx = event.clientX - start.x;
           const dy = event.clientY - start.y;
-          if (Math.abs(dx) >= 90 && Math.abs(dx) > Math.abs(dy) * 1.15) onSwipe(dx > 0 ? 1 : -1);
+          suppressClick.current = Math.hypot(dx, dy) > 12;
+          if (Math.abs(dx) >= (compact ? 52 : 78) && Math.abs(dx) > Math.abs(dy) * 1.1) {
+            gestureNavigated.current = true;
+            onSwipe(dx > 0 ? 1 : -1);
+          }
         }}
-        onPointerCancel={() => { pointerStart.current = null; }}
+        onPointerCancel={() => { pointerStart.current = null; suppressClick.current = true; }}
+        onDragEnd={(_event, info) => {
+          if (!active || gestureNavigated.current) return;
+          if (Math.abs(info.offset.x) >= (compact ? 52 : 78) || Math.abs(info.velocity.x) > 650) {
+            gestureNavigated.current = true;
+            suppressClick.current = true;
+            const direction = Math.abs(info.offset.x) > 12 ? info.offset.x : info.velocity.x;
+            onSwipe(direction > 0 ? 1 : -1);
+          }
+        }}
+        onClick={(event) => {
+          if (!active || suppressClick.current || gestureNavigated.current) return;
+          if ((event.target as HTMLElement).closest('a, button')) return;
+          onSwipe(-1);
+        }}
       >
         {active && (
           <>
@@ -275,7 +298,10 @@ export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
+  const cardViewport = useRef<HTMLDivElement>(null);
   const lastWheelAt = useRef(0);
+  const wheelDelta = useRef(0);
+  const lastWheelEventAt = useRef(0);
   const [activeTab, setActiveTab] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(-1);
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
@@ -357,16 +383,16 @@ export function IdentityFlip() {
     setPhase('hero');
   };
 
-  const interruptShuffle = () => {
+  const interruptShuffle = useCallback(() => {
     setShuffleStage('rest');
     setManualEpoch((current) => current + 1);
-  };
+  }, []);
 
-  const navigateCards = (direction: -1 | 1) => {
+  const navigateCards = useCallback((direction: -1 | 1) => {
     interruptShuffle();
     setSwipeDirection(direction === 1 ? -1 : 1);
     setActiveTab((index) => (index + direction + totalCards) % totalCards);
-  };
+  }, [interruptShuffle]);
 
   const swipeCard = (direction: -1 | 1) => {
     interruptShuffle();
@@ -374,12 +400,37 @@ export function IdentityFlip() {
     setActiveTab((index) => (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
   };
 
-  const handleCardWheel = (event: WheelEvent<HTMLDivElement>) => {
-    if (Math.abs(event.deltaX) < 18 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
-    if (Date.now() - lastWheelAt.current < 550) return;
-    lastWheelAt.current = Date.now();
-    navigateCards(event.deltaX > 0 ? 1 : -1);
-  };
+  useEffect(() => {
+    const viewport = cardViewport.current;
+    if (phase !== 'hero' || !viewport) return;
+
+    const handleWheel = (event: globalThis.WheelEvent) => {
+      const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+      if (Math.abs(primaryDelta) < 1) return;
+
+      // Wheel/trackpad gestures move the deck only while the pointer is over it.
+      event.preventDefault();
+      const now = Date.now();
+      if (now - lastWheelEventAt.current > 220) wheelDelta.current = 0;
+      lastWheelEventAt.current = now;
+      if (now - lastWheelAt.current < 750) {
+        wheelDelta.current = 0;
+        return;
+      }
+
+      const pixels = event.deltaMode === 1 ? primaryDelta * 16 : event.deltaMode === 2 ? primaryDelta * window.innerHeight : primaryDelta;
+      wheelDelta.current += pixels;
+      if (Math.abs(wheelDelta.current) < 36) return;
+
+      const direction = wheelDelta.current > 0 ? 1 : -1;
+      lastWheelAt.current = now;
+      wheelDelta.current = 0;
+      navigateCards(direction);
+    };
+
+    viewport.addEventListener('wheel', handleWheel, { passive: false });
+    return () => viewport.removeEventListener('wheel', handleWheel);
+  }, [phase, navigateCards]);
 
   return (
     <main className={`cinematic-page cinematic-page--${phase}`}>
@@ -440,11 +491,11 @@ export function IdentityFlip() {
             <div className="cinematic-hero__details">
               <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
                 <div
+                  ref={cardViewport}
                   className="cinematic-hero__card-viewport"
-                  aria-label="Tumpukan kartu profil, geser ke kiri atau kanan"
+                  aria-label="Tumpukan kartu profil. Geser, klik, atau scroll untuk berpindah kartu. Gunakan panah kiri atau kanan pada keyboard."
                     role="group"
                     tabIndex={0}
-                  onWheel={handleCardWheel}
                   onPointerDownCapture={() => setDeckEngaged(true)}
                   onPointerUpCapture={() => setDeckEngaged(false)}
                   onPointerCancelCapture={() => setDeckEngaged(false)}
