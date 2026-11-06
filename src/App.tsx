@@ -1,11 +1,7 @@
-import { HeroSection } from './components/HeroSection';
+import { IdentityFlip } from './components/IdentityFlip';
 
 function App() {
-  return (
-    <main className="w-full min-h-screen bg-black text-[#E8DFD8] selection:bg-[#cbb59d] selection:text-black">
-      <HeroSection />
-    </main>
-  );
+  return <IdentityFlip />;
 }
 
 export default App;
