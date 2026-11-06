@@ -136,6 +136,12 @@ export function IdentityFlip() {
           </header>
 
           <div className="cinematic-hero__content">
+            <div className="cinematic-hero__identity">
+              <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
+              <h1 ref={heroHeading} tabIndex={-1}>TEH VINI <span>AI ENTHUSIAST</span></h1>
+            </div>
+
+            <div className="cinematic-hero__details">
             <aside className="cinematic-hero__rail" aria-label="Pilih kategori profil">
               <div className="cinematic-hero__rail-heading">PILIH BAB <span>01 — 07</span></div>
               <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
@@ -162,11 +168,6 @@ export function IdentityFlip() {
               </div>
             </aside>
 
-            <div className="cinematic-hero__story">
-              <div className="cinematic-hero__identity">
-                <span className="cinematic-kicker"><i aria-hidden="true" /> Hello, kenalain saya</span>
-                <h1 ref={heroHeading} tabIndex={-1}>TEH VINI <span>AI ENTHUSIAST</span></h1>
-              </div>
               <div
                 key={activeTab}
                 id="cinematic-tab-panel"
