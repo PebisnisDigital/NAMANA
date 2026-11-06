@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from 'react';
 import '../identity-flip.css';
 
 type Phase = 'welcome' | 'loading' | 'hero';
@@ -39,29 +39,15 @@ export function IdentityFlip() {
   const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
-  const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
-  const cardViewport = useRef<HTMLDivElement>(null);
-  const cardNodes = useRef<Array<HTMLElement | null>>([]);
+  const pointerStart = useRef<number | null>(null);
+  const suppressClick = useRef(false);
+  const lastWheelAt = useRef(0);
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => () => {
     if (loadingTimer.current) clearTimeout(loadingTimer.current);
     if (focusTimer.current) clearTimeout(focusTimer.current);
   }, []);
-
-  useEffect(() => {
-    if (phase !== 'hero') return;
-    const viewport = cardViewport.current;
-    const card = cardNodes.current[activeTab];
-    if (!viewport || !card) return;
-    const viewportBox = viewport.getBoundingClientRect();
-    const cardBox = card.getBoundingClientRect();
-    const cardCenter = cardBox.left - viewportBox.left + viewport.scrollLeft + cardBox.width / 2;
-    viewport.scrollTo({
-      left: Math.max(0, cardCenter - viewport.clientWidth / 2),
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
-    });
-  }, [activeTab, phase]);
 
   const enterExperience = () => {
     if (phase !== 'welcome') return;
@@ -74,16 +60,31 @@ export function IdentityFlip() {
     }, reduceMotion ? 350 : 1550);
   };
 
-  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    let next = index;
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % profileTabs.length;
-    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + profileTabs.length) % profileTabs.length;
-    else if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = profileTabs.length - 1;
-    else return;
-    event.preventDefault();
-    setActiveTab(next);
-    tabButtons.current[next]?.focus();
+  const navigateCards = (direction: -1 | 1) => {
+    setActiveTab((index) => Math.max(0, Math.min(profileTabs.length - 1, index + direction)));
+  };
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    pointerStart.current = event.clientX;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (pointerStart.current === null) return;
+    const movement = event.clientX - pointerStart.current;
+    pointerStart.current = null;
+    if (Math.abs(movement) < 45) return;
+    suppressClick.current = true;
+    navigateCards(movement < 0 ? 1 : -1);
+    window.setTimeout(() => { suppressClick.current = false; }, 0);
+  };
+
+  const handleCardWheel = (event: WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(event.deltaX) < 18 || Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+    if (Date.now() - lastWheelAt.current < 550) return;
+    lastWheelAt.current = Date.now();
+    navigateCards(event.deltaX > 0 ? 1 : -1);
   };
 
   return (
@@ -146,62 +147,56 @@ export function IdentityFlip() {
             </div>
 
             <div className="cinematic-hero__details">
-            <aside className="cinematic-hero__rail" aria-label="Pilih kategori profil">
-              <div className="cinematic-hero__tabs" role="tablist" aria-label="Kategori profil">
-                {profileTabs.map((item, index) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    id={`cinematic-tab-${index}`}
-                    ref={(node) => { tabButtons.current[index] = node; }}
-                    role="tab"
-                    aria-selected={activeTab === index}
-                    aria-controls="cinematic-tab-panel"
-                    tabIndex={activeTab === index ? 0 : -1}
-                    onClick={() => setActiveTab(index)}
-                    onKeyDown={(event) => handleTabKeyDown(event, index)}
-                  >
-                    <span className="cinematic-hero__tab-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-                    <span>{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </aside>
-
-              <div
-                id="cinematic-tab-panel"
-                className="cinematic-hero__panel"
-                role="tabpanel"
-                aria-labelledby={`cinematic-tab-${activeTab}`}
-                tabIndex={0}
-              >
+              <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
                 <div className="cinematic-hero__card-toolbar">
-                  <span>GESER KARTU <span aria-hidden="true">↔</span></span>
+                  <span>KOLEKSI KARTU <span aria-hidden="true">·</span> GESER UNTUK MEMILIH</span>
                   <div className="cinematic-hero__card-arrows">
-                    <button type="button" aria-label="Kartu sebelumnya" disabled={activeTab === 0} onClick={() => setActiveTab((index) => Math.max(0, index - 1))}>←</button>
-                    <button type="button" aria-label="Kartu berikutnya" disabled={activeTab === profileTabs.length - 1} onClick={() => setActiveTab((index) => Math.min(profileTabs.length - 1, index + 1))}>→</button>
+                    <span className="cinematic-hero__card-position">{String(activeTab + 1).padStart(2, '0')} / 07</span>
+                    <button type="button" aria-label="Kartu sebelumnya" disabled={activeTab === 0} onClick={() => navigateCards(-1)}>←</button>
+                    <button type="button" aria-label="Kartu berikutnya" disabled={activeTab === profileTabs.length - 1} onClick={() => navigateCards(1)}>→</button>
                   </div>
                 </div>
-                <div className="cinematic-hero__card-viewport" ref={cardViewport} aria-label="Slider kartu profil">
-                  <div className="cinematic-hero__card-track">
+                <div
+                  className="cinematic-hero__card-viewport"
+                  aria-label="Tumpukan kartu profil, geser ke kiri atau kanan"
+                  onPointerDown={handlePointerDown}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={() => { pointerStart.current = null; }}
+                  onWheel={handleCardWheel}
+                  onKeyDown={(event) => {
+                    if (event.key === 'ArrowRight') { event.preventDefault(); navigateCards(1); }
+                    if (event.key === 'ArrowLeft') { event.preventDefault(); navigateCards(-1); }
+                  }}
+                >
+                  <div className="cinematic-hero__card-track" aria-live="polite">
                     {profileTabs.map((item, index) => {
                       const active = activeTab === index;
+                      const offset = index - activeTab;
+                      const depth = Math.abs(offset);
                       return (
                         <article
                           key={item.label}
-                          ref={(node) => { cardNodes.current[index] = node; }}
-                          className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ''}`}
+                          className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : offset < 0 ? ' cinematic-hero__card--previous' : ' cinematic-hero__card--next'}`}
+                          style={{
+                            '--card-offset': offset,
+                            '--card-depth': depth,
+                            '--card-side': Math.sign(offset),
+                            zIndex: profileTabs.length - depth,
+                            opacity: depth > 3 ? 0 : 1 - depth * .14,
+                            pointerEvents: depth > 3 ? 'none' : 'auto',
+                          } as React.CSSProperties}
                         >
                           <button
                             type="button"
                             className="cinematic-hero__card-trigger"
                             aria-expanded={active}
                             aria-controls={`cinematic-card-data-${index}`}
-                            onClick={() => setActiveTab(index)}
+                            onClick={() => { if (!suppressClick.current) setActiveTab(index); }}
                           >
-                            <span className="cinematic-hero__card-eyebrow">BAB {String(index + 1).padStart(2, '0')} <span> / 07</span></span>
+                            <span className="cinematic-hero__card-eyebrow">PESONAFLIX <span> / ORIGINALS</span></span>
+                            <span className="cinematic-hero__card-chip" aria-hidden="true" />
                             <strong>{item.label}</strong>
-                            <span className="cinematic-hero__card-open" aria-hidden="true">{active ? '−' : '+'}</span>
+                            <span className="cinematic-hero__card-open" aria-hidden="true">{String(index + 1).padStart(2, '0')} / 07</span>
                           </button>
                           <div id={`cinematic-card-data-${index}`} className="cinematic-hero__card-body" hidden={!active}>
                             <dl className="cinematic-hero__fields">
