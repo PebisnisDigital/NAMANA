@@ -1184,3 +1184,102 @@
     transform: none;
   }
 }
+
+/* Biographical chapters: one memorable idea on each physical card. */
+.cinematic-hero__story {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 18px;
+  row-gap: 13px;
+  min-width: 0;
+}
+.cinematic-hero__story-icon {
+  display: grid;
+  grid-column: 1;
+  grid-row: 1;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  color: #f0d09e;
+  border: 1px solid rgba(238,197,130,.47);
+  border-radius: 15px;
+  background: linear-gradient(145deg, rgba(164,115,58,.26), rgba(16,16,19,.68));
+  box-shadow: inset 1px 1px 0 rgba(255,232,188,.2), 5px 9px 14px rgba(0,0,0,.35);
+  animation: cinematic-story-pop .72s cubic-bezier(.19,.86,.21,1) both;
+}
+.cinematic-hero__story-icon svg { display: block; width: 39px; height: 39px; }
+.cinematic-hero__story-icon .cinematic-hero__social-icon { width: 40px; height: 40px; }
+.cinematic-hero__story-value {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  color: #fff4df;
+  font-size: clamp(21px,2.1vw,30px);
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  animation: cinematic-story-reveal .55s .1s both;
+}
+.cinematic-hero__card--name .cinematic-hero__story-value { font-size: clamp(25px,2.6vw,36px); }
+.cinematic-hero__story-copy {
+  grid-column: 1 / -1;
+  margin: 0;
+  max-width: 49ch;
+  color: #ead7bf;
+  font-size: 16px;
+  font-weight: 480;
+  line-height: 1.53;
+  text-wrap: pretty;
+  animation: cinematic-story-reveal .65s .2s both;
+}
+.cinematic-hero__story-link,
+.cinematic-hero__story-unlinked {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.cinematic-hero__story-unlinked { color: rgba(228,198,157,.73); }
+.cinematic-hero__story-link {
+  justify-self: start;
+  min-height: 36px;
+  padding: 9px 13px;
+  color: #191310;
+  background: #e9c68c;
+  border-radius: 7px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.cinematic-hero__story-link:hover,
+.cinematic-hero__story-link:focus-visible { background: #ffdfaa; outline: 2px solid #ffdfaa; outline-offset: 2px; }
+.cinematic-hero__card--long-title.cinematic-hero__card--active .cinematic-hero__card-trigger strong { font-size: 35px; }
+@keyframes cinematic-story-pop {
+  from { opacity: 0; transform: translateY(13px) rotateY(-20deg) scale(.82); }
+  to { opacity: 1; transform: translateY(0) rotateY(0) scale(1); }
+}
+@keyframes cinematic-story-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  .cinematic-hero__card-viewport { height: 365px; }
+  .cinematic-hero__card,
+  .cinematic-hero__card--active { height: 265px; }
+  .cinematic-hero__story { grid-template-columns: 44px minmax(0,1fr); column-gap: 11px; row-gap: 7px; }
+  .cinematic-hero__story-icon { width: 44px; height: 44px; border-radius: 10px; }
+  .cinematic-hero__story-icon svg { width: 27px; height: 27px; }
+  .cinematic-hero__story-icon .cinematic-hero__social-icon { width: 29px; height: 29px; }
+  .cinematic-hero__story-value { font-size: clamp(16px,4.25vw,21px); }
+  .cinematic-hero__card--name .cinematic-hero__story-value { font-size: clamp(19px,5vw,24px); }
+  .cinematic-hero__story-copy { font-size: clamp(11px,2.9vw,13px); line-height: 1.42; }
+  .cinematic-hero__story-unlinked { font-size: 10px; }
+  .cinematic-hero__card--long-title.cinematic-hero__card--active .cinematic-hero__card-trigger strong { font-size: 25px; }
+  .cinematic-hero__card--social .cinematic-hero__card-trigger { height: 90px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-hero__story-icon,
+  .cinematic-hero__story-value,
+  .cinematic-hero__story-copy { animation: none; }
+}
