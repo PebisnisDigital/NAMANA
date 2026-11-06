@@ -107,12 +107,8 @@
 .identity-cinematic-card__field { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(0,.5fr); gap: 6px; align-items: center; border-bottom: 1px solid rgba(222,187,146,.26); }
 .identity-cinematic-card__field-label { font-size: clamp(7px,.95vw,11px); line-height: 1.25; font-weight: 500; letter-spacing: .035em; color: #eaded0; }
 .identity-cinematic-card__field-value { font-size: clamp(11px,1.45vw,17px); font-weight: 300; color: #b89c78; text-align: left; }
-.identity-front-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 13px; transition: opacity .25s ease; }
+.identity-front-actions { display: flex; align-items: center; justify-content: flex-end; gap: 20px; padding-top: 13px; transition: opacity .25s ease; }
 .identity-experience--back .identity-front-actions { opacity: 0; visibility: hidden; pointer-events: none; }
-.identity-front-copy { display: grid; grid-template-columns: 32px 1fr; column-gap: 14px; align-items: center; }
-.identity-front-copy__dash { grid-row: 1 / 3; align-self: start; margin-top: 8px; height: 1px; background: #d9b17e; width: 32px; }
-.identity-front-copy p { margin: 0 0 3px; font-weight: 500; color: #ead9c1; font-size: clamp(11px, 1.2vw, 14px); letter-spacing: .05em; }
-.identity-front-copy > span:last-child { grid-column: 2; color: #9e9d9b; font-size: clamp(10px,1vw,12px); letter-spacing: .04em; }
 .identity-enter { display: flex; align-items: center; justify-content: center; gap: 32px; padding: 15px 25px; min-width: 164px; border: 1px solid #af895c; color: #f3d9b6; background: rgba(12,14,18,.68); font-size: 11px; letter-spacing: .26em; font-weight: 600; cursor: pointer; transition: background .25s, transform .25s, border-color .25s; }
 .identity-enter:hover { background: #3c2a1b; border-color: #f7c887; transform: translateY(-3px); }
 .identity-enter__arrow { font-size: 18px; }
@@ -143,8 +139,6 @@
   .identity-card__bottom { font-size: 5px; letter-spacing: .03em; }
   .identity-front-actions { flex-direction: column; align-items: stretch; gap: 20px; }
   .identity-enter { width: 100%; min-height: 47px; }
-  .identity-front-copy p { font-size: 12px; }
-  .identity-front-copy > span:last-child { font-size: 10px; }
   .identity-front-corner { width: 30px; height: 30px; }
   .identity-front-corner--left { left: 15px; top: 15px; }
   .identity-front-corner--right { right: 15px; bottom: 15px; }

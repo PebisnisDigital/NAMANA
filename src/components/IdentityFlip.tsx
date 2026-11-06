@@ -91,11 +91,6 @@ export function IdentityFlip() {
         </div>
 
         <div className="identity-front-actions">
-          <div className="identity-front-copy">
-            <span className="identity-front-copy__dash" aria-hidden="true" />
-            <p>{phase === 'back' ? 'Satu kartu. Dua karakter.' : 'Satu kartu. Dua sisi. Satu cerita digital.'}</p>
-            <span>{phase === 'back' ? 'Hero cinematic ada di belakang, tetap seukuran kartu.' : 'Sentuh kartu untuk membuka dunia di baliknya.'}</span>
-          </div>
           <button type="button" className="identity-enter" onClick={phase === 'back' ? returnToCard : openIdentity} disabled={phase === 'loading'}>
             <span>{phase === 'back' ? 'BALIK KARTU' : 'MASUK'}</span>
             <span className="identity-enter__arrow" aria-hidden="true">{phase === 'back' ? '↶' : '↗'}</span>
