@@ -5,82 +5,88 @@ import '../identity-flip.css';
 type Phase = 'welcome' | 'hero';
 type ShuffleStage = 'rest' | 'fan' | 'close' | 'tuck';
 type ProfileIcon = 'person' | 'pin' | 'home' | 'book' | 'image' | 'palette' | 'compass' | 'chat' | 'screens' | 'building' | 'flag' | 'mentor' | 'website' | 'pencil' | 'class' | 'certificate';
-type ProfileField = { label: string; value: string; icon: ProfileIcon };
-type ProfileCard = { label: string; fields: ProfileField[]; note?: string };
-
-type SocialAccount = {
+type ProfileCard = {
   label: string;
-  icon: string;
+  value: string;
+  story: string;
+  icon?: ProfileIcon;
+  brandIcon?: string;
+  kind?: 'name' | 'work' | 'social';
   url?: string;
 };
 
-// Add verified profile URLs here. Unconfigured accounts stay non-interactive.
-const socialAccounts: SocialAccount[] = [
-  { label: 'WhatsApp', icon: 'whatsapp' },
-  { label: 'Telegram', icon: 'telegram' },
-  { label: 'Threads', icon: 'threads' },
-  { label: 'Instagram', icon: 'instagram' },
-  { label: 'YouTube', icon: 'youtube' },
-  { label: 'TikTok', icon: 'tiktok' },
-];
-
 const profileTabs: ProfileCard[] = [
   {
-    label: 'Identitas',
-    fields: [
-      { label: 'Nama', value: 'Teh Vini', icon: 'person' },
-      { label: 'Domisili', value: 'Bandung', icon: 'pin' },
-      { label: 'Aktivitas', value: 'Ibu rumah tangga', icon: 'home' },
-    ],
+    label: 'Nama', value: 'Vini Junia N', icon: 'person', kind: 'name',
+    story: 'Aku diberi nama Junia karena lahir pada bulan Juni. Bagiku, nama ini bisa menjadi pengingat sekaligus doa: terus tumbuh dan membawa kebaikan lewat karya.',
   },
   {
-    label: 'Pendidikan',
-    fields: [
-      { label: 'Jalur belajar', value: 'Eksplorasi mandiri', icon: 'book' },
-      { label: 'Fokus', value: 'Prompt gambar AI', icon: 'image' },
-    ],
-    note: 'Riwayat pendidikan formal belum dibagikan.',
+    label: 'Bandung', value: 'Kota tempatku tinggal', icon: 'pin',
+    story: 'Di Bandung aku menjalani hari sebagai ibu rumah tangga sambil merintis dan mengerjakan proyek-proyek digital.',
   },
   {
-    label: 'Hobi',
-    fields: [
-      { label: 'Kreasi', value: 'Gambar AI', icon: 'palette' },
-      { label: 'Eksplorasi', value: 'Prompt visual', icon: 'image' },
-      { label: 'Inspirasi', value: 'Threads', icon: 'compass' },
-    ],
+    label: 'Rumah', value: 'Ibu rumah tangga', icon: 'home',
+    story: 'Di sela urusan rumah, aku terus belajar, membuat konten, dan membangun sesuatu yang bisa dibagikan.',
   },
   {
-    label: 'Skill',
-    fields: [
-      { label: 'Marketing', value: 'WhatsApp marketing', icon: 'chat' },
-      { label: 'Digital', value: 'Konten & produk digital', icon: 'screens' },
-      { label: 'AI', value: 'Prompt gambar', icon: 'image' },
-    ],
+    label: 'Cuanify', value: 'CEO Cuanify ID', icon: 'building',
+    story: 'Kini aku dipercaya mengelola sebuah rintisan bernama Cuanify ID.',
   },
   {
-    label: 'Pengalaman',
-    fields: [
-      { label: 'CEO', value: 'Cuanify ID', icon: 'building' },
-      { label: 'Founder', value: 'Pebisnis.Digital', icon: 'flag' },
-      { label: 'Mentor', value: 'WhatsApp marketing', icon: 'mentor' },
-    ],
+    label: 'Pebisnis', value: 'Founder Pebisnis.Digital', icon: 'flag',
+    story: 'Lewat Pebisnis.Digital aku berbagi pembelajaran digital marketing, terutama yang dekat dengan keseharian pemula.',
   },
   {
-    label: 'Karya',
-    fields: [
-      { label: 'Website', value: 'PESONAFLIX', icon: 'website' },
-      { label: 'Proyek prompt', value: 'Promptional (prototipe)', icon: 'pencil' },
-      { label: 'Kelas', value: 'KULWA', icon: 'class' },
-    ],
+    label: 'Mentor', value: 'WhatsApp marketing', icon: 'mentor',
+    story: 'Aku mendampingi pemula, ibu rumah tangga, dan pelaku usaha kecil memahami cara memakai WhatsApp untuk pemasaran.',
   },
   {
-    label: 'Sertifikasi',
-    fields: [],
-    note: 'Belum ada informasi sertifikasi yang dibagikan.',
+    label: 'Produk', value: 'Produk digital', icon: 'screens',
+    story: 'Aku membuat materi dan produk digital yang bisa dipelajari dan dipraktikkan oleh orang lain.',
   },
   {
-    label: 'Sosial Media',
-    fields: [],
+    label: 'Belajar', value: 'Belajar lewat praktik', icon: 'book',
+    story: 'Aku banyak mengulik prompt gambar AI lewat eksperimen mandiri. Riwayat pendidikan formalku belum dibagikan di sini.',
+  },
+  {
+    label: 'Visual AI', value: 'Gambar dan prompt AI', icon: 'palette',
+    story: 'Mulanya iseng membuat gambar-gambar lucu. Rasa penasaran itu membawaku terus mencoba berbagai prompt dan gaya visual.',
+  },
+  {
+    label: 'PESONAFLIX', value: 'Website personal sinematik', icon: 'website', kind: 'work',
+    story: 'Salah satu karya yang kubangun: halaman profil personal dengan pengalaman visual terinspirasi Netflix.',
+  },
+  {
+    label: 'Promptional', value: 'Koleksi prompt visual', icon: 'pencil', kind: 'work',
+    story: 'Prototipe untuk menjelajahi prompt gambar beserta previewnya, supaya ide visual lebih mudah dicoba.',
+  },
+  {
+    label: 'KULWA', value: 'Kelas via WhatsApp', icon: 'class', kind: 'work',
+    story: 'Aku berbagi materi lewat kelas WhatsApp. Sesi KULWA biasanya dimulai pukul 19.30 WIB.',
+  },
+  {
+    label: 'WhatsApp', value: 'Komunitas dan pemasaran', brandIcon: 'whatsapp', kind: 'social',
+    story: 'Status, grup, dan channel adalah ruang yang sering kupakai untuk berbagi materi dan praktik marketing.',
+  },
+  {
+    label: 'Telegram', value: 'Bot, grup, dan channel', brandIcon: 'telegram', kind: 'social',
+    story: 'Aku menggunakan Telegram untuk aktivitas komunitas dan distribusi konten digital.',
+  },
+  {
+    label: 'Threads', value: 'Prompt dan cerita', brandIcon: 'threads', kind: 'social',
+    story: 'Di sini aku mencari inspirasi dan berbagi eksperimen gambar AI.',
+  },
+  {
+    label: 'Instagram', value: 'Konten digital', brandIcon: 'instagram', kind: 'social',
+    story: 'Salah satu tempatku berbagi ide visual dan konten kreatif.',
+  },
+  {
+    label: 'YouTube', value: 'Akun belum ditautkan', brandIcon: 'youtube', kind: 'social',
+    story: 'Belum ada tautan channel YouTube yang dibagikan untuk kartu ini.',
+  },
+  {
+    label: 'TikTok', value: 'Konten singkat', brandIcon: 'tiktok', kind: 'social',
+    story: 'Kanal lain yang kupakai untuk mengeksplorasi konten digital.',
   },
 ];
 
@@ -190,7 +196,7 @@ function SwipeProfileCard({
 
   return (
     <motion.article
-      className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}${item.label === 'Sosial Media' ? ' cinematic-hero__card--social' : ''}`}
+      className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}${item.kind ? ` cinematic-hero__card--${item.kind}` : ''}${item.label.length > 10 ? ' cinematic-hero__card--long-title' : ''}`}
       initial={cardPosition(Math.max(offset, 1), compact)}
       animate={cardPosition(offset, compact, shuffleStage === 'fan')}
       exit="exit"
@@ -241,57 +247,29 @@ function SwipeProfileCard({
         )}
         {active && (
           <div className="cinematic-hero__card-body">
-            {item.label === 'Sosial Media' ? (
-              <div className="cinematic-hero__social">
-                <ul className="cinematic-hero__social-grid" aria-label="Daftar platform sosial media">
-                  {socialAccounts.map(({ label, icon, url }) => (
-                    <li key={label}>
-                      {url ? (
-                        <a
-                          className="cinematic-hero__social-platform cinematic-hero__social-platform--linked"
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`Buka akun ${label} Teh Vini`}
-                          onPointerDown={(event) => event.stopPropagation()}
-                        >
-                          <span className={`cinematic-hero__social-icon cinematic-hero__social-icon--${icon}`} aria-hidden="true" />
-                          <span>{label}</span>
-                        </a>
-                      ) : (
-                        <span className="cinematic-hero__social-platform cinematic-hero__social-platform--pending" title="Tautan akun belum tersedia">
-                          <span className={`cinematic-hero__social-icon cinematic-hero__social-icon--${icon}`} aria-hidden="true" />
-                          <span>{label}</span>
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-                {socialAccounts.some(({ url }) => !url) && <p className="cinematic-hero__social-note">Tautan akun belum ditambahkan.</p>}
+            <div className="cinematic-hero__story" key={item.label}>
+              <span className="cinematic-hero__story-icon" aria-hidden="true">
+                {item.brandIcon ? (
+                  <span className={`cinematic-hero__social-icon cinematic-hero__social-icon--${item.brandIcon}`} />
+                ) : item.icon ? <ProfileGlyph name={item.icon} /> : null}
+              </span>
+              <p className="cinematic-hero__story-value">{item.value}</p>
+              <p className="cinematic-hero__story-copy">{item.story}</p>
+              {item.kind === 'social' && (item.url ? (
+                <a
+                  className="cinematic-hero__story-link"
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Buka akun ${item.label} Teh Vini`}
+                  onPointerDown={(event) => event.stopPropagation()}
+                >
+                  Buka akun {item.label}
+                </a>
+              ) : (
+                <span className="cinematic-hero__story-unlinked">Tautan akun belum ditambahkan</span>
+              ))}
               </div>
-            ) : (
-              <div className={`cinematic-hero__profile${item.fields.length === 0 ? ' cinematic-hero__profile--empty' : ''}`}>
-                {item.fields.length > 0 && (
-                  <dl className={`cinematic-hero__icon-grid${item.fields.length === 2 ? ' cinematic-hero__icon-grid--two' : ''}`}>
-                    {item.fields.map((field, fieldIndex) => (
-                      <div className="cinematic-hero__icon-tile" key={field.label} style={{ animationDelay: `${fieldIndex * 90}ms` }}>
-                        <span className="cinematic-hero__icon-medallion" aria-hidden="true"><ProfileGlyph name={field.icon} /></span>
-                        <dt>{field.label}</dt>
-                        <dd>{field.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                )}
-                {item.fields.length === 0 && item.note ? (
-                  <div className="cinematic-hero__icon-grid cinematic-hero__icon-grid--empty">
-                    <div className="cinematic-hero__icon-tile">
-                      <span className="cinematic-hero__icon-medallion" aria-hidden="true"><ProfileGlyph name="certificate" /></span>
-                      <p className="cinematic-hero__profile-note">{item.note}</p>
-                    </div>
-                  </div>
-                ) : item.note ? <p className="cinematic-hero__profile-note">{item.note}</p> : null}
-              </div>
-            )}
           </div>
         )}
       </motion.div>
@@ -428,7 +406,7 @@ export function IdentityFlip() {
               <small>TO</small>
               <strong>PESONAFLIX</strong>
             </h1>
-            <p>Kenali Teh Vini lewat delapan kartu profil yang bisa digeser.</p>
+            <p>Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat.</p>
             <button
               type="button"
               className="cinematic-welcome__enter"
