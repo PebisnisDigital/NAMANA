@@ -46,7 +46,7 @@ function cardPosition(offset: number, compact: boolean) {
   }
 
   return {
-    x: depth * (compact ? 24 : 32),
+    x: compact ? 44 + (depth - 1) * 34 : 122 + (depth - 1) * 77,
     y: depth * (compact ? 14 : 18),
     z: -depth * (compact ? 85 : 110),
     rotateX: 1 + depth * 1.6,
