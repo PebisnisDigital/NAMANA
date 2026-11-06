@@ -38,8 +38,6 @@ export function IdentityFlip() {
       <div className="identity-front-corner identity-front-corner--right" aria-hidden="true" />
 
       <div className="identity-front-content">
-        <p className="identity-eyebrow">PESONAFLIX ORIGINAL EXPERIENCE <span>·</span> 001 / DIGITAL ID</p>
-
         <div className="identity-flip-stage">
           <div className="identity-flip-pages">
             <button
@@ -77,10 +75,6 @@ export function IdentityFlip() {
                 <source src="/videos/hero.mp4" type="video/mp4" />
               </video>
               <span className="identity-cinematic-card__shade" aria-hidden="true" />
-              <span className="identity-cinematic-card__top">
-                <b>PESONAFLIX / CREATIVE ID</b>
-                <span>IDENTITAS DIGITAL</span>
-              </span>
               <span className="identity-cinematic-card__details">
                 <strong className="identity-cinematic-card__details-title">DATA PEMILIK KARTU</strong>
                 <span className="identity-cinematic-card__fields">
@@ -91,11 +85,6 @@ export function IdentityFlip() {
                     </span>
                   ))}
                 </span>
-              </span>
-              <span className="identity-cinematic-card__divider" aria-hidden="true" />
-              <span className="identity-cinematic-card__bottom">
-                <span>PF / KARTU IDENTITAS DIGITAL</span>
-                <span>↶ BALIK KARTU</span>
               </span>
             </button>
           </div>
@@ -112,7 +101,6 @@ export function IdentityFlip() {
             <span className="identity-enter__arrow" aria-hidden="true">{phase === 'back' ? '↶' : '↗'}</span>
           </button>
         </div>
-        <p className="identity-demo-note">KONSEP IDENTITAS DIGITAL — BUKAN KTP ATAU DOKUMEN PEMERINTAH</p>
       </div>
 
       {phase === 'loading' && (
