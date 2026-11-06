@@ -154,7 +154,7 @@
   transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
 }
 .cinematic-welcome__enter:hover { transform: translateY(-3px); background: #c91c29; box-shadow: 0 12px 32px rgba(229,43,53,.2); }
-.cinematic-welcome__enter-arrow { font-size: 24px; font-weight: 400; line-height: .7; }
+.cinematic-welcome__enter-arrow { font-family: 'DejaVu Sans', 'Segoe UI Symbol', sans-serif; font-size: 21px; font-weight: 400; line-height: 1; }
 .cinematic-welcome__footer { padding-top: 20px; padding-bottom: 32px; }
 
 /* Single, edge-to-edge cinematic hero. */
@@ -172,7 +172,7 @@
   position: absolute;
   z-index: -3;
   top: 0;
-  right: 0;
+  right: -14%;
   width: 79%;
   height: 100%;
   object-fit: cover;
