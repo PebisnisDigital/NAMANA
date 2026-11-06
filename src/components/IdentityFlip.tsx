@@ -34,6 +34,10 @@ const profileTabs = [
     label: 'Sertifikasi',
     fields: ['Nama Sertifikasi', 'Lembaga Penerbit', 'Bidang Kompetensi', 'Tahun Terbit', 'Masa Berlaku', 'Tautan Verifikasi'],
   },
+  {
+    label: 'Sosial Media',
+    fields: ['WhatsApp', 'Telegram', 'Threads', 'Instagram', 'YouTube', 'TikTok'],
+  },
 ];
 
 // Only confirmed facts are populated in this prototype. The remaining cards
@@ -191,6 +195,13 @@ function SwipeProfileCard({
                 </dl>
                 <p className="cinematic-hero__empty-note">Detail identitas lainnya belum tersedia.</p>
               </>
+            ) : item.label === 'Sosial Media' ? (
+              <div className="cinematic-hero__social">
+                <ul className="cinematic-hero__social-grid" aria-label="Daftar platform sosial media">
+                  {item.fields.map((platform) => <li key={platform}>{platform}</li>)}
+                </ul>
+                <p className="cinematic-hero__social-note">Tautan akun belum ditambahkan.</p>
+              </div>
             ) : (
               <div className="cinematic-hero__empty">
                 <p>Data {item.label.toLowerCase()} belum diisi.</p>
@@ -333,7 +344,7 @@ export function IdentityFlip() {
               <small>TO</small>
               <strong>PESONAFLIX</strong>
             </h1>
-            <p>Kenali Teh Vini lewat tujuh kartu profil yang bisa digeser.</p>
+            <p>Kenali Teh Vini lewat delapan kartu profil yang bisa digeser.</p>
             <button
               type="button"
               className="cinematic-welcome__enter"

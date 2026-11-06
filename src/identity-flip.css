@@ -602,7 +602,7 @@
   .cinematic-welcome__enter, .cinematic-hero__tabs button { transition: none; }
 }
 
-/* The seven categories are now a physical, 3D card deck—no duplicate tab rail. */
+/* The profile categories use a physical, 3D card deck—no duplicate tab rail. */
 .cinematic-hero__details {
   display: block;
   width: min(100%,870px);
@@ -869,6 +869,30 @@
 .cinematic-hero__empty span,
 .cinematic-hero__empty-note { color: #d8c5aa; font-size: 12px; line-height: 1.6; }
 .cinematic-hero__empty-note { margin: 17px 0 0; }
+.cinematic-hero__social { padding-top: 2px; }
+.cinematic-hero__social-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cinematic-hero__social-grid li {
+  min-width: 0;
+  padding: 8px 0 10px;
+  border-bottom: 1px solid rgba(241,219,184,.27);
+  color: #fff2df;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.cinematic-hero__social-note {
+  margin: 15px 0 0;
+  color: #d8c5aa;
+  font-size: 11px;
+  line-height: 1.45;
+}
 .cinematic-hero__swipe-stamp { font-size: 12px; padding: 7px 9px; border-width: 2px; }
 .cinematic-hero__sr-only {
   position: absolute;
@@ -958,6 +982,10 @@
   .cinematic-hero__empty span,
   .cinematic-hero__empty-note { font-size: 10px; line-height: 1.45; }
   .cinematic-hero__empty-note { margin-top: 10px; }
+  .cinematic-hero__social { padding-top: 0; }
+  .cinematic-hero__social-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 15px; }
+  .cinematic-hero__social-grid li { padding: 4px 0 5px; font-size: 12px; line-height: 1.4; }
+  .cinematic-hero__social-note { margin-top: 7px; font-size: 9px; line-height: 1.35; }
   .cinematic-welcome__edition { font-size: 9px; }
   .cinematic-welcome__footer { font-size: 10px; letter-spacing: .05em; }
 }
