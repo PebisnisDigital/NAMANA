@@ -317,6 +317,8 @@ export function IdentityFlip() {
   const [shuffleStage, setShuffleStage] = useState<ShuffleStage>('rest');
   const [deckEngaged, setDeckEngaged] = useState(false);
   const [manualEpoch, setManualEpoch] = useState(0);
+  const [walletPull, setWalletPull] = useState(0);
+  const [walletCardLabel, setWalletCardLabel] = useState('');
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -407,6 +409,12 @@ export function IdentityFlip() {
     interruptShuffle();
     setSwipeDirection(direction);
     setActiveTab((index) => (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
+  };
+
+  const drawFromWallet = () => {
+    setWalletCardLabel(profileTabs[(activeTab + 1) % totalCards].label);
+    setWalletPull((count) => count + 1);
+    navigateCards(1);
   };
 
   useEffect(() => {
@@ -540,6 +548,54 @@ export function IdentityFlip() {
                       })}
                     </AnimatePresence>
                   </div>
+                  <motion.button
+                    type="button"
+                    className="cinematic-hero__wallet"
+                    aria-label={`Keluarkan kartu ${profileTabs[(activeTab + 1) % totalCards].label} dari dompet`}
+                    title="Klik untuk mengeluarkan kartu berikutnya"
+                    onClick={drawFromWallet}
+                    whileHover={{ y: -4, rotateZ: -1 }}
+                    whileTap={{ scale: .96 }}
+                    transition={{ type: 'spring', stiffness: 340, damping: 24 }}
+                  >
+                    <span className="cinematic-hero__wallet-cards" aria-hidden="true">
+                      <span className="cinematic-hero__wallet-peek" />
+                      <span className="cinematic-hero__wallet-peek" />
+                      <span className="cinematic-hero__wallet-peek" />
+                    </span>
+                    <span className="cinematic-hero__wallet-pocket">
+                      <span className="cinematic-hero__wallet-brand">PESONA<span>FLIX</span></span>
+                      <svg className="cinematic-hero__wallet-glyph" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="6" y="12" width="36" height="29" rx="6" />
+                        <path d="M6 18V13a6 6 0 0 1 6-6h23" />
+                        <path d="M30 22h12v12H30a6 6 0 0 1 0-12Z" />
+                        <circle cx="34" cy="28" r="1.6" fill="currentColor" stroke="none" />
+                      </svg>
+                      <span className="cinematic-hero__wallet-action">AMBIL KARTU <span aria-hidden="true">↗</span></span>
+                    </span>
+                    <AnimatePresence>
+                      {walletPull > 0 && (
+                        <motion.span
+                          className="cinematic-hero__wallet-ejected"
+                          key={`wallet-${walletPull}`}
+                          initial={{ x: 10, y: 13, rotateZ: 12, scale: .54, opacity: 0 }}
+                          animate={{
+                            x: [10, -10, -95, -125],
+                            y: [13, -38, -128, -145],
+                            rotateZ: [12, 1, -9, -12],
+                            scale: [.54, .77, 1.06, 1.1],
+                            opacity: [0, 1, 1, 0],
+                          }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: .9, times: [0, .22, .75, 1], ease: 'easeInOut' }}
+                          aria-hidden="true"
+                        >
+                          <span>PESONAFLIX</span>
+                          <strong>{walletCardLabel}</strong>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
                 </div>
                 <span className="cinematic-hero__sr-only" role="status" aria-live="polite">Kartu {profileTabs[activeTab].label}, {activeTab + 1} dari {totalCards}</span>
               </div>
