@@ -31,6 +31,7 @@ export function Landing() {
             loading="lazy"
             width="900"
             height="560"
+            scrolling="no"
           />
           <p>ORIGINAL • Klik dompet, lalu geser kartu untuk menjelajah.</p>
         </div>
