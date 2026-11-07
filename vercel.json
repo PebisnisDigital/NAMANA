@@ -1,0 +1,45 @@
+{
+  "framework": "vite",
+  "buildCommand": "npm run typecheck && npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/operations.ts": { "maxDuration": 30 },
+    "api/site.ts": { "includeFiles": "dist/index.html" }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+        }
+      ]
+    },
+    {
+      "source": "/(studio|dashboard|admin|preview|canvas|auth|login)(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "private, no-store" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/site?mode=sitemap" },
+    { "source": "/robots.txt", "destination": "/api/site?mode=robots" },
+    {
+      "source": "/:slug([a-z0-9][a-z0-9-]{1,46}[a-z0-9])",
+      "destination": "/api/site?slug=:slug"
+    },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}
