@@ -178,13 +178,14 @@ const CARD_EXIT = {
 };
 
 function SwipeProfileCard({
-  item, index, offset, compact, shuffleStage, onSwipe, onSelect,
+  item, index, offset, compact, shuffleStage, fromWallet, onSwipe, onSelect,
 }: {
   item: ProfileCard;
   index: number;
   offset: number;
   compact: boolean;
   shuffleStage: ShuffleStage;
+  fromWallet: boolean;
   onSwipe: (direction: -1 | 1) => void;
   onSelect: (index: number) => void;
 }) {
@@ -200,11 +201,20 @@ function SwipeProfileCard({
   return (
     <motion.article
       className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}${item.kind ? ` cinematic-hero__card--${item.kind}` : ''}${item.label.length > 10 ? ' cinematic-hero__card--long-title' : ''}`}
-      initial={cardPosition(Math.max(offset, 1), compact)}
+      initial={fromWallet ? {
+        x: compact ? 0 : -310,
+        y: compact ? -220 : 25,
+        z: -100,
+        rotateX: -12,
+        rotateY: -24,
+        rotateZ: compact ? -8 : 12,
+        scale: compact ? .28 : .36,
+        opacity: .6,
+      } : cardPosition(Math.max(offset, 1), compact)}
       animate={cardPosition(offset, compact, shuffleStage === 'fan')}
       exit="exit"
       variants={CARD_EXIT}
-      transition={CARD_SPRING}
+      transition={fromWallet ? { type: 'spring', stiffness: 115, damping: 20, mass: 1.05 } : CARD_SPRING}
       style={{ zIndex: 12 - offset, pointerEvents: active || offset < 3 ? 'auto' : 'none' }}
       aria-label={`Kartu ${item.label}, ${index + 1} dari ${totalCards}`}
     >
@@ -311,14 +321,9 @@ export function IdentityFlip() {
   const lastWheelAt = useRef(0);
   const wheelDelta = useRef(0);
   const lastWheelEventAt = useRef(0);
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(-1);
   const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(-1);
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
-  const [shuffleStage, setShuffleStage] = useState<ShuffleStage>('rest');
-  const [deckEngaged, setDeckEngaged] = useState(false);
-  const [manualEpoch, setManualEpoch] = useState(0);
-  const [walletPull, setWalletPull] = useState(0);
-  const [walletCardLabel, setWalletCardLabel] = useState('');
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -360,61 +365,24 @@ export function IdentityFlip() {
     };
   }, [phase]);
 
-  useEffect(() => {
-    if (phase !== 'hero' || deckEngaged) {
-      setShuffleStage('rest');
-      return;
-    }
-
-    const timers: number[] = [];
-    const after = (callback: () => void, delay: number) => {
-      timers.push(window.setTimeout(callback, delay));
-    };
-    const shuffle = () => {
-      setShuffleStage('fan');
-      after(() => setShuffleStage('close'), 850);
-      after(() => {
-        setShuffleStage('tuck');
-        setSwipeDirection(-1);
-        setActiveTab((current) => (current + 1) % totalCards);
-      }, 1650);
-      after(() => {
-        setShuffleStage('rest');
-        after(shuffle, 4400);
-      }, 2900);
-    };
-
-    // The idle loop gives each chapter reading time; interaction cancels every step.
-    after(shuffle, manualEpoch === 0 ? 2300 : 6200);
-    return () => timers.forEach(window.clearTimeout);
-  }, [phase, deckEngaged, manualEpoch]);
-
   const enterExperience = () => {
     if (phase !== 'welcome') return;
     setPhase('hero');
   };
 
-  const interruptShuffle = useCallback(() => {
-    setShuffleStage('rest');
-    setManualEpoch((current) => current + 1);
+  const navigateCards = useCallback((direction: -1 | 1) => {
+    setSwipeDirection(direction === 1 ? -1 : 1);
+    setActiveTab((index) => index < 0 ? index : (index + direction + totalCards) % totalCards);
   }, []);
 
-  const navigateCards = useCallback((direction: -1 | 1) => {
-    interruptShuffle();
-    setSwipeDirection(direction === 1 ? -1 : 1);
-    setActiveTab((index) => (index + direction + totalCards) % totalCards);
-  }, [interruptShuffle]);
-
   const swipeCard = (direction: -1 | 1) => {
-    interruptShuffle();
     setSwipeDirection(direction);
-    setActiveTab((index) => (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
+    setActiveTab((index) => index < 0 ? index : (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
   };
 
   const drawFromWallet = () => {
-    setWalletCardLabel(profileTabs[(activeTab + 1) % totalCards].label);
-    setWalletPull((count) => count + 1);
-    navigateCards(1);
+    setSwipeDirection(-1);
+    setActiveTab((index) => (index + 1) % totalCards);
   };
 
   useEffect(() => {
@@ -423,7 +391,7 @@ export function IdentityFlip() {
 
     const handleWheel = (event: globalThis.WheelEvent) => {
       const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
-      if (Math.abs(primaryDelta) < 1) return;
+      if (Math.abs(primaryDelta) < 1 || activeTab < 0) return;
 
       // Wheel/trackpad gestures move the deck only while the pointer is over it.
       event.preventDefault();
@@ -447,7 +415,7 @@ export function IdentityFlip() {
 
     viewport.addEventListener('wheel', handleWheel, { passive: false });
     return () => viewport.removeEventListener('wheel', handleWheel);
-  }, [phase, navigateCards]);
+  }, [phase, navigateCards, activeTab]);
 
   return (
     <main className={`cinematic-page cinematic-page--${phase}`}>
@@ -512,47 +480,20 @@ export function IdentityFlip() {
               <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
                 <div
                   ref={cardViewport}
-                  className="cinematic-hero__card-viewport"
-                  aria-label="Tumpukan kartu profil. Geser, klik, atau scroll untuk berpindah kartu. Gunakan panah kiri atau kanan pada keyboard."
-                    role="group"
-                    tabIndex={0}
-                  onPointerDownCapture={() => setDeckEngaged(true)}
-                  onPointerUpCapture={() => setDeckEngaged(false)}
-                  onPointerCancelCapture={() => setDeckEngaged(false)}
-                  onFocusCapture={() => setDeckEngaged(true)}
-                  onBlurCapture={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget)) setDeckEngaged(false);
-                  }}
+                  className="cinematic-hero__card-viewport cinematic-hero__card-viewport--wallet-draw"
+                  aria-label="Dompet kartu di kiri dan kartu profil di kanan. Klik dompet untuk mengambil kartu pertama, lalu klik lagi untuk kartu berikutnya. Kartu dapat digeser, di-scroll, atau dinavigasi dengan tombol panah."
+                  role="group"
+                  tabIndex={0}
                   onKeyDown={(event) => {
                     if (event.key === 'ArrowRight') { event.preventDefault(); navigateCards(1); }
                     if (event.key === 'ArrowLeft') { event.preventDefault(); navigateCards(-1); }
                   }}
                 >
-                  <div className="cinematic-hero__card-track">
-                    <AnimatePresence initial={false} mode="sync" custom={{ direction: swipeDirection, compact: compactDeck, shuffle: shuffleStage === 'tuck' }}>
-                      {Array.from({ length: compactDeck ? 2 : 3 }, (_, relativeIndex) => {
-                        const index = (activeTab + relativeIndex) % totalCards;
-                        const item = profileTabs[index];
-                        return (
-                          <SwipeProfileCard
-                            key={item.label}
-                            item={item}
-                            index={index}
-                            offset={relativeIndex}
-                            compact={compactDeck}
-                            shuffleStage={shuffleStage}
-                            onSwipe={swipeCard}
-                            onSelect={(selected) => { interruptShuffle(); setSwipeDirection(-1); setActiveTab(selected); }}
-                          />
-                        );
-                      })}
-                    </AnimatePresence>
-                  </div>
                   <motion.button
                     type="button"
                     className="cinematic-hero__wallet"
                     aria-label={`Keluarkan kartu ${profileTabs[(activeTab + 1) % totalCards].label} dari dompet`}
-                    title="Klik untuk mengeluarkan kartu berikutnya"
+                    title="Klik untuk mengambil satu kartu"
                     onClick={drawFromWallet}
                     whileHover={{ y: -4, rotateZ: -1 }}
                     whileTap={{ scale: .96 }}
@@ -573,31 +514,28 @@ export function IdentityFlip() {
                       </svg>
                       <span className="cinematic-hero__wallet-action">AMBIL KARTU <span aria-hidden="true">↗</span></span>
                     </span>
-                    <AnimatePresence>
-                      {walletPull > 0 && (
-                        <motion.span
-                          className="cinematic-hero__wallet-ejected"
-                          key={`wallet-${walletPull}`}
-                          initial={{ x: 10, y: 13, rotateZ: 12, scale: .54, opacity: 0 }}
-                          animate={{
-                            x: [10, -10, -95, -125],
-                            y: [13, -38, -128, -145],
-                            rotateZ: [12, 1, -9, -12],
-                            scale: [.54, .77, 1.06, 1.1],
-                            opacity: [0, 1, 1, 0],
-                          }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: .9, times: [0, .22, .75, 1], ease: 'easeInOut' }}
-                          aria-hidden="true"
-                        >
-                          <span>PESONAFLIX</span>
-                          <strong>{walletCardLabel}</strong>
-                        </motion.span>
+                  </motion.button>
+                  <div className="cinematic-hero__card-track" aria-label="Kartu yang dikeluarkan dari dompet">
+                    <AnimatePresence initial={false} mode="sync" custom={{ direction: swipeDirection, compact: compactDeck, shuffle: false }}>
+                      {activeTab >= 0 && (
+                        <SwipeProfileCard
+                          key={profileTabs[activeTab].label}
+                          item={profileTabs[activeTab]}
+                          index={activeTab}
+                          offset={0}
+                          compact={compactDeck}
+                          shuffleStage="rest"
+                          fromWallet
+                          onSwipe={swipeCard}
+                          onSelect={setActiveTab}
+                        />
                       )}
                     </AnimatePresence>
-                  </motion.button>
+                  </div>
                 </div>
-                <span className="cinematic-hero__sr-only" role="status" aria-live="polite">Kartu {profileTabs[activeTab].label}, {activeTab + 1} dari {totalCards}</span>
+                <span className="cinematic-hero__sr-only" role="status" aria-live="polite">
+                  {activeTab < 0 ? 'Belum ada kartu. Klik dompet untuk mengambil kartu pertama.' : `Kartu ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
+                </span>
               </div>
             </div>
           </div>
