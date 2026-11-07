@@ -1480,3 +1480,145 @@
   .cinematic-hero__wallet-ejected span { font-size: 6px; }
   .cinematic-hero__wallet-ejected strong { font-size: 13px; }
 }
+
+/* Wallet-draw layout: the pocket remains on the left while each card emerges on the right. */
+.cinematic-hero__details { width: min(100%, 920px); }
+.cinematic-hero__card-viewport--wallet-draw {
+  display: grid;
+  grid-template-columns: 275px minmax(0, 1fr);
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+  height: 375px;
+  overflow: visible;
+  perspective: 1250px;
+  perspective-origin: 45% 48%;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 36;
+  right: auto;
+  bottom: auto;
+  align-self: center;
+  justify-self: center;
+  width: 260px;
+  height: 225px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-cards {
+  left: 23px;
+  right: 16px;
+  height: 121px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek {
+  top: 9px;
+  width: 171px;
+  height: 111px;
+  border-radius: 13px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek::after {
+  top: 18px;
+  left: 18px;
+  width: 33px;
+  height: 22px;
+  border-radius: 5px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek:nth-child(2) { left: 26px; }
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek:nth-child(3) { left: 51px; }
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket {
+  height: 167px;
+  border-radius: 21px;
+  box-shadow: 0 4px 0 #62472d, 0 19px 27px rgba(0,0,0,.72), 0 36px 42px rgba(0,0,0,.44), inset 1px 1px 0 rgba(255,230,189,.24), inset -14px -18px 29px rgba(0,0,0,.51);
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket::before {
+  inset: 9px;
+  border-radius: 14px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-brand {
+  top: 28px;
+  left: 23px;
+  font-size: 13px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-glyph {
+  top: 25px;
+  right: 21px;
+  width: 45px;
+  height: 45px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-action {
+  bottom: 26px;
+  left: 23px;
+  font-size: 14px;
+  gap: 12px;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card,
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card--active {
+  top: 12px;
+  left: 0;
+  width: min(100%, 550px);
+  height: 341px;
+  transform-origin: 50% 50%;
+  pointer-events: auto;
+}
+
+@media (max-width: 850px) and (min-width: 601px) {
+  .cinematic-hero__card-viewport--wallet-draw { grid-template-columns: 208px minmax(0, 1fr); gap: 14px; height: 340px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet { width: 201px; height: 179px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-cards { left: 17px; right: 11px; height: 95px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek { width: 132px; height: 77px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek:nth-child(2) { left: 20px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek:nth-child(3) { left: 40px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket { height: 133px; border-radius: 17px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-brand { top: 19px; left: 16px; font-size: 10px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-glyph { top: 16px; right: 13px; width: 35px; height: 35px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-action { bottom: 19px; left: 16px; font-size: 11px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card,
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card--active { top: 13px; width: 100%; height: 310px; }
+}
+
+@media (max-width: 600px) {
+  .cinematic-hero__card-viewport--wallet-draw {
+    grid-template-columns: 1fr;
+    grid-template-rows: 151px 276px;
+    justify-items: stretch;
+    align-items: start;
+    gap: 6px;
+    height: 433px;
+  }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    margin-left: 8px;
+    width: 189px;
+    height: 149px;
+  }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-cards { left: 15px; right: 9px; height: 75px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek { top: 6px; width: 119px; height: 64px; border-radius: 9px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek::after { top: 11px; left: 10px; width: 22px; height: 16px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek:nth-child(2) { left: 19px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-peek:nth-child(3) { left: 36px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket { height: 109px; border-radius: 14px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-brand { top: 17px; left: 15px; font-size: 9px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-glyph { top: 15px; right: 13px; width: 32px; height: 32px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-action { bottom: 16px; left: 15px; font-size: 11px; gap: 7px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track { grid-column: 1; grid-row: 2; width: 100%; height: 276px; }
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card,
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card--active {
+    top: 6px;
+    left: 0;
+    width: min(100%, 480px);
+    height: 265px;
+  }
+}
