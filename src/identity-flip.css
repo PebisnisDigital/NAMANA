@@ -1314,16 +1314,6 @@
   .cinematic-hero__card--active .cinematic-hero__card-body { padding-top: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-hero__flaticon { display: none; }
-  .cinematic-hero__story-static { display: grid; place-items: center; }
-  .cinematic-hero__story-icon:has(.cinematic-hero__story-brand) .cinematic-hero__story-brand {
-    position: static;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 0;
-    filter: none;
-  }
   .cinematic-hero__story-icon,
   .cinematic-hero__story-value,
   .cinematic-hero__story-copy { animation: none; }
