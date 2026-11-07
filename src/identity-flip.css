@@ -1623,3 +1623,64 @@
     height: 265px;
   }
 }
+
+/* Exposed, compressed card edges create a wallet gusset whose thickness follows its contents. */
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-volume {
+  position: absolute;
+  z-index: 0;
+  right: -4px;
+  bottom: calc(var(--wallet-depth) * -.6);
+  left: 13px;
+  height: calc(157px + var(--wallet-depth) * .6);
+  border: 1px solid rgba(191, 148, 98, .73);
+  border-radius: 18px 18px 24px 25px;
+  background: repeating-linear-gradient(180deg, #392b26 0 3px, #846444 3px 4px, #181516 4px 7px, #574232 7px 8px);
+  box-shadow: 4px 7px 0 #1a1514, 9px 16px 22px rgba(0, 0, 0, .68), inset -14px -9px 18px rgba(0, 0, 0, .56);
+  transform: skewX(-3deg);
+  pointer-events: none;
+  transition: bottom .38s ease, height .38s ease;
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-volume::after {
+  position: absolute;
+  right: 3px;
+  bottom: 6px;
+  width: 8px;
+  height: 66%;
+  border-right: 1px solid rgba(231, 187, 121, .4);
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255, 233, 184, .15), rgba(5, 5, 7, .7));
+  content: '';
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-cards {
+  transition: transform .33s cubic-bezier(.2, .75, .3, 1);
+}
+.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket {
+  transition: transform .3s cubic-bezier(.2, .75, .3, 1);
+}
+.cinematic-hero__wallet--returning .cinematic-hero__wallet-cards { transform: translateY(-5px); }
+.cinematic-hero__wallet--reloaded .cinematic-hero__wallet-cards { transform: translateY(-9px); }
+.cinematic-hero__wallet--drawing .cinematic-hero__wallet-cards { transform: translateY(3px); }
+.cinematic-hero__wallet--reloaded .cinematic-hero__wallet-pocket { transform: translateY(4px) scaleY(1.025); }
+.cinematic-hero__wallet:disabled { cursor: progress; }
+
+@media (max-width: 850px) and (min-width: 601px) {
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-volume {
+    bottom: calc(var(--wallet-depth) * -.45);
+    height: calc(125px + var(--wallet-depth) * .45);
+  }
+}
+
+@media (max-width: 600px) {
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-volume {
+    bottom: calc(var(--wallet-depth) * -.28);
+    left: 10px;
+    height: calc(106px + var(--wallet-depth) * .28);
+    border-radius: 12px 13px 17px 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-volume,
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-cards,
+  .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket { transition: none; }
+}
