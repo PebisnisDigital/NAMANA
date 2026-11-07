@@ -1318,3 +1318,165 @@
   .cinematic-hero__story-value,
   .cinematic-hero__story-copy { animation: none; }
 }
+
+/* A tactile card wallet: the visible card corners are part of the draw control. */
+.cinematic-hero__card-viewport { position: relative; }
+.cinematic-hero__wallet {
+  position: absolute;
+  z-index: 28;
+  right: -36px;
+  bottom: 2px;
+  display: block;
+  width: 204px;
+  height: 145px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: #f2d8ab;
+  cursor: pointer;
+  isolation: isolate;
+  transform-origin: 50% 88%;
+  -webkit-tap-highlight-color: transparent;
+}
+.cinematic-hero__wallet:focus-visible {
+  outline: 2px solid #ffe4b0;
+  outline-offset: 5px;
+}
+.cinematic-hero__wallet-cards {
+  position: absolute;
+  top: 0;
+  left: 19px;
+  right: 13px;
+  height: 78px;
+  pointer-events: none;
+}
+.cinematic-hero__wallet-peek {
+  position: absolute;
+  top: 11px;
+  left: 3px;
+  width: 132px;
+  height: 71px;
+  border: 1px solid rgba(248,220,166,.84);
+  border-radius: 10px;
+  background: linear-gradient(125deg,#5a4633,#211c1b 55%,#101113);
+  box-shadow: 1px 2px 0 rgba(181,138,86,.56),4px 7px 12px rgba(0,0,0,.48);
+  transform-origin: 50% 95%;
+}
+.cinematic-hero__wallet-peek::after {
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: 14px;
+  width: 25px;
+  height: 17px;
+  border-radius: 4px;
+  background: linear-gradient(135deg,#967443,#f4d698 52%,#ab814d);
+  box-shadow: inset 0 0 0 2px rgba(74,50,24,.24);
+}
+.cinematic-hero__wallet-peek:nth-child(1) { left: 0; transform: rotate(-13deg) translateY(8px); }
+.cinematic-hero__wallet-peek:nth-child(2) { left: 22px; transform: rotate(-2deg) translateY(2px); }
+.cinematic-hero__wallet-peek:nth-child(3) { left: 40px; transform: rotate(11deg) translateY(8px); }
+.cinematic-hero__wallet-pocket {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 106px;
+  overflow: hidden;
+  border: 1px solid #bb9969;
+  border-radius: 17px;
+  background: linear-gradient(132deg,#4b3a2d 0%,#211b1a 35%,#101013 72%,#31261f 100%);
+  box-shadow: 0 3px 0 #513a24,0 12px 19px rgba(0,0,0,.65),0 23px 33px rgba(0,0,0,.42),inset 1px 1px 0 rgba(255,230,189,.22),inset -10px -13px 20px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+.cinematic-hero__wallet-pocket::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed rgba(229,191,131,.32);
+  border-radius: 11px;
+  pointer-events: none;
+}
+.cinematic-hero__wallet-pocket::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10px;
+  border-bottom: 1px solid rgba(255,231,185,.14);
+  background: linear-gradient(180deg,rgba(0,0,0,.6),transparent);
+}
+.cinematic-hero__wallet-brand {
+  position: absolute;
+  top: 19px;
+  left: 17px;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .11em;
+}
+.cinematic-hero__wallet-brand span { color: #e45158; }
+.cinematic-hero__wallet-glyph {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 38px;
+  height: 38px;
+  opacity: .9;
+}
+.cinematic-hero__wallet-action {
+  position: absolute;
+  bottom: 15px;
+  left: 17px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .095em;
+}
+.cinematic-hero__wallet-action span { font-size: 20px; line-height: .8; transition: transform .18s ease; }
+.cinematic-hero__wallet:hover .cinematic-hero__wallet-action span { transform: translate(3px,-3px); }
+.cinematic-hero__wallet-ejected {
+  position: absolute;
+  z-index: 4;
+  top: 14px;
+  left: 34px;
+  display: flex;
+  width: 152px;
+  height: 94px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
+  border: 1px solid #e4bd82;
+  border-radius: 10px;
+  background: linear-gradient(125deg,#54402d,#181719 68%,#2e251e);
+  box-shadow: 8px 14px 23px rgba(0,0,0,.6),inset 1px 1px 0 rgba(255,235,200,.2);
+  color: #fce6c8;
+  pointer-events: none;
+}
+.cinematic-hero__wallet-ejected span { font-size: 8px; font-weight: 800; letter-spacing: .12em; }
+.cinematic-hero__wallet-ejected strong { font-size: 17px; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
+@media (max-width: 850px) and (min-width: 601px) {
+  .cinematic-hero__wallet { right: -10px; width: 185px; }
+}
+@media (max-width: 600px) {
+  .cinematic-hero__card-viewport { height: 421px; }
+  .cinematic-hero__wallet { right: 0; bottom: 4px; width: 158px; height: 119px; }
+  .cinematic-hero__wallet-cards { left: 12px; right: 6px; height: 64px; }
+  .cinematic-hero__wallet-peek { top: 6px; left: 0; width: 98px; height: 53px; border-radius: 7px; }
+  .cinematic-hero__wallet-peek::after { top: 9px; left: 9px; width: 19px; height: 13px; border-radius: 3px; }
+  .cinematic-hero__wallet-peek:nth-child(1) { left: 0; }
+  .cinematic-hero__wallet-peek:nth-child(2) { left: 17px; }
+  .cinematic-hero__wallet-peek:nth-child(3) { left: 32px; }
+  .cinematic-hero__wallet-pocket { height: 82px; border-radius: 13px; }
+  .cinematic-hero__wallet-pocket::before { inset: 5px; border-radius: 8px; }
+  .cinematic-hero__wallet-brand { top: 12px; left: 13px; font-size: 8px; }
+  .cinematic-hero__wallet-glyph { top: 12px; right: 10px; width: 29px; height: 29px; }
+  .cinematic-hero__wallet-action { bottom: 11px; left: 13px; font-size: 10px; gap: 6px; }
+  .cinematic-hero__wallet-action span { font-size: 17px; }
+  .cinematic-hero__wallet-ejected { top: 10px; left: 19px; width: 116px; height: 76px; padding: 10px; border-radius: 7px; }
+  .cinematic-hero__wallet-ejected span { font-size: 6px; }
+  .cinematic-hero__wallet-ejected strong { font-size: 13px; }
+}
