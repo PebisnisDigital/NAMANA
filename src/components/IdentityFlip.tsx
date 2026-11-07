@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import '../identity-flip.css';
 
 type Phase = 'welcome' | 'hero';
 type ShuffleStage = 'rest' | 'fan' | 'close' | 'tuck';
+type WalletMotion = 'rest' | 'returning' | 'reloaded' | 'drawing';
 type ProfileIcon = 'person' | 'pin' | 'home' | 'book' | 'image' | 'palette' | 'compass' | 'chat' | 'screens' | 'building' | 'flag' | 'mentor' | 'website' | 'pencil' | 'class' | 'certificate';
 type ProfileCard = {
   label: string;
@@ -148,33 +149,32 @@ const CARD_SPRING = {
   restDelta: .02,
 };
 
+function walletCardOrigin(compact: boolean) {
+  return {
+    x: compact ? 0 : -310,
+    y: compact ? -220 : 25,
+    z: -100,
+    rotateX: -12,
+    rotateY: -24,
+    rotateZ: compact ? -8 : 12,
+    scale: compact ? .28 : .36,
+    opacity: .6,
+  };
+}
+
 const CARD_EXIT = {
-  exit: ({ direction, compact, shuffle }: { direction: -1 | 1; compact: boolean; shuffle: boolean }) => shuffle
-    ? {
-        // The top card travels around the side and drops behind the deck.
-        x: [0, compact ? 72 : 230, compact ? 7 : 100],
-        y: [0, compact ? -25 : -64, compact ? 58 : 24],
-        z: [88, 260, -130],
-        rotateX: [-1, -10, 4],
-        rotateY: [0, -25, -12],
-        rotateZ: [0, 12, -4],
-        scale: [1, 1.04, .91],
-        opacity: [1, 1, 0],
-        zIndex: 70,
-        transition: { duration: 1.15, times: [0, .53, 1], ease: 'easeInOut' as const },
-      }
-    : {
-        x: direction * (compact ? 570 : 930),
-        y: -150,
-        z: 240,
-        rotateX: -9,
-        rotateY: direction * 17,
-        rotateZ: direction * 24,
-        scale: 1.08,
-        opacity: 0,
-        zIndex: 70,
-        transition: { duration: .55, ease: [.24, .76, .22, 1] as [number, number, number, number] },
-      },
+  exit: ({ compact }: { compact: boolean }) => ({
+    x: compact ? [0, 0, 0] : [0, -150, -310],
+    y: compact ? [0, -95, -220] : [0, 10, 25],
+    z: [88, 5, -100],
+    rotateX: [-1, -4, -12],
+    rotateY: [0, -9, -24],
+    rotateZ: [0, compact ? -3 : 5, compact ? -8 : 12],
+    scale: [1, .78, compact ? .28 : .36],
+    opacity: [1, 1, .6],
+    zIndex: 6,
+    transition: { duration: .72, times: [0, .53, 1], ease: [.42, 0, .62, 1] as [number, number, number, number] },
+  }),
 };
 
 function SwipeProfileCard({
@@ -201,16 +201,7 @@ function SwipeProfileCard({
   return (
     <motion.article
       className={`cinematic-hero__card${active ? ' cinematic-hero__card--active' : ' cinematic-hero__card--next'}${item.kind ? ` cinematic-hero__card--${item.kind}` : ''}${item.label.length > 10 ? ' cinematic-hero__card--long-title' : ''}`}
-      initial={fromWallet ? {
-        x: compact ? 0 : -310,
-        y: compact ? -220 : 25,
-        z: -100,
-        rotateX: -12,
-        rotateY: -24,
-        rotateZ: compact ? -8 : 12,
-        scale: compact ? .28 : .36,
-        opacity: .6,
-      } : cardPosition(Math.max(offset, 1), compact)}
+      initial={fromWallet ? walletCardOrigin(compact) : cardPosition(Math.max(offset, 1), compact)}
       animate={cardPosition(offset, compact, shuffleStage === 'fan')}
       exit="exit"
       variants={CARD_EXIT}
@@ -321,9 +312,13 @@ export function IdentityFlip() {
   const lastWheelAt = useRef(0);
   const wheelDelta = useRef(0);
   const lastWheelEventAt = useRef(0);
+  const pendingCard = useRef<number | null>(null);
+  const returnTimer = useRef<number | null>(null);
   const [activeTab, setActiveTab] = useState(-1);
-  const [swipeDirection, setSwipeDirection] = useState<-1 | 1>(-1);
+  const [walletMotion, setWalletMotion] = useState<WalletMotion>('rest');
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
+  const storedCards = totalCards - (activeTab >= 0 || walletMotion === 'returning' ? 1 : 0);
+  const walletDepth = Math.min(50, 10 + storedCards * 2);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -334,7 +329,14 @@ export function IdentityFlip() {
 
   useEffect(() => () => {
     videoRef.current?.pause();
+    if (returnTimer.current !== null) window.clearTimeout(returnTimer.current);
   }, []);
+
+  useEffect(() => {
+    if (walletMotion !== 'drawing') return;
+    const timer = window.setTimeout(() => setWalletMotion('rest'), 1050);
+    return () => window.clearTimeout(timer);
+  }, [walletMotion, activeTab]);
 
   useEffect(() => {
     if (phase !== 'hero') return;
@@ -370,19 +372,42 @@ export function IdentityFlip() {
     setPhase('hero');
   };
 
+  const requestCard = useCallback((nextIndex: number) => {
+    if (walletMotion !== 'rest' || nextIndex === activeTab) return;
+    if (activeTab < 0) {
+      setActiveTab(nextIndex);
+      setWalletMotion('drawing');
+      return;
+    }
+
+    pendingCard.current = nextIndex;
+    setWalletMotion('returning');
+    setActiveTab(-1);
+  }, [activeTab, walletMotion]);
+
+  const finishReturningCard = () => {
+    if (pendingCard.current === null) return;
+    const nextIndex = pendingCard.current;
+    pendingCard.current = null;
+    setWalletMotion('reloaded');
+    returnTimer.current = window.setTimeout(() => {
+      setActiveTab(nextIndex);
+      setWalletMotion('drawing');
+      returnTimer.current = null;
+    }, 150);
+  };
+
   const navigateCards = useCallback((direction: -1 | 1) => {
-    setSwipeDirection(direction === 1 ? -1 : 1);
-    setActiveTab((index) => index < 0 ? index : (index + direction + totalCards) % totalCards);
-  }, []);
+    if (activeTab < 0) return;
+    requestCard((activeTab + direction + totalCards) % totalCards);
+  }, [activeTab, requestCard]);
 
   const swipeCard = (direction: -1 | 1) => {
-    setSwipeDirection(direction);
-    setActiveTab((index) => index < 0 ? index : (index + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
+    if (activeTab >= 0) requestCard((activeTab + (direction === -1 ? 1 : -1) + totalCards) % totalCards);
   };
 
   const drawFromWallet = () => {
-    setSwipeDirection(-1);
-    setActiveTab((index) => (index + 1) % totalCards);
+    requestCard((activeTab + 1) % totalCards);
   };
 
   useEffect(() => {
@@ -391,7 +416,7 @@ export function IdentityFlip() {
 
     const handleWheel = (event: globalThis.WheelEvent) => {
       const primaryDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
-      if (Math.abs(primaryDelta) < 1 || activeTab < 0) return;
+      if (Math.abs(primaryDelta) < 1 || activeTab < 0 || walletMotion !== 'rest') return;
 
       // Wheel/trackpad gestures move the deck only while the pointer is over it.
       event.preventDefault();
@@ -415,7 +440,7 @@ export function IdentityFlip() {
 
     viewport.addEventListener('wheel', handleWheel, { passive: false });
     return () => viewport.removeEventListener('wheel', handleWheel);
-  }, [phase, navigateCards, activeTab]);
+  }, [phase, navigateCards, activeTab, walletMotion]);
 
   return (
     <main className={`cinematic-page cinematic-page--${phase}`}>
@@ -491,14 +516,19 @@ export function IdentityFlip() {
                 >
                   <motion.button
                     type="button"
-                    className="cinematic-hero__wallet"
-                    aria-label={`Keluarkan kartu ${profileTabs[(activeTab + 1) % totalCards].label} dari dompet`}
-                    title="Klik untuk mengambil satu kartu"
+                    className={`cinematic-hero__wallet cinematic-hero__wallet--${walletMotion}`}
+                    aria-label={`Keluarkan kartu ${profileTabs[pendingCard.current ?? (activeTab + 1) % totalCards].label} dari dompet`}
+                    aria-busy={walletMotion !== 'rest'}
+                    title={walletMotion === 'rest' ? 'Klik untuk mengambil satu kartu' : 'Kartu sedang bergerak'}
                     onClick={drawFromWallet}
+                    disabled={walletMotion !== 'rest'}
+                    style={{ '--wallet-depth': `${walletDepth}px` } as CSSProperties}
+                    animate={{ rotateZ: walletMotion === 'returning' ? .8 : walletMotion === 'drawing' ? -.6 : 0, scaleY: walletMotion === 'reloaded' ? 1.06 : walletMotion === 'drawing' ? .98 : 1 }}
                     whileHover={{ y: -4, rotateZ: -1 }}
                     whileTap={{ scale: .96 }}
-                    transition={{ type: 'spring', stiffness: 340, damping: 24 }}
+                    transition={{ type: 'spring', stiffness: 270, damping: 25 }}
                   >
+                    <span className="cinematic-hero__wallet-volume" aria-hidden="true" />
                     <span className="cinematic-hero__wallet-cards" aria-hidden="true">
                       <span className="cinematic-hero__wallet-peek" />
                       <span className="cinematic-hero__wallet-peek" />
@@ -516,7 +546,7 @@ export function IdentityFlip() {
                     </span>
                   </motion.button>
                   <div className="cinematic-hero__card-track" aria-label="Kartu yang dikeluarkan dari dompet">
-                    <AnimatePresence initial={false} mode="sync" custom={{ direction: swipeDirection, compact: compactDeck, shuffle: false }}>
+                    <AnimatePresence initial={false} mode="wait" custom={{ compact: compactDeck }} onExitComplete={finishReturningCard}>
                       {activeTab >= 0 && (
                         <SwipeProfileCard
                           key={profileTabs[activeTab].label}
@@ -527,14 +557,14 @@ export function IdentityFlip() {
                           shuffleStage="rest"
                           fromWallet
                           onSwipe={swipeCard}
-                          onSelect={setActiveTab}
+                          onSelect={requestCard}
                         />
                       )}
                     </AnimatePresence>
                   </div>
                 </div>
                 <span className="cinematic-hero__sr-only" role="status" aria-live="polite">
-                  {activeTab < 0 ? 'Belum ada kartu. Klik dompet untuk mengambil kartu pertama.' : `Kartu ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
+                  {walletMotion === 'returning' ? 'Kartu sedang dimasukkan kembali ke dompet.' : walletMotion === 'reloaded' ? 'Mengambil kartu berikutnya.' : activeTab < 0 ? 'Belum ada kartu. Klik dompet untuk mengambil kartu pertama.' : `Kartu ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
                 </span>
               </div>
             </div>
