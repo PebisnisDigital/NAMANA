@@ -1,41 +1,59 @@
 # NAMANA.PRO
 
-NAMANA Studio builds personal websites from the approved ORIGINAL CSS 3D wallet/card renderer. This checkout is the NAMANA product, separate from PESONAFLIX and BADAI production.
+NAMANA is a multi-client cinematic website built from one GitHub repository and one Vercel project. The ORIGINAL wallet and 3D card experience is reused for each client's profile. This repository is separate from the existing PESONAFLIX production system.
 
-## Development
+## Routes
 
-Node 24 / npm 11 were validated. Use the existing isolated checkout; no extra worktree is needed.
+| Route | Purpose |
+| --- | --- |
+| `/` | NAMANA landing page |
+| `/vini` | ORIGINAL cinematic demo with Vini's profile and video |
+| `/studio` | Password-protected content editor for the admin team |
+| `/:client-slug` | Published client website |
+
+`/demo` redirects to `/vini`. Former Supabase-specific login/admin/dashboard routes redirect to `/studio` for existing bookmarks. Legacy files and SQL migrations remain in Git history but are not used by these routes.
+
+## Content and deployment
+
+1. Admin signs into `/studio` using a server-checked password. The password and GitHub access token are not sent to the browser.
+2. Admin edits identity, card text, colors, title size, images and external video URLs. Draft changes stay in the current browser until published.
+3. Publishing validates the document and commits `public/clients/{slug}.json` to the configured GitHub branch using the GitHub Contents API.
+4. Vercel builds and deploys that branch. The published client URL then reads the newly deployed JSON file. Publishing data does not immediately update a currently deployed page until Vercel finishes its build.
+
+`/vini` is backed by the ORIGINAL seed from `src/static/originalProfileTabs.ts` when no `public/clients/vini.json` has been published yet. New clients start with an independent blank profile. An unknown slug does not show Vini's profile.
+
+Images and videos are not uploaded to GitHub or Supabase through Studio. Admins paste an HTTPS media URL. Dropbox shared links normally need `raw=1` for direct display. Keep a poster image as fallback: external hosts may throttle streaming or block embedded playback. `public/videos/hero.mp4` remains the default Vini video.
+
+## Environment configuration
+
+Use `.env.example` as a checklist. Set these **server-only** variables on Vercel:
+
+- `NAMANA_GITHUB_REPO`: repository owner/name, e.g. `PebisnisDigital/NAMANA`.
+- `NAMANA_GITHUB_BRANCH`: exact target branch. Production typically uses `main`. Use a separate preview branch for staging; otherwise a publish from a preview deployment can update production.
+- `NAMANA_GITHUB_TOKEN`: fine-grained GitHub PAT with **Contents: Read and write** on this repo only.
+- `NAMANA_ADMIN_PASSWORD`: unique password of at least 12 characters for the Studio team.
+- `NAMANA_SESSION_SECRET`: separate, high-entropy random signing secret of at least 32 characters.
+
+Do not prefix these variables with `VITE_`. Never commit their values or paste them into the frontend. Restrict and monitor `/api/studio` with Vercel Firewall/rate limiting before opening Studio to public traffic. The cookie is signed, HttpOnly, Secure, SameSite=Strict and expires after 12 hours. For multiple editors and stronger auditing, move toward individual accounts rather than sharing one admin password.
+
+## Local development
+
+Use Node 24 and npm 11:
 
 ```sh
-npm ci --cache /workspace/.npm-cache
-npm run dev -- --host 0.0.0.0 --port 5173 --strictPort
+npm ci
+npm run dev
 ```
 
-Configure the existing NAMANA Supabase/Vercel services using [RELEASE_SETUP.md](RELEASE_SETUP.md). `.env.example` contains variable names only. Without backend configuration the landing/demo work and authenticated features display an explicit configuration message. Production never uses test fixtures or local-only draft persistence.
-
-Frontend and server reuse the existing `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`; no duplicate anon key or URL is required. Private server operations additionally require the existing NAMANA service-role key stored only in `SUPABASE_SERVICE_ROLE_KEY`. See [INTEGRATION_STATUS.md](INTEGRATION_STATUS.md) for access and Preview prerequisites.
+Without the environment variables, the landing page and public demo work. `/studio` explains which configuration is missing. Legacy Supabase services are not needed for the current routing.
 
 ## Validation
 
 ```sh
 npm run lint
 npm run typecheck
-npm test
-npm run test:e2e
+node --import tsx --test tests/*.test.ts
 npm run build
 ```
 
-Unit/integration tests execute the SQL migration with PostgreSQL roles and RLS in PGlite. Browser tests use Chromium at `/usr/bin/chromium`, real SQL/RLS, controlled Auth fixtures and a local multipart transport. They do not certify hosted Supabase Auth/Storage, email delivery, Safari/Edge or Vercel deployment. Test-only URLs and public keys are injected only in `playwright.config.ts`.
-
-## Application
-
-- `/`: NAMANA landing; `/demo`: original approved example.
-- `/login`, `/auth`: invited-user login and password setup/reset.
-- `/dashboard`: own website, status, URL and account settings.
-- `/studio`, `/studio/sites/:siteId`: visual editor, true desktop/mobile viewport, card CRUD/reorder, media, autosave/conflicts, undo/redo, private preview, publish and restore.
-- `/admin`: server-authorized client/site operations, invitation, provisioning, suspension, template/quota settings and audit summaries. Commerce remains disabled.
-- `/:slug`: last published snapshot; `/preview/:token`: revocable one-hour preview.
-
-All private table reads use RLS. Writes use owner/admin-checked PostgreSQL functions; publish makes an immutable snapshot and updates the public pointer atomically. Uploads remain private and unverified until the server checks actual content, size, dimensions and MP4 duration. Server keys are never imported by frontend modules. Media remains available for restoring old versions; there is no destructive delete UI.
-
-[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) records source identity and architecture. [QA_REPORT.md](QA_REPORT.md) records verified results, visual evidence and launch blockers. Nothing in this checkout authorizes production go-live.
+The older tests still exercise Supabase-era code paths retained in the repository. New tests cover the static client schema, Vini seed, video-link validation and invalid content. A passing build does not certify a live Vercel deployment or a working GitHub token. Test the preview branch and publish a sample before switching production traffic.

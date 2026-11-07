@@ -1,0 +1,146 @@
+.studio-root,
+.studio-gate {
+  min-height: 100dvh;
+  color: #f1e9dd;
+  background: #11110f;
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+.studio-root *,
+.studio-gate * { box-sizing: border-box; }
+.studio-root button,
+.studio-root a[href],
+.studio-root input,
+.studio-root textarea,
+.studio-root select,
+.studio-gate button,
+.studio-gate a[href] { cursor: pointer; }
+.studio-root button:disabled { cursor: not-allowed; opacity: .55; }
+.studio-root :focus-visible,
+.studio-gate :focus-visible { outline: 3px solid #f0bd6b; outline-offset: 3px; }
+
+.studio-header {
+  display: flex;
+  min-height: 70px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px clamp(18px, 3vw, 46px);
+  border-bottom: 1px solid #38332d;
+}
+.studio-wordmark {
+  color: #f2e7d5;
+  text-decoration: none;
+  font-family: "Bebas Neue", Impact, sans-serif;
+  letter-spacing: .07em;
+  font-size: 28px;
+}
+.studio-header > strong { font-size: 13px; font-weight: 500; color: #bdb1a0; }
+.studio-header__actions { display: flex; gap: 16px; align-items: center; }
+.studio-header__actions a { color: #e3c49d; text-underline-offset: 4px; font-size: 13px; }
+.studio-root button,
+.studio-gate button {
+  border: 1px solid #625846;
+  background: #28241e;
+  color: #fbf5e9;
+  border-radius: 5px;
+  padding: 11px 15px;
+  font: inherit;
+  font-size: 13px;
+  min-height: 44px;
+  transition: background .15s, border-color .15s;
+}
+.studio-root button:hover,
+.studio-gate button:hover { background: #393024; border-color: #c6a77c; }
+.studio-root button:active,
+.studio-gate button:active { transform: translateY(1px); }
+.studio-root input,
+.studio-root select,
+.studio-root textarea,
+.studio-gate input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 12px;
+  color: #f9f1e7;
+  background: #181713;
+  border: 1px solid #575047;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+}
+.studio-root textarea { min-height: 100px; resize: vertical; }
+.studio-root input::placeholder { color: #a79b8b; }
+.studio-root input[type="color"] {
+  width: 56px;
+  min-height: 44px;
+  padding: 3px;
+  cursor: pointer;
+}
+.studio-root input[type="range"] { min-height: 32px; padding: 0; accent-color: #d3ad76; }
+.studio-root input[type="checkbox"] { width: 20px; min-height: 20px; accent-color: #d3ad76; }
+.studio-root label,
+.studio-gate label { display: block; margin: 0 0 7px; color: #dfd2c2; font-size: 12px; }
+
+.studio-root .studio-workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 365px) minmax(0, 1fr);
+  height: calc(100dvh - 70px);
+  overflow: hidden;
+  padding: 0;
+  background: #11110f;
+}
+.studio-sidebar {
+  overflow-y: auto;
+  padding: 0 20px 30px;
+  border-right: 1px solid #3b342c;
+  background: #191713;
+}
+.studio-group { padding: 24px 0; border-bottom: 1px solid #3a332b; }
+.studio-group h1,
+.studio-group h2 { margin: 0 0 18px; color: #f1e9dd; font-weight: 600; font-size: 16px; letter-spacing: -.015em; }
+.studio-group h1 { font-size: 21px; }
+.studio-field { margin: 0 0 16px; }
+.studio-inline { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.studio-inline button { flex: 0 0 auto; }
+.studio-hint { font-size: 12px; color: #c8bbaa; line-height: 1.6; }
+.studio-color { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.studio-color label { display: flex; flex: 1; align-items: center; justify-content: space-between; margin: 0; }
+.studio-color span { width: 80px; color: #b9ad9d; font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.studio-check { display: flex !important; align-items: center; gap: 10px; margin: 14px 0 !important; }
+.studio-card-editor { padding-top: 20px; }
+.studio-root .studio-outline { width: 100%; margin-top: 12px; }
+.studio-main { display: flex; min-width: 0; flex-direction: column; overflow: hidden; }
+.studio-main__toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 24px; border-bottom: 1px solid #38332d; }
+.studio-main__toolbar strong { display: block; font-size: 17px; font-weight: 600; }
+.studio-main__toolbar span { display: block; margin-top: 4px; color: #afa495; font-size: 12px; }
+.studio-main__toolbar .studio-publish { color: #1f180e; background: #e2bf84; border-color: #e2bf84; font-weight: 700; }
+.studio-main__toolbar .studio-publish:hover { background: #f2d8a9; }
+.studio-alert { margin: 8px 24px; padding: 10px 14px; color: #f1dbb0; background: #292319; border-left: 3px solid #c5a170; font-size: 13px; line-height: 1.5; }
+.studio-alert--error { color: #ffd4d4; background: #402323; border-color: #e78a8a; }
+.studio-preview { flex: 1; min-height: 0; overflow: auto; position: relative; }
+.studio-preview > .cinematic-page { width: 100%; min-height: 100%; }
+.studio-gate { display: grid; place-items: center; padding: 24px; }
+.studio-gate__card { width: min(100%, 460px); padding: clamp(25px, 5vw, 44px); border: 1px solid #494037; background: #1e1b17; }
+.studio-gate__card h1 { margin: 22px 0; font-size: clamp(24px, 4vw, 32px); }
+.studio-gate__card p { color: #d4c5b0; line-height: 1.7; }
+.studio-gate__card form { display: grid; gap: 12px; margin: 26px 0; }
+.studio-gate__card a:not(.studio-wordmark) { display: inline-block; margin-top: 16px; color: #ebc996; }
+
+@media (max-width: 930px) {
+  .studio-root .studio-workspace { grid-template-columns: minmax(270px, 330px) minmax(0, 1fr); }
+  .studio-main__toolbar { padding: 14px 16px; }
+}
+@media (max-width: 720px) {
+  .studio-header { min-height: 65px; flex-wrap: wrap; }
+  .studio-header > strong { display: none; }
+  .studio-root .studio-workspace { display: flex; height: auto; flex-direction: column-reverse; overflow: visible; }
+  .studio-main { min-height: 490px; overflow: visible; }
+  .studio-preview { min-height: 450px; max-height: 65dvh; }
+  .studio-sidebar { overflow: visible; border-right: 0; border-top: 1px solid #3b342c; padding: 0 18px 30px; }
+  .studio-group { padding: 22px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio-root button,
+  .studio-gate button { transition: none; }
+}

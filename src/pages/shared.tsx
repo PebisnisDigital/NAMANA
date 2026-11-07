@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { useAuth } from "../platform/auth-state";
-import { configured, db } from "../platform/client";
+import { configured } from "../platform/client";
 
 export function Notice({
   children,
@@ -19,7 +19,6 @@ export function Notice({
   );
 }
 export function Shell({ children }: { children: ReactNode }) {
-  const { session, admin } = useAuth();
   return (
     <div className="app-shell">
       <header className="app-nav">
@@ -27,24 +26,8 @@ export function Shell({ children }: { children: ReactNode }) {
           NAMANA<span>.PRO</span>
         </a>
         <nav aria-label="Navigasi aplikasi">
-          <a href="/demo">Demo ORIGINAL</a>
-          {session ? (
-            <>
-              <a href="/dashboard">Website saya</a>
-              {admin && <a href="/admin">Superadmin</a>}
-              <button
-                onClick={() =>
-                  void db()
-                    .auth.signOut()
-                    .then(() => location.assign("/login"))
-                }
-              >
-                Keluar
-              </button>
-            </>
-          ) : (
-            <a href="/login">Login</a>
-          )}
+          <a href="/vini">Demo ORIGINAL</a>
+          <a href="/studio">Studio admin</a>
         </nav>
       </header>
       {children}
@@ -62,7 +45,7 @@ export function Protected({ children }: { children: ReactNode }) {
             Koneksi Supabase NAMANA belum dikonfigurasi. Login dan penyimpanan
             belum dapat digunakan.
           </Notice>
-          <a href="/demo">Lihat demo ORIGINAL</a>
+          <a href="/vini">Lihat demo ORIGINAL</a>
         </main>
       </Shell>
     );

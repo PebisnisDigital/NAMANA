@@ -64,6 +64,10 @@ export const cardSchema = z
     visible: z.boolean(),
     color,
     imageAssetId: asset,
+    icon: z.enum(["person", "pin", "home", "book", "image", "palette", "compass", "chat", "screens", "building", "flag", "mentor", "website", "pencil", "class", "certificate"]).optional(),
+    brandIcon: z.enum(["whatsapp", "telegram", "threads", "instagram", "youtube", "tiktok"]).optional(),
+    kind: z.enum(["name", "work", "social"]).optional(),
+    animatedIcon: z.number().int().positive().optional(),
     link: text(500).refine(
       safeLink,
       "Gunakan tautan https, email, atau telepon yang valid.",
@@ -100,7 +104,11 @@ export const contentSchema = z
       })
       .strict(),
     theme: z
-      .object({ accent: color, fontPreset: z.enum(["original", "system"]) })
+      .object({
+        accent: color,
+        fontPreset: z.enum(["original", "system"]),
+        headingScale: z.number().min(0.8).max(1.3).optional(),
+      })
       .strict(),
     cards: z
       .array(cardSchema)

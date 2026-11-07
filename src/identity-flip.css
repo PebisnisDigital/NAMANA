@@ -2018,3 +2018,17 @@
   .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: .18s; }
   .cinematic-hero__flight-sheet--out { animation-name: cinematic-paper-return-gentle; animation-duration: 1.25s; animation-timing-function: ease-in; }
 }
+
+.cinematic-page--custom .cinematic-hero__identity h1 {
+  font-size: clamp(calc(85px * var(--namana-heading-scale, 1)), calc(9.2vw * var(--namana-heading-scale, 1)), calc(142px * var(--namana-heading-scale, 1)));
+}
+@media (max-width: 850px) and (min-width: 601px) {
+  .cinematic-page--custom .cinematic-hero__identity h1 {
+    font-size: clamp(calc(62px * var(--namana-heading-scale, 1)), calc(8.3vw * var(--namana-heading-scale, 1)), calc(86px * var(--namana-heading-scale, 1)));
+  }
+}
+@media (max-width: 600px) {
+  .cinematic-page--custom .cinematic-hero__identity h1 {
+    font-size: clamp(calc(54px * var(--namana-heading-scale, 1)), calc(13.2vw * var(--namana-heading-scale, 1)), calc(83px * var(--namana-heading-scale, 1)));
+  }
+}
