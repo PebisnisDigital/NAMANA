@@ -1904,3 +1904,17 @@
   .cinematic-hero__archive--returning .cinematic-hero__archive-stage,
   .cinematic-hero__archive--drawing .cinematic-hero__archive-stage { animation: none; }
 }
+
+/* Preferred hybrid: the original tactile wallet draws color-backed file documents. */
+.cinematic-hero__card-viewport--file-wallet .cinematic-hero__document .cinematic-hero__card-swipe {
+  background: color-mix(in srgb, #faf6ec 88%, var(--document-accent) 12%);
+}
+.cinematic-hero__card-viewport--file-wallet .cinematic-hero__card-track { isolation: isolate; }
+@media (max-width: 600px) {
+  .cinematic-hero__card-viewport--file-wallet {
+    grid-template-rows: 158px 310px;
+    height: 478px;
+  }
+  .cinematic-hero__card-viewport--file-wallet .cinematic-hero__card-track { height: 310px; }
+  .cinematic-hero__card-viewport--file-wallet .cinematic-hero__document { height: 299px; }
+}
