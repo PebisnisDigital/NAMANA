@@ -1588,6 +1588,7 @@
 }
 
 @media (max-width: 600px) {
+  .cinematic-hero__content { padding-top: min(23svh, 190px); gap: 15px; }
   .cinematic-hero__card-viewport--wallet-draw {
     grid-template-columns: 1fr;
     grid-template-rows: 151px 276px;
