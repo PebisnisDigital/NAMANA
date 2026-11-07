@@ -56,8 +56,10 @@ export default async function handler(
       res.end(await template());
       return;
     }
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.VITE_SUPABASE_ANON_KEY;
+    const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const key =
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY;
     if (!url || !key || url !== process.env.VITE_SUPABASE_URL) {
       res
         .writeHead(503, {

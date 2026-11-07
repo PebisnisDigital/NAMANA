@@ -2,14 +2,14 @@
 
 Date: 7 November 2026. Scope: local feature branch `feat/namana-studio-mvp`.
 
-**Release decision: NOT READY FOR PRODUCTION.** The implementation is reviewable locally; hosted NAMANA integrations and Preview remain externally blocked. No production project was modified, no migration was applied remotely, no new Supabase/Vercel project was created, and no code was pushed to an unverified deployment integration.
+**Release decision: NOT READY FOR PRODUCTION.** Hosted NAMANA integrations and Preview remain externally blocked. No production project was modified, no migration was applied remotely and no new Supabase/Vercel project was created. Integration follow-up details are in INTEGRATION_STATUS.md.
 
 ## Evidence
 
 - Repository HEAD and both remote reference branches matched `9b6dc4fa1981121bd8733bb770a67c0e9de8df92` before changes. ORIGINAL uses the existing CSS 3D wallet, document flight/exchange, swipe, wheel and keyboard engine.
 - `npm run lint`: passes without warnings.
 - `npm run typecheck`: passes for frontend, Vite/dev API and server.
-- `npm test`: 17 passing tests, including nine SQL/RLS subtests. No failures or skips.
+- `npm test`: 18 passing tests, including nine SQL/RLS subtests and publishable-key-only server configuration. No failures or skips. The read-only inspection SQL is also executed in the disposable database.
 - Test TypeScript files also passed an independent TypeScript check.
 - `npm run build`: passes, 573 modules. Frontend bundle inspection found no server-key variable name, test key or test password.
 - Development API smoke request returns JSON 503 with an explicit backend-configuration message when keys are missing. It does not silently serve HTML or pretend the operation succeeded.

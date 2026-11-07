@@ -48,8 +48,10 @@ export default async function handler(
     return;
   }
   try {
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.VITE_SUPABASE_ANON_KEY;
+    const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const key =
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY;
     const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key || !service || url !== process.env.VITE_SUPABASE_URL) {
       res.writeHead(503).end(
@@ -62,10 +64,13 @@ export default async function handler(
     const body = requestSchema.parse(
       typeof req.body === "string" ? JSON.parse(req.body) : req.body,
     );
-    const authorization = req.headers.authorization?.match(/^Bearer \S+$/)?.[0] || "";
+    const authorization =
+      req.headers.authorization?.match(/^Bearer \S+$/)?.[0] || "";
     const userClient = createClient(url, key, {
       auth: { persistSession: false },
-      global: { headers: { Authorization: authorization || `Bearer ${key}` } },
+      global: {
+        headers: authorization ? { Authorization: authorization } : {},
+      },
     });
     const privileged = createClient(url, service, {
       auth: { persistSession: false, autoRefreshToken: false },
@@ -79,6 +84,17 @@ export default async function handler(
       .digest("hex");
     const rate = await privileged.rpc("namana_api_rate", { p_key: rateKey });
     if (rate.error) {
+      if (!rate.error.message.includes("rate_limit")) {
+        res
+          .writeHead(503)
+          .end(
+            JSON.stringify({
+              error:
+                "Backend NAMANA belum siap. Periksa migration dan konfigurasi server.",
+            }),
+          );
+        return;
+      }
       res.writeHead(429, { "Retry-After": "60" }).end(
         JSON.stringify({
           error: "Terlalu banyak permintaan. Coba lagi sebentar.",

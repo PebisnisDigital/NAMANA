@@ -1,30 +1,29 @@
 # Connect the existing NAMANA services
 
-No remote database migration, project creation, Vercel deployment, DNS change or production change has been performed. Local test Auth/Storage transports are fixtures, never a fallback enabled in the application.
+For the current integration prerequisites see [INTEGRATION_STATUS.md](INTEGRATION_STATUS.md). No remote database migration, project creation, DNS change or production deployment has been performed. Local test transports are fixtures, never an application fallback.
 
 ## Confirm the projects
 
-1. In Supabase Dashboard select the existing **NAMANA** project. Under Project Settings / General copy its project reference and confirm the organization. Under Data API / API Keys obtain its project URL and public anon key. Keep key values in settings, not chat or Git. Do not select PESONAFLIX or BADAI.
-2. In Vercel open the existing project owning **namanapro.vercel.app**. Under Settings / General identify its project/team, and under Git confirm `PebisnisDigital/NAMANA`. Do not import a new project or reconnect a PESONAFLIX project. The feature branch is `feat/namana-studio-mvp`.
+1. The owner confirmed the existing **NAMANA** Supabase project `xglpwdgygzhjsmiwkzgj`, URL `https://xglpwdgygzhjsmiwkzgj.supabase.co`. Keep key values in settings, not chat or Git. Do not select PESONAFLIX or BADAI.
+2. The owner confirmed the existing Vercel project **namana**, domain **namanapro.vercel.app**. Under Git confirm `PebisnisDigital/NAMANA`. Do not import a new project or reconnect a PESONAFLIX project. The feature branch is `feat/namana-studio-mvp`.
 3. The cloud instance currently has no Supabase/Vercel variables, no `.env` or `.vercel/project.json`, and no Vercel login. Git read works, but GitHub deployment API and the supplied live reference are blocked by outbound policy. Add required destinations in environment network settings: `api.github.com`, `api.vercel.com`, `namanapro.vercel.app`, the exact supplied reference hostname, and the verified `<project-ref>.supabase.co`. Add the actual generated Preview hostname after it is known. Never replace an unknown allowlist.
 
 ## Environment values
 
-In the existing Vercel project's Settings / Environment Variables, set values for **Preview** first:
+In the existing Vercel project's Settings / Environment Variables, reuse the two existing All Environments public variables. No duplicate key or URL is needed. Add only missing server requirements for **Preview**:
 
 | Variable | Source / scope |
 | --- | --- |
 | `VITE_SUPABASE_URL` | Verified NAMANA project URL, browser-safe |
-| `VITE_SUPABASE_ANON_KEY` | NAMANA public anon key; not the service key |
-| `SUPABASE_URL` | Exactly the same NAMANA project URL, server |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Existing NAMANA publishable key; not the service key |
 | `SUPABASE_SERVICE_ROLE_KEY` | NAMANA secret service role key, server only; never use a VITE_ prefix |
 | `APP_ORIGIN` | Exact HTTPS origin of the verified NAMANA Preview deployment |
 
-Use the same variable names in secure cloud environment settings to enable integration checks here. Values must be present in the actual running environment, not merely declared in an unpublished draft. No secret is needed in Git. `.env.example` lists names only. The server rejects mismatched frontend/backend URLs.
+Use the same variable names in secure cloud settings to enable integration checks here. Values must be present in the running environment, not merely declared in a draft. No secret is needed in Git. Legacy VITE_SUPABASE_ANON_KEY is an optional lower-priority fallback; do not create it for this project. SUPABASE_URL is optional because the server reuses VITE_SUPABASE_URL; an explicitly configured mismatch still rejects.
 
 ## Additive database setup
 
-After project identity and existing schema are inspected, apply `supabase/migrations/202611070001_namana.sql` with the project's migration tooling or SQL Editor. It creates only `namana_*` entities, a new `namana-media` private bucket, namespaced functions/policies, and a profile trigger on Auth users. It does not replace tables or drop existing data. Inspect for namespace/bucket conflicts before applying; do not blindly replay it. It has been executed against disposable PostgreSQL/PGlite locally, not against hosted NAMANA.
+Run `supabase/inspect-namana.sql` first in the verified project. It is read-only and includes ALL Storage object policies. Only if the migration is absent and there are no conflicts, apply `supabase/migrations/202611070001_namana.sql` using the project's migration workflow. It creates `namana_*` entities, a private `namana-media` bucket, functions/policies and an Auth profile trigger. It does not replace tables or drop data. Do not blindly replay it over existing entities. It has been executed against disposable PostgreSQL/PGlite locally, not against hosted NAMANA.
 
 Bootstrap the first superadmin only through trusted SQL Editor, after creating/inviting that verified account in Supabase Auth. Use the actual user UUID locally in the dashboard:
 
@@ -40,7 +39,7 @@ Never assign roles through editable user metadata. Existing Auth users are not a
 
 ## Auth and email
 
-In Supabase Authentication / URL Configuration, set Site URL to the verified Preview origin while testing and add `<preview-origin>/auth` to Redirect URLs. Add `https://namanapro.vercel.app/auth` only for the intended production setup. Disable public signups for invitation-only MVP. Configure the project's SMTP provider, sender identity, and production email rate limits. Verify invitation and reset email delivery with controlled test inboxes.
+In Supabase Authentication / URL Configuration, keep the existing production Site URL unchanged and add `<preview-origin>/auth` to Redirect URLs for testing. Confirm invitation-only registration and existing SMTP/sender configuration. Verify invitation/reset delivery with controlled test inboxes. Do not change production configuration to work around a Preview callback error.
 
 The invitation API issues a server-side invitation, creates a NAMANA profile, and records an audit event. Website provisioning is a separate transaction: if it fails, the invited account remains recoverable and can be provisioned later. No fake paid/order status is created. Resend access uses password reset to the same verified callback.
 

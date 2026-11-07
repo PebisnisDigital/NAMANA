@@ -8,6 +8,7 @@ export function devApi(mode: string): Plugin {
       for (const name of [
         "SUPABASE_URL",
         "VITE_SUPABASE_URL",
+        "VITE_SUPABASE_PUBLISHABLE_KEY",
         "VITE_SUPABASE_ANON_KEY",
         "SUPABASE_SERVICE_ROLE_KEY",
         "APP_ORIGIN",

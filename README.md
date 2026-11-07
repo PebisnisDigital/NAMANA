@@ -13,6 +13,8 @@ npm run dev -- --host 0.0.0.0 --port 5173 --strictPort
 
 Configure the existing NAMANA Supabase/Vercel services using [RELEASE_SETUP.md](RELEASE_SETUP.md). `.env.example` contains variable names only. Without backend configuration the landing/demo work and authenticated features display an explicit configuration message. Production never uses test fixtures or local-only draft persistence.
 
+Frontend and server reuse the existing `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`; no duplicate anon key or URL is required. Private server operations additionally require the existing NAMANA service-role key stored only in `SUPABASE_SERVICE_ROLE_KEY`. See [INTEGRATION_STATUS.md](INTEGRATION_STATUS.md) for access and Preview prerequisites.
+
 ## Validation
 
 ```sh

@@ -22,6 +22,12 @@ test("migration: real SQL roles, RLS, ownership, snapshots, concurrency, preview
       "utf8",
     ),
   );
+  await db.exec(
+    await readFile(
+      new URL("../supabase/inspect-namana.sql", import.meta.url),
+      "utf8",
+    ),
+  );
   const admin = "10000000-0000-4000-8000-000000000001",
     a = "20000000-0000-4000-8000-000000000001",
     b = "30000000-0000-4000-8000-000000000001";
