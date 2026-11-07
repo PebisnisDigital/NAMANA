@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import '../identity-flip.css';
-import { archiveBoxSrc, archiveFolderSrc } from '../archive-images';
 
 type Phase = 'welcome' | 'hero';
 type ShuffleStage = 'rest' | 'fan' | 'close' | 'tuck';
@@ -152,27 +151,27 @@ const CARD_SPRING = {
 
 function walletCardOrigin(compact: boolean) {
   return {
-    x: compact ? 0 : 325,
-    y: compact ? -235 : -55,
-    z: -120,
-    rotateX: -10,
-    rotateY: 18,
-    rotateZ: compact ? 8 : -9,
-    scale: compact ? .2 : .24,
-    opacity: .22,
+    x: compact ? 0 : -310,
+    y: compact ? -220 : 25,
+    z: -100,
+    rotateX: -12,
+    rotateY: -24,
+    rotateZ: compact ? -8 : 12,
+    scale: compact ? .28 : .36,
+    opacity: .6,
   };
 }
 
 const CARD_EXIT = {
   exit: ({ compact }: { compact: boolean }) => ({
-    x: compact ? [0, 0, 0] : [0, 160, 325],
-    y: compact ? [0, -105, -235] : [0, -12, -55],
-    z: [88, 10, -120],
-    rotateX: [-1, -5, -10],
-    rotateY: [0, 6, 18],
-    rotateZ: [0, compact ? 4 : -4, compact ? 8 : -9],
-    scale: [1, .72, compact ? .2 : .24],
-    opacity: [1, 1, .15],
+    x: compact ? [0, 0, 0] : [0, -150, -310],
+    y: compact ? [0, -95, -220] : [0, 10, 25],
+    z: [88, 5, -100],
+    rotateX: [-1, -4, -12],
+    rotateY: [0, -9, -24],
+    rotateZ: [0, compact ? -3 : 5, compact ? -8 : 12],
+    scale: [1, .78, compact ? .28 : .36],
+    opacity: [1, 1, .6],
     zIndex: 6,
     transition: { duration: .72, times: [0, .53, 1], ease: [.42, 0, .62, 1] as [number, number, number, number] },
   }),
@@ -321,10 +320,7 @@ export function IdentityFlip() {
   const [walletMotion, setWalletMotion] = useState<WalletMotion>('rest');
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
   const storedCards = totalCards - (activeTab >= 0 || walletMotion === 'returning' ? 1 : 0);
-  const visibleFiles = Array.from({ length: Math.min(6, totalCards) }, (_, position) => {
-    const index = ((activeTab >= 0 ? activeTab + 1 : 0) + position) % totalCards;
-    return { index, item: profileTabs[index], position };
-  });
+  const walletDepth = Math.min(50, 10 + storedCards * 2);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 600px)');
@@ -512,8 +508,8 @@ export function IdentityFlip() {
               <div className="cinematic-hero__panel" aria-label="Koleksi kartu profil 3D">
                 <div
                   ref={cardViewport}
-                  className="cinematic-hero__card-viewport cinematic-hero__card-viewport--wallet-draw cinematic-hero__card-viewport--archive"
-                  aria-label="Dokumen di panel kiri dan kotak arsip 3D di panel kanan. Arahkan kursor pada map untuk mengangkatnya; klik atau scroll untuk mengeluarkan dokumen, lalu geser untuk berpindah."
+                  className="cinematic-hero__card-viewport cinematic-hero__card-viewport--wallet-draw cinematic-hero__card-viewport--file-wallet"
+                  aria-label="Dompet 3D di kiri dan dokumen berwarna di kanan. Klik dompet untuk mengambil kartu pertama. Klik, geser, atau scroll untuk dokumen berikutnya."
                   role="group"
                   tabIndex={0}
                   onKeyDown={(event) => {
@@ -521,37 +517,38 @@ export function IdentityFlip() {
                     if (event.key === 'ArrowLeft') { event.preventDefault(); navigateCards(-1); }
                   }}
                 >
-                  <div className={`cinematic-hero__archive cinematic-hero__archive--${walletMotion}`} aria-busy={walletMotion !== 'rest'}>
-                    <div className="cinematic-hero__archive-stage">
-                      <img src={archiveBoxSrc} className="cinematic-hero__archive-shell" width="700" height="525" alt="" aria-hidden="true" draggable={false} />
-                      <div className="cinematic-hero__archive-folders">
-                        {visibleFiles.map(({ item, index, position }) => (
-                          <motion.button
-                            key={`${position}-${index}`}
-                            type="button"
-                            className={`cinematic-hero__archive-file cinematic-hero__archive-file--tone-${position}`}
-                            style={{ '--file-position': position, top: `${-22 + position * 16}px`, left: `${position * -3}px` } as CSSProperties}
-                            onClick={() => requestCard(index)}
-                            title={`Buka dokumen ${item.label}`}
-                            aria-label={`Ambil dokumen ${item.label} dari kotak arsip`}
-                            disabled={walletMotion !== 'rest' || index === activeTab}
-                            whileHover={{ y: -22, scale: 1.04, rotateZ: -1.5 }}
-                            whileFocus={{ y: -15, scale: 1.03 }}
-                            whileTap={{ y: -5, scale: .99 }}
-                            transition={{ type: 'spring', stiffness: 280, damping: 19 }}
-                          >
-                            <img src={archiveFolderSrc} alt="" aria-hidden="true" draggable={false} />
-                            <span>{item.label}</span>
-                          </motion.button>
-                        ))}
-                      </div>
-                      <img src={archiveBoxSrc} className="cinematic-hero__archive-front" width="700" height="525" alt="" aria-hidden="true" draggable={false} />
-                      <button type="button" className="cinematic-hero__archive-pull" onClick={drawFromWallet} disabled={walletMotion !== 'rest'} aria-label="Ambil dokumen berikutnya dari kotak arsip">AMBIL FILE <span aria-hidden="true">↗</span></button>
-                    </div>
-                    <p className="cinematic-hero__archive-hint">PILIH FILE · GULIR UNTUK JELAJAH</p>
-                    <span className="cinematic-hero__archive-count">{storedCards} FILE TERSIMPAN</span>
-                  </div>
-                  <div className="cinematic-hero__card-track" aria-label="Dokumen yang dikeluarkan dari kotak arsip">
+                  <motion.button
+                    type="button"
+                    className={`cinematic-hero__wallet cinematic-hero__wallet--${walletMotion}`}
+                    aria-label={`Keluarkan dokumen ${profileTabs[pendingCard.current ?? (activeTab + 1) % totalCards].label} dari dompet`}
+                    aria-busy={walletMotion !== 'rest'}
+                    title={walletMotion === 'rest' ? 'Klik untuk mengambil satu dokumen' : 'Dokumen sedang bergerak'}
+                    onClick={drawFromWallet}
+                    disabled={walletMotion !== 'rest'}
+                    style={{ '--wallet-depth': `${walletDepth}px` } as CSSProperties}
+                    animate={{ rotateZ: walletMotion === 'returning' ? .8 : walletMotion === 'drawing' ? -.6 : 0, scaleY: walletMotion === 'reloaded' ? 1.06 : walletMotion === 'drawing' ? .98 : 1 }}
+                    whileHover={{ y: -4, rotateZ: -1 }}
+                    whileTap={{ scale: .96 }}
+                    transition={{ type: 'spring', stiffness: 270, damping: 25 }}
+                  >
+                    <span className="cinematic-hero__wallet-volume" aria-hidden="true" />
+                    <span className="cinematic-hero__wallet-cards" aria-hidden="true">
+                      <span className="cinematic-hero__wallet-peek" />
+                      <span className="cinematic-hero__wallet-peek" />
+                      <span className="cinematic-hero__wallet-peek" />
+                    </span>
+                    <span className="cinematic-hero__wallet-pocket">
+                      <span className="cinematic-hero__wallet-brand">PESONA<span>FLIX</span></span>
+                      <svg className="cinematic-hero__wallet-glyph" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <rect x="6" y="12" width="36" height="29" rx="6" />
+                        <path d="M6 18V13a6 6 0 0 1 6-6h23" />
+                        <path d="M30 22h12v12H30a6 6 0 0 1 0-12Z" />
+                        <circle cx="34" cy="28" r="1.6" fill="currentColor" stroke="none" />
+                      </svg>
+                      <span className="cinematic-hero__wallet-action">AMBIL FILE <span aria-hidden="true">↗</span></span>
+                    </span>
+                  </motion.button>
+                  <div className="cinematic-hero__card-track" aria-label="Dokumen yang dikeluarkan dari dompet">
                     <AnimatePresence initial={false} mode="wait" custom={{ compact: compactDeck }} onExitComplete={finishReturningCard}>
                       {activeTab >= 0 && (
                         <SwipeProfileCard
@@ -570,7 +567,7 @@ export function IdentityFlip() {
                   </div>
                 </div>
                 <span className="cinematic-hero__sr-only" role="status" aria-live="polite">
-                  {walletMotion === 'returning' ? 'Dokumen sedang dikembalikan ke kotak arsip.' : walletMotion === 'reloaded' ? 'Mengambil dokumen berikutnya.' : activeTab < 0 ? 'Belum ada dokumen. Pilih file pada kotak arsip untuk membukanya.' : `Dokumen ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
+                  {walletMotion === 'returning' ? 'Dokumen sedang dikembalikan ke dompet.' : walletMotion === 'reloaded' ? 'Mengambil dokumen berikutnya.' : activeTab < 0 ? 'Belum ada dokumen. Klik dompet untuk mengambil dokumen pertama.' : `Dokumen ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
                 </span>
               </div>
             </div>
