@@ -93,6 +93,7 @@ const profileTabs: ProfileCard[] = [
 ];
 
 const totalCards = profileTabs.length;
+const documentAccents = ['#ef694e', '#e6b65a', '#a4a3f0', '#67b5d6', '#7dca95', '#e4a2c5'];
 
 function ProfileGlyph({ name }: { name: ProfileIcon }) {
   const symbols = {
@@ -208,7 +209,7 @@ function SwipeProfileCard({
       exit={reduceMotion ? { opacity: 0, transition: { duration: 0 } } : 'exit'}
       variants={CARD_EXIT}
       transition={reduceMotion ? { duration: 0 } : fromWallet ? { type: 'spring', stiffness: 125, damping: 23, mass: 1.05, delay: exchangeFront ? .16 : 0 } : CARD_SPRING}
-      style={{ zIndex: active ? 24 : 12 - offset, pointerEvents: active || offset < 3 ? 'auto' : 'none', '--document-accent': ['#ef694e', '#e6b65a', '#a4a3f0', '#67b5d6', '#7dca95', '#e4a2c5'][index % 6] } as CSSProperties}
+      style={{ zIndex: active ? 24 : 12 - offset, pointerEvents: active || offset < 3 ? 'auto' : 'none', '--document-accent': documentAccents[index % documentAccents.length] } as CSSProperties}
       aria-label={`Dokumen ${item.label}, ${index + 1} dari ${totalCards}`}
     >
       <motion.div
@@ -308,6 +309,30 @@ function SwipeProfileCard({
   );
 }
 
+function FlyingDocument({ item, index, direction, exchanging }: { item: ProfileCard; index: number; direction: 'in' | 'out'; exchanging: boolean }) {
+  return (
+    <div
+      className={`cinematic-hero__flight-sheet cinematic-hero__flight-sheet--${direction}${exchanging ? ' cinematic-hero__flight-sheet--exchange' : ''} cinematic-hero__document`}
+      style={{ '--document-accent': documentAccents[index % documentAccents.length] } as CSSProperties}
+      aria-hidden="true"
+    >
+      <div className="cinematic-hero__card-swipe">
+        <div className="cinematic-hero__card-body">
+          <div className="cinematic-hero__document-meta"><span>FILE / {String(index + 1).padStart(3, '0')}</span><span>ARSIP TEH VINI</span></div>
+          <h2 className="cinematic-hero__document-title">{item.label}</h2>
+          <div className="cinematic-hero__story">
+            <span className="cinematic-hero__story-icon">
+              <img className="cinematic-hero__flaticon" src={`/animated-icons/${item.animatedIcon}.webp`} width={64} height={64} alt="" />
+            </span>
+            <p className="cinematic-hero__story-value">{item.value}</p>
+            <p className="cinematic-hero__story-copy">{item.story}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function IdentityFlip() {
   const [phase, setPhase] = useState<Phase>('welcome');
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -317,7 +342,9 @@ export function IdentityFlip() {
   const wheelDelta = useRef(0);
   const lastWheelEventAt = useRef(0);
   const [activeTab, setActiveTab] = useState(-1);
+  const [outgoingTab, setOutgoingTab] = useState<number | null>(null);
   const [walletMotion, setWalletMotion] = useState<WalletMotion>('rest');
+  const reduceMotion = useReducedMotion();
   const [compactDeck, setCompactDeck] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches);
   const storedCards = totalCards - (activeTab >= 0 ? 1 : 0) - (walletMotion === 'exchanging' ? 1 : 0);
   const walletDepth = Math.min(50, 10 + storedCards * 2);
@@ -335,9 +362,12 @@ export function IdentityFlip() {
 
   useEffect(() => {
     if (walletMotion !== 'drawing' && walletMotion !== 'exchanging') return;
-    const timer = window.setTimeout(() => setWalletMotion('rest'), walletMotion === 'exchanging' ? 1190 : 1050);
+    const timer = window.setTimeout(() => {
+      setWalletMotion('rest');
+      setOutgoingTab(null);
+    }, reduceMotion ? 60 : walletMotion === 'exchanging' ? 1780 : 1550);
     return () => window.clearTimeout(timer);
-  }, [walletMotion, activeTab]);
+  }, [walletMotion, activeTab, reduceMotion]);
 
   useEffect(() => {
     if (phase !== 'hero') return;
@@ -376,12 +406,14 @@ export function IdentityFlip() {
   const requestCard = useCallback((nextIndex: number) => {
     if (walletMotion !== 'rest' || nextIndex === activeTab) return;
     if (activeTab < 0) {
+      setOutgoingTab(null);
       setActiveTab(nextIndex);
       setWalletMotion('drawing');
       return;
     }
 
-    // The next document is drawn in front while the old one retreats behind it.
+    // Keep both document faces visible throughout their overlapping flight paths.
+    setOutgoingTab(activeTab);
     setWalletMotion('exchanging');
     setActiveTab(nextIndex);
   }, [activeTab, walletMotion]);
@@ -535,7 +567,7 @@ export function IdentityFlip() {
                       <span className="cinematic-hero__wallet-action">AMBIL FILE <span aria-hidden="true">↗</span></span>
                     </span>
                   </motion.button>
-                  <div className="cinematic-hero__card-track" aria-label="Dokumen yang dikeluarkan dari dompet">
+                  <div className={`cinematic-hero__card-track${walletMotion !== 'rest' && !reduceMotion ? ' cinematic-hero__card-track--in-flight' : ''}`} aria-label="Dokumen yang dikeluarkan dari dompet" aria-hidden={walletMotion !== 'rest' && !reduceMotion}>
                     <AnimatePresence initial={false} mode="sync" custom={{ compact: compactDeck }}>
                       {activeTab >= 0 && (
                         <SwipeProfileCard
@@ -553,6 +585,14 @@ export function IdentityFlip() {
                       )}
                     </AnimatePresence>
                   </div>
+                  {walletMotion !== 'rest' && activeTab >= 0 && !reduceMotion && (
+                    <div className="cinematic-hero__flight-layer" aria-hidden="true">
+                      {outgoingTab !== null && (
+                        <FlyingDocument item={profileTabs[outgoingTab]} index={outgoingTab} direction="out" exchanging />
+                      )}
+                      <FlyingDocument item={profileTabs[activeTab]} index={activeTab} direction="in" exchanging={walletMotion === 'exchanging'} />
+                    </div>
+                  )}
                 </div>
                 <span className="cinematic-hero__sr-only" role="status" aria-live="polite">
                   {walletMotion === 'exchanging' ? 'Dua dokumen sedang bertukar: dokumen lama masuk ke belakang, dokumen baru keluar di depan.' : activeTab < 0 ? 'Belum ada dokumen. Klik dompet untuk mengambil dokumen pertama.' : `Dokumen ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
