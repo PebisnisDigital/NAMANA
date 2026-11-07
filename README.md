@@ -1,32 +1,59 @@
-# React + TypeScript + Vite
+# NAMANA.PRO
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+NAMANA is a multi-client cinematic website built from one GitHub repository and one Vercel project. The ORIGINAL wallet and 3D card experience is reused for each client's profile. This repository is separate from the existing PESONAFLIX production system.
 
-Currently, two official plugins are available:
+## Routes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Route | Purpose |
+| --- | --- |
+| `/` | NAMANA landing page |
+| `/vini` | ORIGINAL cinematic demo with Vini's profile and video |
+| `/studio` | Password-protected content editor for the admin team |
+| `/:client-slug` | Published client website |
 
-## React Compiler
+`/demo` redirects to `/vini`. Former Supabase-specific login/admin/dashboard routes redirect to `/studio` for existing bookmarks. Legacy files and SQL migrations remain in Git history but are not used by these routes.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Content and deployment
 
-## Expanding the Oxlint configuration
+1. Admin signs into `/studio` using a server-checked password. The password and GitHub access token are not sent to the browser.
+2. Admin edits identity, card text, colors, title size, images and external video URLs. Draft changes stay in the current browser until published.
+3. Publishing validates the document and commits `public/clients/{slug}.json` to the configured GitHub branch using the GitHub Contents API.
+4. Vercel builds and deploys that branch. The published client URL then reads the newly deployed JSON file. Publishing data does not immediately update a currently deployed page until Vercel finishes its build.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+`/vini` is backed by the ORIGINAL seed from `src/static/originalProfileTabs.ts` when no `public/clients/vini.json` has been published yet. New clients start with an independent blank profile. An unknown slug does not show Vini's profile.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+Images and videos are not uploaded to GitHub or Supabase through Studio. Admins paste an HTTPS media URL. Dropbox shared links normally need `raw=1` for direct display. Keep a poster image as fallback: external hosts may throttle streaming or block embedded playback. `public/videos/hero.mp4` remains the default Vini video.
+
+## Environment configuration
+
+Use `.env.example` as a checklist. Set these **server-only** variables on Vercel:
+
+- `NAMANA_GITHUB_REPO`: repository owner/name, e.g. `PebisnisDigital/NAMANA`.
+- `NAMANA_GITHUB_BRANCH`: exact target branch. Production typically uses `main`. Use a separate preview branch for staging; otherwise a publish from a preview deployment can update production.
+- `NAMANA_GITHUB_TOKEN`: fine-grained GitHub PAT with **Contents: Read and write** on this repo only.
+- `NAMANA_ADMIN_PASSWORD`: unique password of at least 12 characters for the Studio team.
+- `NAMANA_SESSION_SECRET`: separate, high-entropy random signing secret of at least 32 characters.
+
+Do not prefix these variables with `VITE_`. Never commit their values or paste them into the frontend. Restrict and monitor `/api/studio` with Vercel Firewall/rate limiting before opening Studio to public traffic. The cookie is signed, HttpOnly, Secure, SameSite=Strict and expires after 12 hours. For multiple editors and stronger auditing, move toward individual accounts rather than sharing one admin password.
+
+## Local development
+
+Use Node 24 and npm 11:
+
+```sh
+npm ci
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Without the environment variables, the landing page and public demo work. `/studio` explains which configuration is missing. Legacy Supabase services are not needed for the current routing.
+
+## Validation
+
+```sh
+npm run lint
+npm run typecheck
+node --import tsx --test tests/*.test.ts
+npm run build
+```
+
+The older tests still exercise Supabase-era code paths retained in the repository. New tests cover the static client schema, Vini seed, video-link validation and invalid content. A passing build does not certify a live Vercel deployment or a working GitHub token. Test the preview branch and publish a sample before switching production traffic.
