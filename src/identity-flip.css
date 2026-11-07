@@ -1909,6 +1909,82 @@
   background: color-mix(in srgb, #faf6ec 88%, var(--document-accent) 12%);
 }
 .cinematic-hero__card-viewport--file-wallet .cinematic-hero__card-track { isolation: isolate; }
+.cinematic-hero__card-viewport--file-wallet .cinematic-hero__card-track--in-flight {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* A full-size paper copy travels between the wallet opening and the reading panel.
+   Both copies stay in view during an exchange, with the returning sheet behind. */
+.cinematic-hero__flight-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 28;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  perspective: 1250px;
+  --flight-origin-x: -205px;
+  --flight-origin-y: 76px;
+  --flight-middle-x: -116px;
+  --flight-middle-y: 6px;
+}
+.cinematic-hero__flight-sheet {
+  position: absolute;
+  top: 12px;
+  left: 300px;
+  width: min(550px, calc(100% - 300px));
+  height: 341px;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.cinematic-hero__flight-sheet--in {
+  z-index: 18;
+  opacity: 0;
+  animation: cinematic-paper-draw 1.45s cubic-bezier(.22,.67,.22,1) both;
+}
+.cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: .23s; }
+.cinematic-hero__flight-sheet--out {
+  z-index: 3;
+  animation: cinematic-paper-return 1.49s cubic-bezier(.43,.1,.64,.83) both;
+}
+.cinematic-hero__flight-sheet .cinematic-hero__card-swipe { cursor: default; }
+.cinematic-hero__flight-sheet .cinematic-hero__card-body { padding: 22px 29px; }
+
+@keyframes cinematic-paper-draw {
+  0% {
+    transform: translate3d(var(--flight-origin-x), var(--flight-origin-y), -170px) rotateX(12deg) rotateY(-39deg) rotateZ(10deg) scale(.33);
+    opacity: .45;
+  }
+  12% { opacity: 1; }
+  54% {
+    transform: translate3d(var(--flight-middle-x), var(--flight-middle-y), 60px) rotateX(-3deg) rotateY(-18deg) rotateZ(4deg) scale(.72);
+    opacity: 1;
+  }
+  81% { transform: translate3d(-16px,-8px,120px) rotateX(1deg) rotateY(3deg) rotateZ(-1deg) scale(1.02); }
+  100% { transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); opacity: 1; }
+}
+
+@keyframes cinematic-paper-return {
+  0% { transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); opacity: 1; }
+  22% { transform: translate3d(-35px,5px,-85px) rotateX(2deg) rotateY(17deg) rotateZ(-3deg) scale(.9); opacity: 1; }
+  66% {
+    transform: translate3d(var(--flight-middle-x), var(--flight-middle-y), -190px) rotateX(8deg) rotateY(31deg) rotateZ(-6deg) scale(.58);
+    opacity: .85;
+  }
+  100% {
+    transform: translate3d(var(--flight-origin-x), var(--flight-origin-y), -280px) rotateX(15deg) rotateY(44deg) rotateZ(-10deg) scale(.25);
+    opacity: .18;
+  }
+}
+
+@media (max-width: 850px) and (min-width: 601px) {
+  .cinematic-hero__flight-layer { --flight-origin-x: -165px; --flight-origin-y: 63px; --flight-middle-x: -88px; --flight-middle-y: 4px; }
+  .cinematic-hero__flight-sheet { top: 13px; left: 222px; width: calc(100% - 222px); height: 310px; }
+  .cinematic-hero__flight-sheet .cinematic-hero__card-body { padding: 15px 18px; }
+}
 @media (max-width: 600px) {
   .cinematic-hero__card-viewport--file-wallet {
     grid-template-rows: 158px 310px;
@@ -1916,4 +1992,15 @@
   }
   .cinematic-hero__card-viewport--file-wallet .cinematic-hero__card-track { height: 310px; }
   .cinematic-hero__card-viewport--file-wallet .cinematic-hero__document { height: 299px; }
+  .cinematic-hero__flight-layer {
+    --flight-origin-x: 20px;
+    --flight-origin-y: -140px;
+    --flight-middle-x: 10px;
+    --flight-middle-y: -75px;
+  }
+  .cinematic-hero__flight-sheet { top: 170px; left: 0; width: 100%; height: 299px; transform-origin: top left; }
+  .cinematic-hero__flight-sheet .cinematic-hero__card-body { padding: 15px 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-hero__flight-sheet { animation: none !important; }
 }
