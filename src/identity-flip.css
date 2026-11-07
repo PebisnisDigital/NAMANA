@@ -1657,10 +1657,9 @@
 .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-pocket {
   transition: transform .3s cubic-bezier(.2, .75, .3, 1);
 }
-.cinematic-hero__wallet--returning .cinematic-hero__wallet-cards { transform: translateY(-5px); }
-.cinematic-hero__wallet--reloaded .cinematic-hero__wallet-cards { transform: translateY(-9px); }
+.cinematic-hero__wallet--exchanging .cinematic-hero__wallet-cards { transform: translateY(-7px) rotateX(7deg); }
 .cinematic-hero__wallet--drawing .cinematic-hero__wallet-cards { transform: translateY(3px); }
-.cinematic-hero__wallet--reloaded .cinematic-hero__wallet-pocket { transform: translateY(4px) scaleY(1.025); }
+.cinematic-hero__wallet--exchanging .cinematic-hero__wallet-pocket { transform: translateY(3px) scaleY(1.025); }
 .cinematic-hero__wallet:disabled { cursor: progress; }
 
 @media (max-width: 850px) and (min-width: 601px) {
