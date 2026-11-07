@@ -365,7 +365,7 @@ export function IdentityFlip() {
     const timer = window.setTimeout(() => {
       setWalletMotion('rest');
       setOutgoingTab(null);
-    }, reduceMotion ? 60 : walletMotion === 'exchanging' ? 1780 : 1550);
+    }, reduceMotion ? (walletMotion === 'exchanging' ? 1510 : 1360) : walletMotion === 'exchanging' ? 1780 : 1550);
     return () => window.clearTimeout(timer);
   }, [walletMotion, activeTab, reduceMotion]);
 
@@ -567,7 +567,7 @@ export function IdentityFlip() {
                       <span className="cinematic-hero__wallet-action">AMBIL FILE <span aria-hidden="true">↗</span></span>
                     </span>
                   </motion.button>
-                  <div className={`cinematic-hero__card-track${walletMotion !== 'rest' && !reduceMotion ? ' cinematic-hero__card-track--in-flight' : ''}`} aria-label="Dokumen yang dikeluarkan dari dompet" aria-hidden={walletMotion !== 'rest' && !reduceMotion}>
+                  <div className={`cinematic-hero__card-track${walletMotion !== 'rest' ? ' cinematic-hero__card-track--in-flight' : ''}`} aria-label="Dokumen yang dikeluarkan dari dompet" aria-hidden={walletMotion !== 'rest'}>
                     <AnimatePresence initial={false} mode="sync" custom={{ compact: compactDeck }}>
                       {activeTab >= 0 && (
                         <SwipeProfileCard
@@ -585,7 +585,7 @@ export function IdentityFlip() {
                       )}
                     </AnimatePresence>
                   </div>
-                  {walletMotion !== 'rest' && activeTab >= 0 && !reduceMotion && (
+                  {walletMotion !== 'rest' && activeTab >= 0 && (
                     <div className="cinematic-hero__flight-layer" aria-hidden="true">
                       {outgoingTab !== null && (
                         <FlyingDocument item={profileTabs[outgoingTab]} index={outgoingTab} direction="out" exchanging />
