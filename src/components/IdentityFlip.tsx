@@ -4,7 +4,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type PointerEvent as ReactPointerEvent,
 } from "react";
 import {
   AnimatePresence,
@@ -460,7 +459,8 @@ function FlyingDocument({
         if (
           direction === "in" &&
           event.target === event.currentTarget &&
-          event.animationName === "cinematic-paper-draw"
+          (event.animationName === "cinematic-paper-draw" ||
+            event.animationName === "cinematic-enter-card-fall")
         ) {
           onDrawComplete?.();
         }
@@ -494,81 +494,31 @@ function FlyingDocument({
   );
 }
 
-/** A drawn stage performer, not a replacement photo or a looping video. */
-function DancingStickman({
-  performerRef,
-  throwing,
+/** A physical Enter key is the single trigger for the card cascade. */
+function EnterKeycap({
+  pressed,
   inactive,
   firstActivation,
   nextCard,
-  onThrow,
+  onEnter,
 }: {
-  performerRef: React.RefObject<HTMLButtonElement | null>;
-  throwing: boolean;
+  pressed: boolean;
   inactive: boolean;
   firstActivation: boolean;
   nextCard: string;
-  onThrow: () => void;
+  onEnter: () => void;
 }) {
   return (
     <button
-      ref={performerRef}
       type="button"
-      className={`cinematic-hero__dancer${throwing ? " cinematic-hero__dancer--throwing" : ""}`}
-      aria-label={firstActivation ? `Aktifkan gerak dan lempar kartu ${nextCard}` : `Minta karakter melempar kartu ${nextCard}`}
-      title={firstActivation ? "Aktifkan animasi kartu" : "Klik karakter untuk melempar kartu"}
-      onClick={onThrow}
+      className={`cinematic-hero__enter-key${pressed ? " cinematic-hero__enter-key--pressed" : ""}`}
+      aria-label={firstActivation ? `Aktifkan animasi dan tampilkan kartu ${nextCard}` : `ENTER, tampilkan kartu ${nextCard}`}
+      title={firstActivation ? "Aktifkan animasi kartu" : "Tekan ENTER untuk menjatuhkan kartu berikutnya"}
+      onClick={onEnter}
       disabled={inactive}
     >
-      <span className="cinematic-hero__dancer-stage" aria-hidden="true">
-        <span className="cinematic-hero__dancer-light" />
-        <svg className="cinematic-hero__dancer-figure" viewBox="0 0 280 470" fill="none" role="presentation">
-          <ellipse cx="145" cy="445" rx="87" ry="12" fill="#b58b55" fillOpacity=".12" />
-          <path d="M63 443H231" stroke="#e3bc83" strokeOpacity=".3" strokeWidth="2" strokeLinecap="round" />
-          <g className="cinematic-hero__dancer-body" strokeLinecap="round" strokeLinejoin="round">
-            <g className="cinematic-hero__dancer-leg cinematic-hero__dancer-leg--back">
-              <path d="M142 258L179 341L188 414" stroke="#271f1e" strokeWidth="20" />
-              <path d="M142 258L179 341L188 414" stroke="#eee0c6" strokeWidth="10" />
-              <path d="M186 413L207 427L214 430" stroke="#e3bc83" strokeWidth="9" />
-            </g>
-            <g className="cinematic-hero__dancer-leg cinematic-hero__dancer-leg--front">
-              <path d="M142 258L105 341L99 417" stroke="#271f1e" strokeWidth="20" />
-              <path d="M142 258L105 341L99 417" stroke="#f6e8d0" strokeWidth="10" />
-              <path d="M99 417L75 429L68 429" stroke="#e3bc83" strokeWidth="9" />
-            </g>
-            <path d="M140 126C132 169 149 208 142 260" stroke="#231d1d" strokeWidth="25" />
-            <path d="M140 126C132 169 149 208 142 260" stroke="#f1e2ca" strokeWidth="12" />
-            <path d="M137 125L140 112" stroke="#f1e2ca" strokeWidth="10" />
-            <g className="cinematic-hero__dancer-arm cinematic-hero__dancer-arm--left">
-              <path d="M136 144L91 201L107 258" stroke="#231d1d" strokeWidth="20" />
-              <path d="M136 144L91 201L107 258" stroke="#f5e7d0" strokeWidth="10" />
-              <circle cx="107" cy="258" r="10" fill="#ebca95" />
-            </g>
-            <g className="cinematic-hero__dancer-arm cinematic-hero__dancer-arm--right">
-              <path d="M145 144L202 194L208 250" stroke="#231d1d" strokeWidth="20" />
-              <path d="M145 144L202 194L208 250" stroke="#f7e7cc" strokeWidth="10" />
-              <circle cx="208" cy="250" r="10" fill="#ebca95" />
-              <g className="cinematic-hero__dancer-hand-card">
-                <rect x="203" y="248" width="43" height="28" rx="4" fill="#c89150" stroke="#fff0d2" strokeWidth="2" transform="rotate(-24 203 248)" />
-                <path d="M214 257L237 247" stroke="#533526" strokeWidth="2" strokeLinecap="round" />
-              </g>
-            </g>
-            <g className="cinematic-hero__dancer-head">
-              <circle cx="141" cy="77" r="37" fill="#151313" stroke="#f6e9d0" strokeWidth="10" />
-              <path d="M115 54C129 41 151 39 167 52" stroke="#e8bb7b" strokeWidth="5" />
-              <g className="cinematic-hero__dancer-face">
-                <circle cx="129" cy="73" r="3.6" fill="#f5e7d0" />
-                <circle cx="154" cy="73" r="3.6" fill="#f5e7d0" />
-                <path d="M128 91Q141 102 155 90" stroke="#e8bb7b" strokeWidth="4" />
-              </g>
-            </g>
-          </g>
-        </svg>
-      </span>
-      <span className="cinematic-hero__dancer-instruction">
-        <strong>{firstActivation ? "AKTIFKAN GERAK" : "LEMPAR KARTU"}</strong>
-        <small>Gerakkan kursor untuk berdansa. Klik atau scroll untuk melempar.</small>
-      </span>
+      <img src="/images/enter-key-3d.webp" alt="" width={720} height={328} draggable={false} />
+      <span className="cinematic-hero__sr-only">{firstActivation ? "Aktifkan gerakan kartu" : "Keluarkan kartu"}</span>
     </button>
   );
 }
@@ -613,8 +563,6 @@ export function IdentityFlip({
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const heroStage = useRef<HTMLElement>(null);
-  const performerRef = useRef<HTMLButtonElement>(null);
-  const danceStep = useRef(0);
   const lastWheelAt = useRef(0);
   const wheelDelta = useRef(0);
   const lastWheelEventAt = useRef(0);
@@ -765,7 +713,7 @@ export function IdentityFlip({
       );
   };
 
-  const throwFromPerformer = useCallback(() => {
+  const triggerEnter = useCallback(() => {
     if (totalCards === 0 || walletMotion !== "rest") return;
     const nextIndex = (activeTab + 1) % totalCards;
     if (needsMotionOptIn) {
@@ -783,31 +731,6 @@ export function IdentityFlip({
     requestCard(nextIndex);
   }, [activeTab, needsMotionOptIn, requestCard, totalCards, walletMotion]);
 
-  const movePerformer = (event: ReactPointerEvent<HTMLElement>) => {
-    if (reduceMotion || walletMotion !== "rest" || event.pointerType === "touch") return;
-    const performer = performerRef.current;
-    if (!performer) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width) * 2 - 1));
-    const y = Math.max(-1, Math.min(1, ((event.clientY - bounds.top) / bounds.height) * 2 - 1));
-    danceStep.current += 0.19;
-    const beat = Math.sin(danceStep.current);
-    performer.style.setProperty("--dance-lean", `${x * 13 + beat * 7}deg`);
-    performer.style.setProperty("--dance-bounce", `${-6 - Math.abs(beat) * 13}px`);
-    performer.style.setProperty("--dance-head", `${-x * 12 + beat * 4}deg`);
-    performer.style.setProperty("--dance-left-arm", `${-15 + beat * 34 - y * 16}deg`);
-    performer.style.setProperty("--dance-right-arm", `${25 - beat * 42 + y * 12}deg`);
-    performer.style.setProperty("--dance-left-leg", `${-beat * 13}deg`);
-    performer.style.setProperty("--dance-right-leg", `${beat * 14}deg`);
-    performer.style.setProperty("--dance-eye-x", `${x * 3}px`);
-  };
-
-  const settlePerformer = () => {
-    const performer = performerRef.current;
-    if (!performer) return;
-    ["--dance-lean", "--dance-bounce", "--dance-head", "--dance-left-arm", "--dance-right-arm", "--dance-left-leg", "--dance-right-leg", "--dance-eye-x"].forEach((variable) => performer.style.removeProperty(variable));
-  };
-
   useEffect(() => {
     const stage = heroStage.current;
     if (phase !== "hero" || !stage || editMode) return;
@@ -819,8 +742,7 @@ export function IdentityFlip({
           : event.deltaX;
       if (Math.abs(primaryDelta) < 1 || walletMotion !== "rest" || totalCards === 0) return;
 
-      // Desktop scroll turns the performer into the card thrower. On touch-sized
-      // layouts the page still scrolls naturally; tapping the figure also works.
+      // Scrolling also browses the cards; touch devices keep native scrolling.
       if (!window.matchMedia("(max-width: 600px)").matches) event.preventDefault();
       const now = Date.now();
       if (now - lastWheelEventAt.current > 220) wheelDelta.current = 0;
@@ -842,13 +764,13 @@ export function IdentityFlip({
       const direction = wheelDelta.current > 0 ? 1 : -1;
       lastWheelAt.current = now;
       wheelDelta.current = 0;
-      if (activeTab < 0) throwFromPerformer();
+      if (activeTab < 0) triggerEnter();
       else navigateCards(direction);
     };
 
     stage.addEventListener("wheel", handleWheel, { passive: false });
     return () => stage.removeEventListener("wheel", handleWheel);
-  }, [phase, editMode, navigateCards, throwFromPerformer, activeTab, walletMotion, totalCards]);
+  }, [phase, editMode, navigateCards, triggerEnter, activeTab, walletMotion, totalCards]);
 
   return (
     <main
@@ -938,11 +860,9 @@ export function IdentityFlip({
       {phase === "hero" && (
         <section
           ref={heroStage}
-          className="cinematic-hero cinematic-hero--stickman"
+          className="cinematic-hero cinematic-hero--enter"
           data-edit="background"
           aria-label="Profil digital cinematic"
-          onPointerMove={movePerformer}
-          onPointerLeave={settlePerformer}
         >
           <div
             className="cinematic-hero__video"
@@ -1028,40 +948,40 @@ export function IdentityFlip({
           </header>
 
           <div className="cinematic-hero__content">
-            <div className="cinematic-hero__identity" data-edit="identity">
-              <span className="cinematic-kicker">Hello, kenalain saya</span>
-              <h1 ref={heroHeading} tabIndex={-1}>
-                <span className="cinematic-hero__stamp cinematic-hero__stamp--name">
-                  {content?.identity.displayName || "TEH VINI"}
-                </span>
-                <span className="cinematic-hero__stamp cinematic-hero__stamp--role">
-                  {content ? content.identity.profession : "AI ENTHUSIAST"}
-                </span>
-              </h1>
-              {content && (
-                <p className="namana-profile-bio">{content.identity.bio}</p>
-              )}
-              {content?.identity.portraitAssetId &&
-                assetUrls[content.identity.portraitAssetId] && (
-                  <img
-                    data-edit="identity"
-                    className="namana-portrait"
-                    src={assetUrls[content.identity.portraitAssetId]}
-                    alt={`Foto ${content.identity.displayName}`}
-                    width={140}
-                    height={140}
-                  />
+            <div className="cinematic-hero__headline-row">
+              <EnterKeycap
+                pressed={walletMotion !== "rest"}
+                inactive={walletMotion !== "rest" || totalCards === 0 || editMode}
+                firstActivation={needsMotionOptIn}
+                nextCard={profileTabs[(activeTab + 1) % totalCards]?.label || "pertama"}
+                onEnter={triggerEnter}
+              />
+              <div className="cinematic-hero__identity" data-edit="identity">
+                <span className="cinematic-kicker">Hello, kenalain saya</span>
+                <h1 ref={heroHeading} tabIndex={-1}>
+                  <span className="cinematic-hero__stamp cinematic-hero__stamp--name">
+                    {content?.identity.displayName || "TEH VINI"}
+                  </span>
+                  <span className="cinematic-hero__stamp cinematic-hero__stamp--role">
+                    {content ? content.identity.profession : "AI ENTHUSIAST"}
+                  </span>
+                </h1>
+                {content && (
+                  <p className="namana-profile-bio">{content.identity.bio}</p>
                 )}
+                {content?.identity.portraitAssetId &&
+                  assetUrls[content.identity.portraitAssetId] && (
+                    <img
+                      data-edit="identity"
+                      className="namana-portrait"
+                      src={assetUrls[content.identity.portraitAssetId]}
+                      alt={`Foto ${content.identity.displayName}`}
+                      width={140}
+                      height={140}
+                    />
+                  )}
+              </div>
             </div>
-
-            <DancingStickman
-              performerRef={performerRef}
-              throwing={walletMotion !== "rest"}
-              inactive={walletMotion !== "rest" || totalCards === 0 || editMode}
-              firstActivation={needsMotionOptIn}
-              nextCard={profileTabs[(activeTab + 1) % totalCards]?.label || "pertama"}
-              onThrow={throwFromPerformer}
-            />
 
             <div className="cinematic-hero__details">
               <div
@@ -1069,8 +989,8 @@ export function IdentityFlip({
                 aria-label="Koleksi kartu profil 3D"
               >
                 <div
-                  className="cinematic-hero__card-viewport cinematic-hero__card-viewport--wallet-draw cinematic-hero__card-viewport--file-wallet cinematic-hero__card-viewport--stickman"
-                  aria-label="Dokumen yang dilempar karakter. Klik karakter atau scroll untuk melempar dokumen berikutnya."
+                  className="cinematic-hero__card-viewport cinematic-hero__card-viewport--wallet-draw cinematic-hero__card-viewport--file-wallet cinematic-hero__card-viewport--enter"
+                  aria-label="Dokumen profil. Tekan tombol ENTER atau scroll untuk menampilkan kartu berikutnya."
                   role="group"
                   tabIndex={0}
                   onKeyDown={(event) => {
@@ -1091,7 +1011,7 @@ export function IdentityFlip({
                         : undefined
                     }
                     className={`cinematic-hero__card-track${walletMotion !== "rest" ? " cinematic-hero__card-track--in-flight" : ""}`}
-                    aria-label="Dokumen yang dilempar oleh karakter"
+                    aria-label="Kartu profil saat ini"
                     aria-hidden={walletMotion !== "rest"}
                     style={
                       activeTab >= 0 && profileTabs[activeTab]?.color
@@ -1129,6 +1049,13 @@ export function IdentityFlip({
                       className="cinematic-hero__flight-layer"
                       aria-hidden="true"
                     >
+                      {[0, 1, 2].map((trail) => (
+                        <div
+                          key={trail}
+                          className={`cinematic-hero__falling-trail cinematic-hero__falling-trail--${trail + 1}`}
+                          style={{ "--trail-accent": profileTabs[(activeTab + trail) % totalCards]?.color || documentAccents[(activeTab + trail) % documentAccents.length] } as CSSProperties}
+                        />
+                      ))}
                       {outgoingTab !== null && (
                         <FlyingDocument
                           item={profileTabs[outgoingTab]}
@@ -1153,9 +1080,9 @@ export function IdentityFlip({
                   aria-live="polite"
                 >
                   {walletMotion === "exchanging"
-                    ? "Karakter melempar dokumen baru dan mengambil kembali dokumen sebelumnya."
+                    ? "Kartu baru sedang berjatuhan dan menggantikan kartu sebelumnya."
                     : activeTab < 0
-                      ? "Belum ada dokumen. Klik karakter untuk melempar dokumen pertama."
+                      ? "Belum ada dokumen. Tekan ENTER untuk menampilkan kartu pertama."
                       : `Dokumen ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
                 </span>
               </div>
