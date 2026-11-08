@@ -2528,41 +2528,138 @@
   .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer { --drop-from-x: 12px; --drop-mid-x: 6px; }
 }
 @media (max-width: 600px) {
-  .cinematic-hero--enter { overflow: hidden; }
-  .cinematic-hero--enter .cinematic-hero__content { padding: min(29svh,240px) 20px 32px; gap: 14px; }
+  /* The phone composition has three reserved planes: portrait, title/key and
+     reading card. Its available height, not a desktop-sized fixed card,
+     decides the card's size and keeps the floor rebound visible. */
+  .cinematic-hero--enter {
+    --mobile-enter-card-height: clamp(185px, 35svh, 304px);
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+  .cinematic-hero--enter .cinematic-hero__nav {
+    flex: 0 0 auto;
+    padding: max(14px, env(safe-area-inset-top)) 16px 0;
+  }
+  .cinematic-hero--enter .cinematic-brand { font-size: clamp(21px, 6.5vw, 26px); }
+  .cinematic-hero--enter .cinematic-hero__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    justify-content: flex-end;
+    padding: 0 16px max(12px, env(safe-area-inset-bottom));
+    gap: clamp(8px, 1.4svh, 14px);
+  }
   .cinematic-hero--enter .cinematic-hero__video {
     width: 118%;
     right: -18%;
-    height: 46svh;
+    height: 55svh;
     opacity: 1;
-    object-position: 35% 19%;
+    object-position: 35% 17%;
   }
   .cinematic-hero--enter .cinematic-hero__shade {
-    background: linear-gradient(0deg, #080809 0%, rgba(8,8,9,.96) 13%, rgba(8,8,9,.48) 37%, rgba(0,0,0,.04) 78%, rgba(0,0,0,.43) 100%);
+    background: linear-gradient(0deg, #080809 0%, rgba(8,8,9,.98) 27%, rgba(8,8,9,.79) 40%, rgba(0,0,0,.04) 67%, rgba(0,0,0,.43) 100%);
   }
-  .cinematic-hero__headline-row { display: grid; grid-template-columns: clamp(70px,19vw,90px) minmax(0,1fr); gap: 9px; align-items: start; }
-  .cinematic-hero__enter-key { width: clamp(70px,19vw,90px); min-height: 70px; margin: 31px 0 0; }
+  .cinematic-hero--enter .cinematic-hero__headline-row {
+    display: grid;
+    grid-template-columns: clamp(58px, 19vw, 83px) minmax(0, 1fr);
+    align-items: start;
+    width: 100%;
+    gap: clamp(7px, 2vw, 12px);
+  }
+  .cinematic-hero--enter .cinematic-hero__enter-key {
+    flex-basis: auto;
+    width: clamp(58px, 19vw, 83px);
+    min-height: 58px;
+    margin: clamp(18px, 2.5svh, 27px) 0 0;
+  }
   .cinematic-hero--enter .cinematic-hero__identity h1,
   .cinematic-page--custom .cinematic-hero--enter .cinematic-hero__identity h1 {
-    font-size: clamp(36px,9vw,52px);
+    margin-top: 5px;
+    font-size: clamp(29px, 9.2vw, 46px);
+    line-height: .9;
   }
-  .cinematic-hero--enter .cinematic-hero__identity .cinematic-kicker { font-size: 11px; }
-  .cinematic-hero--enter .cinematic-hero__details { width: 100%; }
-  .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw { height: 314px; }
-  .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track { height: 310px; }
-  .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { top: 5px; height: 299px; }
+  .cinematic-hero--enter .cinematic-hero__identity .cinematic-kicker {
+    font-size: clamp(10px, 2.6vw, 12px);
+    line-height: 1.2;
+  }
+  .cinematic-hero--enter .cinematic-hero__details { flex: 0 0 auto; width: 100%; min-width: 0; }
+  .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw {
+    height: var(--mobile-enter-card-height);
+  }
+  .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track {
+    height: 100%;
+  }
+  .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card {
+    top: 3px;
+    height: calc(var(--mobile-enter-card-height) - 10px);
+  }
   .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer {
-    --drop-from-x: 5px;
-    --drop-mid-x: 2px;
-    --drop-from-y: -385px;
-    --drop-early-y: -350px;
-    --drop-mid-y: -200px;
-    --drop-bounce-high: -65px;
-    --drop-bounce-mid: -26px;
-    --drop-bounce-low: -9px;
+    --drop-from-x: 0px;
+    --drop-mid-x: 0px;
+    --drop-from-y: calc(-1 * (var(--mobile-enter-card-height) + clamp(55px, 9svh, 82px)));
+    --drop-early-y: calc(var(--drop-from-y) + 23px);
+    --drop-mid-y: calc(var(--drop-from-y) * .55);
+    --drop-bounce-high: clamp(-67px, -8svh, -46px);
+    --drop-bounce-mid: clamp(-28px, -3.4svh, -18px);
+    --drop-bounce-low: -7px;
   }
-  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet { top: 5px; left: 0; height: 299px; }
-  .cinematic-hero__card-viewport--enter .cinematic-hero__impact-shadow { top: 300px; height: 17px; filter: blur(7px); }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet {
+    top: 3px;
+    left: 0;
+    width: min(100%, 550px);
+    height: calc(var(--mobile-enter-card-height) - 10px);
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__impact-shadow {
+    top: calc(var(--mobile-enter-card-height) - 9px);
+    height: 15px;
+    filter: blur(6px);
+  }
+  /* Each card can contain a longer biography without extending the hero. */
+  .cinematic-hero__card-viewport--enter .cinematic-hero__card-swipe {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__card-body,
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document.cinematic-hero__card--active .cinematic-hero__card-body {
+    padding: clamp(11px, 1.6svh, 16px) clamp(13px, 4vw, 20px);
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document-title {
+    margin: 4px 0 clamp(8px, 1.2svh, 13px);
+    padding-bottom: 6px;
+    font-size: clamp(25px, 7.4vw, 33px);
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__story {
+    grid-template-columns: clamp(34px, 10vw, 43px) minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 5px;
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__story-icon {
+    width: clamp(34px, 10vw, 43px);
+    height: clamp(34px, 10vw, 43px);
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__flaticon {
+    width: 95%;
+    height: 95%;
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__story-value {
+    font-size: clamp(15px, 4.2vw, 20px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__story-copy {
+    margin-top: 4px;
+    font-size: clamp(11px, 2.9vw, 13px);
+    line-height: 1.37;
+  }
+  .cinematic-hero--enter .cinematic-hero__pause-video {
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    bottom: auto;
+    width: 40px;
+    height: 40px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .cinematic-hero__enter-key { transition: none; }
