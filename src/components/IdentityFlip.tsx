@@ -1309,9 +1309,20 @@ export function IdentityFlip({
               )}
             </div>
           </div>
+          {textMode && (
+            <details className="namana-text-credits">
+              <summary aria-label="Lihat kredit ikon animasi" title="Kredit ikon animasi">i</summary>
+              <p>
+                Ikon animasi oleh{" "}
+                <a href="https://www.flaticon.com/authors/magnific" target="_blank" rel="noopener noreferrer">Magnific</a>
+                {" "}melalui{" "}
+                <a href="https://www.flaticon.com/" target="_blank" rel="noopener noreferrer">Flaticon</a>.
+              </p>
+            </details>
+          )}
         </section>
       )}
-      {phase === "hero" && (
+      {phase === "hero" && !textMode && (
         <footer className="cinematic-credits">
           Ikon animasi oleh{" "}
           <a href="https://www.flaticon.com/authors/magnific" target="_blank" rel="noopener noreferrer">Magnific</a>

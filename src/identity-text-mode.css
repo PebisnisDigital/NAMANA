@@ -106,6 +106,50 @@
   min-width: 0;
 }
 
+/* Keep the free animated icons' attribution reachable without a footer row. */
+.namana-text-credits {
+  position: absolute;
+  right: clamp(10px, 2vw, 30px);
+  bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 8;
+  color: #dfd3c3;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+}
+
+.namana-text-credits summary {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  margin-left: auto;
+  border: 1px solid rgba(225, 183, 117, .36);
+  border-radius: 50%;
+  background: rgba(8, 14, 13, .7);
+  color: #dfd3c3;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  list-style: none;
+}
+.namana-text-credits summary::-webkit-details-marker { display: none; }
+.namana-text-credits summary:focus-visible { outline: 2px solid #f5c382; outline-offset: 3px; }
+.namana-text-credits p {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: max-content;
+  max-width: min(280px, calc(100vw - 30px));
+  margin: 0;
+  padding: 12px 15px;
+  border: 1px solid rgba(225, 183, 117, .32);
+  border-radius: 9px;
+  background: #0d1513;
+  line-height: 1.6;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+}
+.namana-text-credits a { color: #ffe0ac; text-underline-offset: 3px; }
+
 .namana-text-story {
   width: 100%;
   min-width: 0;
