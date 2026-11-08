@@ -1151,9 +1151,11 @@ export function IdentityFlip({
           />
           <div className="cinematic-hero__grain" aria-hidden="true" />
 
-          <header className="cinematic-hero__nav">
-            <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMANA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
-          </header>
+          {!textMode && (
+            <header className="cinematic-hero__nav">
+              <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMANA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+            </header>
+          )}
 
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__headline-row">
@@ -1168,7 +1170,10 @@ export function IdentityFlip({
                 textMode={textMode}
               />
               <div className="cinematic-hero__identity" data-edit="identity">
-                <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || "Hello, kenalain saya"} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+                {textMode && (
+                  <EditableText as="span" className="cinematic-brand namana-text-brand" value={content?.identity.brandLabel || "NAMANA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+                )}
+                <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || (textMode ? "Hallo, Kenalin Saya adalah..." : "Hello, kenalain saya")} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 <h1 ref={heroHeading} tabIndex={-1}>
                   <EditableText as="span" className="cinematic-hero__stamp cinematic-hero__stamp--name" value={content?.identity.displayName || "TEH VINI"} field="identity.displayName" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                   <EditableText as="span" className="cinematic-hero__stamp cinematic-hero__stamp--role" value={content ? content.identity.profession : "AI ENTHUSIAST"} field="identity.profession" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />

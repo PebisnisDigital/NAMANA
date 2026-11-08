@@ -47,6 +47,7 @@ export const viniSeed: SiteDocument = {
     identity: {
       displayName: "TEH VINI",
       profession: "AI ENTHUSIAST",
+      introLabel: "Hallo, Kenalin Saya adalah...",
       bio: "Di balik setiap karya, ada cerita yang ingin kubagikan.",
       portraitAssetId: null,
     },
