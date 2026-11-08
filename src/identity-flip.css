@@ -1691,7 +1691,7 @@
 .cinematic-hero__wallet--exchanging .cinematic-hero__wallet-cards { transform: translateY(-7px) rotateX(7deg); }
 .cinematic-hero__wallet--drawing .cinematic-hero__wallet-cards { transform: translateY(3px); }
 .cinematic-hero__wallet--exchanging .cinematic-hero__wallet-pocket { transform: translateY(3px) scaleY(1.025); }
-.cinematic-hero__wallet:disabled { cursor: progress; }
+.cinematic-hero__wallet:disabled { cursor: default; }
 
 @media (max-width: 850px) and (min-width: 601px) {
   .cinematic-hero__card-viewport--wallet-draw .cinematic-hero__wallet-volume {
@@ -1959,8 +1959,8 @@
   --flight-origin-y: 76px;
   --flight-middle-x: -116px;
   --flight-middle-y: 6px;
-  --flight-apex-y: -105px;
-  --flight-landing-x: 24px;
+  --flight-apex-y: -155px;
+  --flight-landing-x: 42px;
 }
 .cinematic-hero__flight-sheet {
   position: absolute;
@@ -1977,53 +1977,55 @@
 .cinematic-hero__flight-sheet--in {
   z-index: 18;
   opacity: 0;
-  animation: cinematic-paper-draw 1.38s cubic-bezier(.23,.59,.18,1) both;
+  animation: cinematic-paper-draw 1.8s cubic-bezier(.24,.63,.22,1) both;
 }
-.cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: .18s; }
+.cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: .16s; }
 .cinematic-hero__flight-sheet--out {
   z-index: 3;
-  animation: cinematic-paper-return 1.16s cubic-bezier(.42,.08,.66,.87) both;
+  animation: cinematic-paper-return 1.35s cubic-bezier(.42,.08,.66,.87) both;
 }
 .cinematic-hero__flight-sheet .cinematic-hero__card-swipe { cursor: default; }
 .cinematic-hero__flight-sheet .cinematic-hero__card-body { padding: 22px 29px; }
 
 @keyframes cinematic-paper-draw {
   0% {
-    transform: translate3d(var(--flight-origin-x), var(--flight-origin-y), -245px) rotateX(13deg) rotateY(-43deg) rotateZ(16deg) scale(.27);
-    opacity: .76;
+    transform: translate3d(var(--flight-origin-x), var(--flight-origin-y), -245px) rotateX(13deg) rotateY(-48deg) rotateZ(16deg) scale(.26);
+    opacity: .92;
   }
-  17% {
-    /* Lift the paper clear of the pocket before giving it forward momentum. */
-    transform: translate3d(calc(var(--flight-origin-x) + 42px), calc(var(--flight-origin-y) - 74px), -50px) rotateX(-7deg) rotateY(-31deg) rotateZ(-8deg) scale(.43);
+  12% {
+    transform: translate3d(calc(var(--flight-origin-x) + 55px), calc(var(--flight-origin-y) - 85px), 12px) rotateX(-11deg) rotateY(-34deg) rotateZ(-12deg) scale(.49);
     opacity: 1;
   }
-  44% {
-    /* A high, tilted arc reads as a tossed object rather than a loading fade. */
-    transform: translate3d(var(--flight-middle-x), var(--flight-apex-y), 165px) rotateX(-8deg) rotateY(-13deg) rotateZ(-13deg) scale(.76);
+  36% {
+    transform: translate3d(var(--flight-middle-x), var(--flight-apex-y), 195px) rotateX(-14deg) rotateY(-19deg) rotateZ(-19deg) scale(.8);
     opacity: 1;
   }
-  70% {
-    transform: translate3d(var(--flight-landing-x), -25px, 102px) rotateX(2deg) rotateY(7deg) rotateZ(5deg) scale(1.035);
+  56% {
+    transform: translate3d(calc(var(--flight-middle-x) + 74px), calc(var(--flight-apex-y) + 22px), 230px) rotateX(-8deg) rotateY(13deg) rotateZ(11deg) scale(.95);
     opacity: 1;
   }
-  88% {
-    transform: translate3d(-9px, 4px, 28px) rotateX(-1deg) rotateY(-2deg) rotateZ(-1.5deg) scale(.992);
+  79% {
+    transform: translate3d(var(--flight-landing-x), -27px, 85px) rotateX(5deg) rotateY(5deg) rotateZ(-4deg) scale(1.06);
+    opacity: 1;
+  }
+  92% {
+    transform: translate3d(-10px, 6px, 20px) rotateX(-1deg) rotateY(-2deg) rotateZ(1deg) scale(.99);
   }
   100% { transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); opacity: 1; }
 }
 
 @keyframes cinematic-paper-return {
   0% { transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); opacity: 1; }
-  24% {
-    transform: translate3d(17px, -25px, 98px) rotateX(-2deg) rotateY(9deg) rotateZ(8deg) scale(1.025);
+  22% {
+    transform: translate3d(33px, -45px, 120px) rotateX(-6deg) rotateY(16deg) rotateZ(9deg) scale(1.04);
     opacity: 1;
   }
-  54% {
-    transform: translate3d(var(--flight-middle-x), var(--flight-apex-y), 65px) rotateX(8deg) rotateY(27deg) rotateZ(12deg) scale(.69);
+  53% {
+    transform: translate3d(var(--flight-middle-x), var(--flight-apex-y), 195px) rotateX(8deg) rotateY(27deg) rotateZ(16deg) scale(.79);
     opacity: 1;
   }
-  82% {
-    transform: translate3d(calc(var(--flight-origin-x) + 40px), calc(var(--flight-origin-y) - 55px), -115px) rotateX(12deg) rotateY(36deg) rotateZ(-6deg) scale(.39);
+  84% {
+    transform: translate3d(calc(var(--flight-origin-x) + 44px), calc(var(--flight-origin-y) - 62px), -95px) rotateX(12deg) rotateY(36deg) rotateZ(-6deg) scale(.42);
     opacity: .94;
   }
   100% {
@@ -2033,7 +2035,7 @@
 }
 
 @media (max-width: 850px) and (min-width: 601px) {
-  .cinematic-hero__flight-layer { --flight-origin-x: -165px; --flight-origin-y: 63px; --flight-middle-x: -88px; --flight-middle-y: 4px; --flight-apex-y: -78px; --flight-landing-x: 12px; }
+  .cinematic-hero__flight-layer { --flight-origin-x: -165px; --flight-origin-y: 63px; --flight-middle-x: -88px; --flight-middle-y: 4px; --flight-apex-y: -112px; --flight-landing-x: 24px; }
   .cinematic-hero__flight-sheet { top: 13px; left: 222px; width: calc(100% - 222px); height: 310px; }
   .cinematic-hero__flight-sheet .cinematic-hero__card-body { padding: 15px 18px; }
 }
@@ -2049,11 +2051,22 @@
     --flight-origin-y: -140px;
     --flight-middle-x: 10px;
     --flight-middle-y: -75px;
-    --flight-apex-y: -185px;
-    --flight-landing-x: -7px;
+    --flight-apex-y: -200px;
+    --flight-landing-x: 8px;
   }
   .cinematic-hero__flight-sheet { top: 170px; left: 0; width: 100%; height: 299px; transform-origin: top left; }
   .cinematic-hero__flight-sheet .cinematic-hero__card-body { padding: 15px 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-page--motion-opt-in .cinematic-hero__flight-sheet--in {
+    animation: cinematic-paper-draw 1.8s cubic-bezier(.24,.63,.22,1) both !important;
+  }
+  .cinematic-page--motion-opt-in .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange {
+    animation-delay: .16s !important;
+  }
+  .cinematic-page--motion-opt-in .cinematic-hero__flight-sheet--out {
+    animation: cinematic-paper-return 1.35s cubic-bezier(.42,.08,.66,.87) both !important;
+  }
 }
 .cinematic-page--custom .cinematic-hero__identity h1 {
   font-size: clamp(calc(85px * var(--namana-heading-scale, 1)), calc(9.2vw * var(--namana-heading-scale, 1)), calc(142px * var(--namana-heading-scale, 1)));
