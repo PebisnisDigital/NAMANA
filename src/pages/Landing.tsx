@@ -1,55 +1,135 @@
+import { NaminaLogo } from "../components/NaminaLogo";
 import { Shell } from "./shared";
+import "../landing.css";
+
+const whatsappNumber = "62881022445869";
+const registrationMessage =
+  "Halo Teh Vini, saya ingin mendaftar jasa pembuatan website personal sinematik NAMINA.PRO. Mohon dibantu proses pendaftarannya.";
+const registrationUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(registrationMessage)}`;
+
+const storyParts = [
+  { title: "Siapa kamu", detail: "Nama, profil, dan cerita singkat yang ingin kamu kenalkan." },
+  { title: "Apa yang kamu kerjakan", detail: "Profesi, pengalaman, dan keahlian dalam kartu cerita." },
+  { title: "Apa yang kamu buat", detail: "Karya, pencapaian, dan tautan yang ingin ditunjukkan." },
+];
+
+const orderSteps = [
+  { title: "Chat Teh Vini", detail: "Ceritakan kebutuhan website-mu melalui WhatsApp." },
+  { title: "Kirim bahan", detail: "Siapkan nama, foto atau video, dan isi cerita yang ingin tampil." },
+  { title: "Lihat hasilnya", detail: "Tim NAMINA membuat website dan mengirimkan hasil untuk kamu tinjau." },
+  { title: "Siap dibagikan", detail: "Setelah disetujui, website dipublikasikan dan link-nya bisa kamu bagikan." },
+];
+
+function WhatsAppLink({ label, className = "" }: { label: string; className?: string }) {
+  return (
+    <a className={`namina-landing__whatsapp ${className}`} href={registrationUrl} target="_blank" rel="noopener noreferrer">
+      {label}
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="m5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </a>
+  );
+}
+
 export function Landing() {
   return (
-    <Shell>
-      <main className="landing">
-        <div className="landing-intro">
-          <p className="section-label">Website personal • Template ORIGINAL</p>
-          <h1>
-            Cerita Anda.
-            <br />
-            Dalam setiap kartu.
-          </h1>
-          <p>
-            Perkenalkan diri lewat dompet dan kartu 3D interaktif. Ubah cerita,
-            foto, video latar, dan tautan dari NAMINA Studio.
-          </p>
-          <div className="actions">
-            <a className="primary" href="/vini">
-              Buka demo interaktif
-            </a>
-            <a href="/studio">Studio tim admin</a>
+    <div className="namina-landing" id="beranda">
+      <a className="namina-landing__skip" href="#konten">Lewati navigasi</a>
+      <header className="namina-landing__header">
+        <a className="namina-landing__brand" href="#beranda" aria-label="NAMINA, kembali ke atas">
+          <NaminaLogo variant="compact" />
+          <span className="namina-landing__brand-dot">.PRO</span>
+        </a>
+        <nav aria-label="Navigasi NAMINA">
+          <a href="#contoh">Contoh</a>
+          <a href="#layanan">Layanan</a>
+          <a href="#cara-pesan">Cara pesan</a>
+        </nav>
+        <WhatsAppLink label="Pesan via WA" className="namina-landing__header-cta" />
+      </header>
+
+      <main id="konten">
+        <section className="namina-landing__hero" aria-labelledby="namina-hero-title">
+          <div className="namina-landing__hero-copy">
+            <p className="namina-landing__eyebrow"><span aria-hidden="true" /> JASA WEBSITE PERSONAL SINEMATIK</p>
+            <h1 id="namina-hero-title">KENALAN<br /><span>LEBIH</span><br />BERKESAN.</h1>
+            <p className="namina-landing__hero-lead">
+              Ceritamu pantas lebih dari sekadar biodata. Kami buatkan website personal dengan nuansa film dan kartu cerita interaktif.
+            </p>
+            <p className="namina-landing__hero-service">Kamu kirim bahan. Tim NAMINA yang mengerjakan.</p>
+            <div className="namina-landing__hero-actions">
+              <WhatsAppLink label="Daftar sekarang" />
+              <a className="namina-landing__text-link" href="#contoh">Lihat hasilnya <span aria-hidden="true">↓</span></a>
+            </div>
           </div>
-          <p className="fine">
-            Template ORIGINAL tersedia di /vini. Pengeditan ditangani tim admin.
-          </p>
-        </div>
-        <div className="landing-demo">
-          <iframe
-            src="/vini"
-            title="Demo interaktif template ORIGINAL"
-            loading="lazy"
-            width="900"
-            height="560"
-            scrolling="no"
-          />
-          <p>ORIGINAL • Klik dompet, lalu geser kartu untuk menjelajah.</p>
-        </div>
-        <section className="landing-note">
-          <h2>Isi baru, karakter tetap.</h2>
-          <p>
-            Studio menjaga bentuk dompet dan gerak kartu. Tim admin mengatur
-            identitas, isi kartu, warna, serta tautan media. Website klien
-            dipublikasikan dari satu repositori GitHub.
-          </p>
+
+          <div className="namina-landing__hero-stage" id="contoh">
+            <div className="namina-landing__stage-meta" aria-hidden="true">
+              <span>01 / NAMINA ORIGINAL</span>
+              <span>CONTOH WEBSITE</span>
+            </div>
+            <a className="namina-landing__showcase" href="/vini" aria-label="Buka contoh website interaktif Teh Vini">
+              <img src="/videos/vini-dropbox-poster.webp" width="1280" height="720" fetchPriority="high" alt="Cuplikan website Teh Vini dengan latar panggung sinematik" />
+              <span className="namina-landing__showcase-scrim" aria-hidden="true" />
+              <span className="namina-landing__showcase-content">
+                <span className="namina-landing__showcase-caption">CONTOH ASLI • KLIK UNTUK JELAJAHI</span>
+                <strong>TEH VINI</strong>
+                <span>AI ENTHUSIAST</span>
+              </span>
+              <span className="namina-landing__showcase-action">Buka demo <span aria-hidden="true">↗</span></span>
+            </a>
+            <p className="namina-landing__stage-note">Lihat animasi, video pembuka, dan kartu cerita langsung di contoh ini.</p>
+          </div>
+        </section>
+
+        <section className="namina-landing__story" id="layanan" aria-labelledby="namina-story-title">
+          <div className="namina-landing__section-heading">
+            <span className="namina-landing__index">TENTANG LAYANANNYA</span>
+            <h2 id="namina-story-title">SATU LINK.<br /><span>BANYAK SISI KAMU.</span></h2>
+            <p>Setiap orang punya kisah yang berbeda. NAMINA menatanya jadi halaman personal yang bisa dibuka, dijelajahi, dan dibagikan.</p>
+          </div>
+          <div className="namina-landing__story-list">
+            {storyParts.map((part, index) => (
+              <article className="namina-landing__story-row" key={part.title}>
+                <span className="namina-landing__story-number">0{index + 1}</span>
+                <div><h3>{part.title}</h3><p>{part.detail}</p></div>
+              </article>
+            ))}
+            <a className="namina-landing__story-demo" href="/vini">Jelajahi contoh Teh Vini <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section className="namina-landing__process" id="cara-pesan" aria-labelledby="namina-process-title">
+          <div className="namina-landing__process-intro">
+            <span className="namina-landing__index">CARA PESAN</span>
+            <h2 id="namina-process-title">TINGGAL KIRIM CERITA.<br /><span>BIAR KAMI BUATKAN.</span></h2>
+            <p>Tidak perlu mengutak-atik website. Kamu cukup siapkan data dan materi, lalu tinjau hasilnya.</p>
+            <WhatsAppLink label="Mulai pesan" />
+          </div>
+          <ol className="namina-landing__steps">
+            {orderSteps.map((step, index) => (
+              <li key={step.title}>
+                <span>0{index + 1}</span>
+                <div><h3>{step.title}</h3><p>{step.detail}</p></div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="namina-landing__closing" aria-labelledby="namina-closing-title">
+          <span className="namina-landing__closing-label">NAMINA.PRO / CERITA KAMU</span>
+          <h2 id="namina-closing-title">GILIRAN CERITAMU<br /><span>NAIK PANGGUNG.</span></h2>
+          <WhatsAppLink label="Daftar via WA" />
+          <p>Pendaftaran dan konsultasi langsung bersama Teh Vini.</p>
         </section>
       </main>
-      <footer className="app-footer">
-        <span>NAMINA</span>
-        <a href="/privacy">Privasi</a>
-        <a href="/terms">Ketentuan</a>
+
+      <footer className="namina-landing__footer">
+        <a href="#beranda" aria-label="NAMINA, kembali ke atas">NAMINA<span>.PRO</span></a>
+        <span>Website personal sinematik. Dibuatkan untuk ceritamu.</span>
+        <nav aria-label="Tautan informasi NAMINA"><a href="/privacy">Privasi</a><a href="/terms">Ketentuan</a></nav>
       </footer>
-    </Shell>
+    </div>
   );
 }
 export function Legal({ terms }: { terms: boolean }) {
