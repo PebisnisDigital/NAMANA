@@ -2358,7 +2358,7 @@
   z-index: 4;
   display: flex;
   align-items: center;
-  gap: clamp(14px, 2vw, 30px);
+  gap: clamp(10px, 1vw, 18px);
   width: min(100%, 1030px);
   min-width: 0;
 }
@@ -2368,10 +2368,11 @@
 }
 .cinematic-hero__enter-key {
   display: block;
-  flex: 0 0 clamp(118px, 11.4vw, 180px);
-  width: clamp(118px, 11.4vw, 180px);
-  min-height: 66px;
-  margin: 33px 0 0;
+  flex: 0 0 clamp(150px, 12vw, 200px);
+  align-self: flex-start;
+  width: clamp(150px, 12vw, 200px);
+  aspect-ratio: 1;
+  margin: 36px 0 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -2392,7 +2393,8 @@
 .cinematic-hero__enter-key img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   user-select: none;
   pointer-events: none;
 }
@@ -2488,7 +2490,7 @@
 
 @media (max-width: 1100px) and (min-width: 601px) {
   .cinematic-hero__headline-row { width: min(100%, 800px); gap: 14px; }
-  .cinematic-hero__enter-key { flex-basis: 120px; width: 120px; }
+  .cinematic-hero__enter-key { flex-basis: clamp(118px,13.4vw,160px); width: clamp(118px,13.4vw,160px); }
   .cinematic-hero--enter .cinematic-hero__details { width: min(100%, 59vw); }
   .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { width: 100%; }
 }
@@ -2505,8 +2507,8 @@
   .cinematic-hero--enter .cinematic-hero__shade {
     background: linear-gradient(0deg, #080809 0%, rgba(8,8,9,.96) 13%, rgba(8,8,9,.48) 37%, rgba(0,0,0,.04) 78%, rgba(0,0,0,.43) 100%);
   }
-  .cinematic-hero__headline-row { display: grid; grid-template-columns: 83px minmax(0,1fr); gap: 9px; align-items: center; }
-  .cinematic-hero__enter-key { width: 83px; min-height: 44px; margin: 20px 0 0; }
+  .cinematic-hero__headline-row { display: grid; grid-template-columns: clamp(70px,19vw,90px) minmax(0,1fr); gap: 9px; align-items: start; }
+  .cinematic-hero__enter-key { width: clamp(70px,19vw,90px); min-height: 70px; margin: 31px 0 0; }
   .cinematic-hero--enter .cinematic-hero__identity h1,
   .cinematic-page--custom .cinematic-hero--enter .cinematic-hero__identity h1 {
     font-size: clamp(36px,9vw,52px);
