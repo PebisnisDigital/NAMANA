@@ -518,15 +518,6 @@ td button {
   flex-direction: column;
   gap: 7px;
 }
-.namana-video-toggle {
-  min-height: 44px;
-  border: 1px solid #aa9b7e;
-  background: #171612;
-  color: #f8efde;
-  font-size: 12px;
-  position: relative;
-  z-index: 4;
-}
 .namana-profile-bio {
   font-size: 14px;
   line-height: 1.6;
@@ -587,9 +578,6 @@ td button {
 .cinematic-page .cinematic-hero__nav {
   flex-wrap: wrap;
   gap: 12px;
-}
-.cinematic-page .namana-video-toggle {
-  white-space: nowrap;
 }
 .cinematic-page--custom .cinematic-hero__identity {
   text-shadow: 0 2px 6px #000;
