@@ -516,9 +516,7 @@ export function IdentityFlip({
     : originalProfileTabs;
   const totalCards = profileTabs.length;
   const [phase, setPhase] = useState<Phase>(startOpen ? "hero" : "welcome");
-  const [videoPaused, setVideoPaused] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const [videoPaused, setVideoPaused] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
@@ -602,13 +600,7 @@ export function IdentityFlip({
     video.playsInline = true;
 
     const resumeVideo = () => {
-      if (
-        document.visibilityState !== "visible" ||
-        videoPaused ||
-        reduceMotion ||
-        content?.wallet.animationPreset === "minimal"
-      )
-        return;
+      if (document.visibilityState !== "visible" || videoPaused) return;
       void video.play().catch(() => {
         // Browser-level autoplay restrictions cannot be overridden by the page.
       });
@@ -626,9 +618,8 @@ export function IdentityFlip({
   }, [
     phase,
     videoPaused,
-    reduceMotion,
-    content?.wallet.animationPreset,
     videoFailed,
+    videoUrl,
   ]);
 
   const enterExperience = () => {
@@ -837,7 +828,7 @@ export function IdentityFlip({
                 ref={videoRef}
                 className="cinematic-hero__video"
                 data-edit="background"
-                autoPlay={!reduceMotion && !videoPaused}
+                autoPlay={!videoPaused}
                 muted
                 loop
                 playsInline
@@ -890,54 +881,6 @@ export function IdentityFlip({
           <header className="cinematic-hero__nav">
             <span className="cinematic-brand">
               NAMANA.PRO
-            </span>
-            <button
-              type="button"
-              className="namana-video-toggle"
-              disabled={
-                videoFailed ||
-                (!!content &&
-                  !assetUrls[
-                    (compactDeck && content.background.mobileVideoAssetId) ||
-                      content.background.desktopVideoAssetId ||
-                      ""
-                  ])
-              }
-              onClick={() => {
-                if (videoRef.current) {
-                  if (!videoPaused) videoRef.current.pause();
-                  else
-                    void videoRef.current
-                      .play()
-                      .catch(() => setVideoFailed(true));
-                }
-                setVideoPaused(!videoPaused);
-              }}
-              aria-pressed={videoPaused}
-            >
-              {videoFailed
-                ? "Video tidak tersedia"
-                : videoPaused
-                  ? "Putar video"
-                  : "Jeda video"}
-            </button>
-            <span className="cinematic-hero__icon-credit">
-              Ikon animasi{" "}
-              <a
-                href="https://www.flaticon.com/authors/magnific"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Magnific
-              </a>{" "}
-              via{" "}
-              <a
-                href="https://www.flaticon.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Flaticon
-              </a>
             </span>
           </header>
 
@@ -1140,7 +1083,34 @@ export function IdentityFlip({
               </div>
             </div>
           </div>
+          {videoUrl && !videoFailed && (
+            <button
+              type="button"
+              className="cinematic-hero__pause-video"
+              aria-label={videoPaused ? "Lanjutkan video latar" : "Jeda video latar"}
+              aria-pressed={videoPaused}
+              onClick={() => {
+                if (!videoRef.current) return;
+                if (videoPaused) {
+                  void videoRef.current.play().then(() => setVideoPaused(false)).catch(() => {});
+                } else {
+                  videoRef.current.pause();
+                  setVideoPaused(true);
+                }
+              }}
+            >
+              <span aria-hidden="true">{videoPaused ? "▶" : "Ⅱ"}</span>
+            </button>
+          )}
         </section>
+      )}
+      {phase === "hero" && (
+        <footer className="cinematic-credits">
+          Ikon animasi oleh{" "}
+          <a href="https://www.flaticon.com/authors/magnific" target="_blank" rel="noopener noreferrer">Magnific</a>
+          {" "}melalui{" "}
+          <a href="https://www.flaticon.com/" target="_blank" rel="noopener noreferrer">Flaticon</a>.
+        </footer>
       )}
     </main>
   );
