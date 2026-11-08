@@ -676,10 +676,8 @@ function TextProfileStory({
                       {item.icon && <span className="namana-text-story__static-glyph"><ProfileGlyph name={item.icon} /></span>}
                     </span>
                     <div className="namana-text-story__copy">
-                      {item.id ? (
+                      {editMode && item.id && (
                         <EditableText as="span" className="namana-text-story__label" value={item.label} field={`card:${item.id}:title`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
-                      ) : (
-                        <span className="namana-text-story__label">{item.label}</span>
                       )}
                       {item.id ? (
                         <EditableText as="h2" className="namana-text-story__value" value={item.value} field={`card:${item.id}:subtitle`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />

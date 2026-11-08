@@ -5,6 +5,7 @@
   --namana-text-cream: #fff0d9;
   --namana-text-gold: #e1b775;
   --namana-text-muted: #dfd3c3;
+  --namana-text-red: #e52b35;
   --namana-text-display: 'Space Grotesk', 'Montserrat', Arial, sans-serif;
 }
 
@@ -83,9 +84,9 @@
 
 .cinematic-page--text-mode .cinematic-hero__identity h1 .cinematic-hero__stamp--role {
   margin-top: 10px;
-  color: var(--namana-text-gold);
+  color: var(--namana-text-red);
   font-family: var(--namana-text-display);
-  font-size: .27em;
+  font-size: .35em;
   font-weight: 700;
   line-height: 1.28;
   letter-spacing: .11em;
@@ -218,9 +219,16 @@
 
 .namana-text-story__entry:nth-child(2) .namana-text-story__icon { animation-delay: .12s; }
 .namana-text-story__entry:nth-child(3) .namana-text-story__icon { animation-delay: .24s; }
-.namana-text-story__icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.namana-text-story__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Recolor animated WebP icons while preserving their transparency and motion. */
+  filter: brightness(0) saturate(100%) invert(28%) sepia(92%) saturate(2846%) hue-rotate(336deg) brightness(96%) contrast(99%);
+}
 .namana-text-story__static-glyph { display: none; }
-.namana-text-story__icon svg { width: 36px; height: 36px; }
+.namana-text-story__icon svg { width: 36px; height: 36px; color: var(--namana-text-red); }
 .namana-text-story__entry:hover .namana-text-story__icon { transform: translateY(-4px) rotate(-7deg); transition: transform .28s ease; }
 
 .namana-text-story__copy { min-width: 0; }
@@ -340,7 +348,7 @@
 
   .cinematic-page--text-mode .cinematic-hero__identity h1 .cinematic-hero__stamp--role {
     margin-top: 8px;
-    font-size: .34em;
+    font-size: .42em;
     letter-spacing: .075em;
   }
 
