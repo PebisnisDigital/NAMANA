@@ -27,10 +27,10 @@ export function NaminaLogo({ variant }: NaminaLogoProps) {
   );
 }
 
-export function NaminaLiquidLoader({ startedAt, onSoundRequest }: { startedAt?: number; onSoundRequest?: () => void }) {
+export function NaminaLiquidLoader({ startedAt }: { startedAt?: number }) {
   const elapsedMs = startedAt ? Math.min(Math.max(Date.now() - startedAt, 0), 5000) : 0;
 
-  const mark = (
+  return (
     <span className={`namina-liquid-loader ${startedAt ? "namina-liquid-loader--active" : "namina-liquid-loader--waiting"}`} aria-hidden="true">
       <span className="namina-liquid-loader__base">
         <NaminaLogo variant="hero" />
@@ -40,28 +40,15 @@ export function NaminaLiquidLoader({ startedAt, onSoundRequest }: { startedAt?: 
       </span>
     </span>
   );
-
-  return onSoundRequest ? (
-    <button
-      className="namina-liquid-loader__sound-trigger"
-      type="button"
-      onClick={onSoundRequest}
-      aria-label="Putar intro NAMINA dengan suara"
-      title="Ketuk logo untuk mengaktifkan suara"
-    >
-      {mark}
-    </button>
-  ) : mark;
 }
 
-export function NaminaIntroStage({ startedAt, onSoundRequest }: { startedAt?: number; onSoundRequest?: () => void }) {
+export function NaminaIntroStage({ startedAt }: { startedAt?: number }) {
   return (
     <div className="namina-intro-stage">
       <h1 className="namina-intro-stage__heading">
-        <NaminaLiquidLoader startedAt={startedAt} onSoundRequest={onSoundRequest} />
+        <NaminaLiquidLoader startedAt={startedAt} />
         <span className="cinematic-welcome__sr-only">NAMINA</span>
       </h1>
-      {!startedAt && onSoundRequest && <p className="namina-intro-stage__invite">KETUK LOGO UNTUK MULAI</p>}
     </div>
   );
 }

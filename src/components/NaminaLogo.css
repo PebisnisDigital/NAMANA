@@ -68,45 +68,6 @@
 
 .namina-intro-stage__heading { margin: 0; line-height: 1; }
 
-.namina-intro-stage__invite {
-  position: absolute;
-  top: calc(100% + 19px);
-  left: 50%;
-  margin: 0;
-  width: max-content;
-  max-width: 90vw;
-  transform: translateX(-50%);
-  color: #f7f2ea;
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(11px, 2.8vw, 13px);
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-align: center;
-}
-
-.namina-liquid-loader__sound-trigger {
-  appearance: none;
-  display: block;
-  max-width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
-button.namina-liquid-loader__sound-trigger:hover:not(:disabled),
-button.namina-liquid-loader__sound-trigger:active:not(:disabled) {
-  background: transparent;
-  transform: none;
-}
-
-button.namina-liquid-loader__sound-trigger:focus-visible {
-  border-radius: 12px;
-  outline: 3px solid #f7f2ea;
-  outline-offset: 14px;
-}
-
 .namina-liquid-loader::after {
   content: "";
   position: absolute;

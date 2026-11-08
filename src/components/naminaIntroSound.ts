@@ -62,7 +62,14 @@ export function createNaminaIntroSound() {
     try {
       const audio = ensureContext();
       if (!audio) return false;
-      if (audio.state !== "running") await audio.resume();
+      if (audio.state !== "running") {
+        // An autoplay-restricted browser can leave resume() pending until a much
+        // later click. Do not surprise the visitor with a delayed intro sound.
+        await Promise.race([
+          audio.resume().catch(() => {}),
+          new Promise<void>((resolve) => window.setTimeout(resolve, 350)),
+        ]);
+      }
       if (disposed || (played && !restart) || audio.state !== "running") return played;
       if (restart && audio.currentTime - lastStartedAt < 0.7) return true;
       played = true;

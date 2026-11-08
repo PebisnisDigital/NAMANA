@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { slugSchema } from "../domain/content";
 import { IdentityFlip } from "../components/IdentityFlip";
 import { NaminaIntroStage } from "../components/NaminaLogo";
@@ -14,25 +14,22 @@ type SiteState =
 
 export function StaticSite({ slug }: { slug: string }) {
   const [state, setState] = useState<SiteState>({ status: "loading" });
-  const [introStart, setIntroStart] = useState<number | null>(null);
-  const introSound = useRef<ReturnType<typeof createNaminaIntroSound> | null>(null);
+  const [introStart, setIntroStart] = useState<number | null>(() => slug === "vini" ? Date.now() : null);
+
+  useEffect(() => {
+    if (slug === "vini" && introStart === null) setIntroStart(Date.now());
+    else if (slug !== "vini" && introStart !== null) setIntroStart(null);
+  }, [slug, introStart]);
 
   useEffect(() => {
     if (slug !== "vini") return;
     const sound = createNaminaIntroSound();
-    introSound.current = sound;
+    // Attempt the sound automatically; browsers may block it without a user gesture.
+    void sound.play();
     return () => {
-      introSound.current = null;
       sound.dispose();
     };
   }, [slug]);
-
-  const activateIntroSound = useCallback(() => {
-    const sound = introSound.current;
-    if (!sound) return;
-    setIntroStart(Date.now());
-    void sound.play(true);
-  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -68,15 +65,15 @@ export function StaticSite({ slug }: { slug: string }) {
   }, [state]);
 
   if (state.status === "ready") {
-    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} introStartedAt={slug === "vini" ? introStart ?? undefined : undefined} onIntroSound={slug === "vini" ? activateIntroSound : undefined} />;
+    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} introStartedAt={slug === "vini" ? introStart ?? undefined : undefined} />;
   }
 
   if (slug === "vini" && state.status === "loading") {
     return (
       <main className="namina-initial-loader" aria-label="Menyiapkan profil NAMINA">
-        <NaminaIntroStage startedAt={introStart ?? undefined} onSoundRequest={activateIntroSound} />
+        <NaminaIntroStage startedAt={introStart ?? undefined} />
         <span className="cinematic-welcome__sr-only" role="status">
-          {introStart ? "Menyiapkan video profil." : "Ketuk logo NAMINA untuk memulai intro bersuara."}
+          Menyiapkan video profil.
         </span>
       </main>
     );

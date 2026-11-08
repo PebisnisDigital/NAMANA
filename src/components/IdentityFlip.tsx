@@ -720,7 +720,6 @@ export function IdentityFlip({
   onEditText,
   textMode = false,
   introStartedAt,
-  onIntroSound,
 }: {
   content?: SiteContent;
   assetUrls?: AssetUrls;
@@ -731,7 +730,6 @@ export function IdentityFlip({
   onEditText?: (field: EditableField, value: string) => void;
   textMode?: boolean;
   introStartedAt?: number;
-  onIntroSound?: () => void;
 }) {
   const profileTabs: ProfileCard[] = content
     ? content.cards
@@ -1067,9 +1065,9 @@ export function IdentityFlip({
         >
           {textMode ? (
             <div className="cinematic-welcome__solo">
-              <NaminaIntroStage startedAt={introStartedAt} onSoundRequest={onIntroSound} />
+              <NaminaIntroStage startedAt={introStartedAt} />
               <span className="cinematic-welcome__sr-only" role="status">
-                {introStartedAt ? "Menyiapkan video profil." : "Ketuk logo NAMINA untuk memulai intro bersuara."}
+                Menyiapkan video profil.
               </span>
             </div>
           ) : (
