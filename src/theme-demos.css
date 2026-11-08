@@ -384,6 +384,7 @@
     min-height:0;
   }
   .theme-demo__visual { order:0; width:100%; min-height:0; height:clamp(220px,38dvh,420px); flex:0 0 auto; margin:0 auto; transform:none; }
+  .theme-demo--2 .theme-demo__visual { min-height:0; }
   .theme-demo__video-frame { inset:0 4px !important; transform:none !important; box-shadow:none !important; }
   .theme-demo__visual-caption { right:14px; bottom:9px; font-size:9px; }
   .theme-demo__identity { order:1; align-self:stretch; padding:0 5px; }
