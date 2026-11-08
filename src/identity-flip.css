@@ -2556,9 +2556,9 @@
   .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer {
     --drop-from-x: 5px;
     --drop-mid-x: 2px;
-    --drop-from-y: -420px;
-    --drop-early-y: -385px;
-    --drop-mid-y: -235px;
+    --drop-from-y: -385px;
+    --drop-early-y: -350px;
+    --drop-mid-y: -200px;
     --drop-bounce-high: -65px;
     --drop-bounce-mid: -26px;
     --drop-bounce-low: -9px;
