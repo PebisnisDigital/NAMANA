@@ -271,6 +271,13 @@
 }
 
 @media (max-width: 900px) {
+  .namana-text-credits {
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    bottom: auto;
+  }
+  .namana-text-credits p { top: calc(100% + 10px); bottom: auto; }
+
   .cinematic-page--text-mode .cinematic-hero--enter {
     height: auto;
     min-height: 100svh;
