@@ -517,7 +517,7 @@ function EnterKeycap({
       onClick={onEnter}
       disabled={inactive}
     >
-      <img src="/images/enter-key-square.webp" alt="" width={512} height={512} fetchPriority="high" draggable={false} />
+      <img src="/images/enter-key-square-tight.webp" alt="" width={512} height={512} fetchPriority="high" draggable={false} />
       <span className="cinematic-hero__sr-only">{firstActivation ? "Aktifkan gerakan kartu" : "Keluarkan kartu"}</span>
     </button>
   );
