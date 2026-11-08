@@ -70,7 +70,13 @@
   cursor: pointer;
 }
 
-.namina-liquid-loader__sound-trigger:focus-visible {
+button.namina-liquid-loader__sound-trigger:hover:not(:disabled),
+button.namina-liquid-loader__sound-trigger:active:not(:disabled) {
+  background: transparent;
+  transform: none;
+}
+
+button.namina-liquid-loader__sound-trigger:focus-visible {
   border-radius: 12px;
   outline: 3px solid #f7f2ea;
   outline-offset: 14px;
@@ -146,11 +152,11 @@
   }
   .namina-liquid-loader::after { animation: none; display: none; }
   .namina-liquid-loader--opt-in .namina-liquid-loader__fill {
-    animation: namina-liquid-rise 5s linear both;
+    animation: namina-liquid-rise 5s linear both !important;
   }
   .namina-liquid-loader--opt-in::after {
     display: block;
-    animation: namina-light-sweep 5s ease-in-out both;
+    animation: namina-light-sweep 5s ease-in-out both !important;
   }
 }
 
