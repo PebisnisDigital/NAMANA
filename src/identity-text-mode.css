@@ -5,6 +5,7 @@
   --namana-text-cream: #fff0d9;
   --namana-text-gold: #e1b775;
   --namana-text-muted: #dfd3c3;
+  --namana-text-display: 'Space Grotesk', 'Montserrat', Arial, sans-serif;
 }
 
 .cinematic-page--text-mode .cinematic-hero {
@@ -67,12 +68,12 @@
 
 .cinematic-page--text-mode .cinematic-hero__identity h1,
 .cinematic-page--text-mode.cinematic-page--custom .cinematic-hero__identity h1 {
-  margin: 8px 0 0;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: calc(clamp(64px, 6.25vw, 105px) * var(--namana-heading-scale, 1));
-  font-weight: 600;
-  line-height: .83;
-  letter-spacing: -.025em;
+  margin: 10px 0 0;
+  font-family: var(--namana-text-display);
+  font-size: calc(clamp(50px, 5vw, 82px) * var(--namana-heading-scale, 1));
+  font-weight: 700;
+  line-height: .99;
+  letter-spacing: -.055em;
 }
 
 .cinematic-page--text-mode .cinematic-hero__identity h1 .cinematic-hero__stamp {
@@ -81,13 +82,13 @@
 }
 
 .cinematic-page--text-mode .cinematic-hero__identity h1 .cinematic-hero__stamp--role {
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--namana-text-gold);
-  font-family: 'Montserrat', sans-serif;
-  font-size: .28em;
-  font-weight: 600;
-  line-height: 1.22;
-  letter-spacing: .19em;
+  font-family: var(--namana-text-display);
+  font-size: .27em;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: .11em;
 }
 
 .cinematic-page--text-mode .cinematic-hero__enter-key {
@@ -129,9 +130,10 @@
 .namana-text-story__invite p {
   max-width: 350px;
   margin: 9px 0 0;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(23px, 2.8vw, 35px);
-  line-height: 1.13;
+  font-family: var(--namana-text-display);
+  font-size: clamp(20px, 2.1vw, 29px);
+  font-weight: 600;
+  line-height: 1.22;
 }
 
 .namana-text-story__chapter {
@@ -182,11 +184,11 @@
 .namana-text-story__value {
   margin: 3px 0 0;
   color: var(--namana-text-cream);
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(28px, 2.6vw, 38px);
+  font-family: var(--namana-text-display);
+  font-size: clamp(23px, 2vw, 31px);
   font-weight: 600;
-  line-height: 1.03;
-  letter-spacing: -.015em;
+  line-height: 1.16;
+  letter-spacing: -.04em;
   overflow-wrap: anywhere;
 }
 
@@ -219,8 +221,8 @@
   .cinematic-page--text-mode .cinematic-hero__content { padding-right: 5vw; }
   .cinematic-page--text-mode .cinematic-hero__headline-row,
   .cinematic-page--text-mode .cinematic-hero--enter .cinematic-hero__details { width: min(100%, 50vw); }
-  .cinematic-page--text-mode .cinematic-hero__identity h1 { font-size: calc(clamp(58px, 6.5vw, 80px) * var(--namana-heading-scale, 1)); }
-  .namana-text-story__value { font-size: clamp(25px, 2.9vw, 32px); }
+  .cinematic-page--text-mode .cinematic-hero__identity h1 { font-size: calc(clamp(46px, 5.3vw, 65px) * var(--namana-heading-scale, 1)); }
+  .namana-text-story__value { font-size: clamp(23px, 2.4vw, 28px); }
   .namana-text-story__description { margin-left: 54px; }
 }
 
@@ -281,14 +283,14 @@
   .cinematic-page--text-mode .cinematic-hero__identity h1,
   .cinematic-page--text-mode.cinematic-page--custom .cinematic-hero__identity h1 {
     margin-top: 6px;
-    font-size: calc(clamp(40px, 10.7vw, 63px) * var(--namana-heading-scale, 1));
-    line-height: .88;
+    font-size: calc(clamp(35px, 9.3vw, 50px) * var(--namana-heading-scale, 1));
+    line-height: 1.02;
   }
 
   .cinematic-page--text-mode .cinematic-hero__identity h1 .cinematic-hero__stamp--role {
     margin-top: 8px;
-    font-size: .32em;
-    letter-spacing: .1em;
+    font-size: .34em;
+    letter-spacing: .075em;
   }
 
   .cinematic-page--text-mode .cinematic-hero--enter .cinematic-hero__details {
@@ -302,7 +304,7 @@
   .namana-text-story__icon { flex-basis: 42px; width: 42px; height: 42px; }
   .namana-text-story__topline { gap: 10px; }
   .namana-text-story__label { font-size: 10px; letter-spacing: .12em; }
-  .namana-text-story__value { font-size: clamp(27px, 7.2vw, 35px); }
+  .namana-text-story__value { font-size: clamp(22px, 6vw, 27px); }
   .namana-text-story__description { margin: 5px 0 0 52px; font-size: 12px; line-height: 1.45; }
   .namana-text-story__external { margin-left: 52px; }
   .namana-text-story__invite { padding-top: 8px; }
@@ -311,7 +313,7 @@
 @media (max-width: 370px) {
   .cinematic-page--text-mode .cinematic-hero__content { padding-right: 13px; padding-left: 13px; }
   .cinematic-page--text-mode .cinematic-hero__identity h1,
-  .cinematic-page--text-mode.cinematic-page--custom .cinematic-hero__identity h1 { font-size: calc(38px * var(--namana-heading-scale, 1)); }
+  .cinematic-page--text-mode.cinematic-page--custom .cinematic-hero__identity h1 { font-size: calc(34px * var(--namana-heading-scale, 1)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
