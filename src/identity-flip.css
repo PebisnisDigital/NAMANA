@@ -2081,3 +2081,259 @@
     font-size: clamp(calc(54px * var(--namana-heading-scale, 1)), calc(13.2vw * var(--namana-heading-scale, 1)), calc(83px * var(--namana-heading-scale, 1)));
   }
 }
+
+/* The performer replaces the wallet as the physical source of each flying file.
+   Its drawn joints follow pointer movement; no idle dance loops compete with text. */
+.cinematic-hero--stickman .cinematic-hero__video {
+  opacity: .09;
+  filter: grayscale(1) blur(16px);
+}
+.cinematic-hero--stickman .cinematic-hero__shade {
+  background: linear-gradient(90deg, #070708 0%, rgba(7,7,8,.96) 42%, rgba(7,7,8,.62) 77%, #080809 100%);
+}
+.cinematic-hero--stickman .cinematic-hero__content { position: relative; }
+.cinematic-hero__dancer {
+  --dance-lean: 0deg;
+  --dance-bounce: 0px;
+  --dance-head: 0deg;
+  --dance-left-arm: 0deg;
+  --dance-right-arm: 0deg;
+  --dance-left-leg: 0deg;
+  --dance-right-leg: 0deg;
+  --dance-eye-x: 0px;
+  position: absolute;
+  z-index: 9;
+  top: clamp(32px, 5vh, 90px);
+  right: clamp(12px, 4vw, 78px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  width: clamp(260px, 29vw, 480px);
+  height: min(72vh, 670px);
+  min-height: 420px;
+  padding: 0 5px 8px;
+  border: 0;
+  background: transparent;
+  color: #f6e9d1;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.cinematic-hero__dancer-stage {
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  width: 100%;
+  height: calc(100% - 68px);
+}
+.cinematic-hero__dancer-light {
+  position: absolute;
+  inset: 6% 0 0;
+  background: radial-gradient(ellipse at 50% 54%, rgba(193,142,77,.18), transparent 62%);
+  pointer-events: none;
+  opacity: .78;
+}
+.cinematic-hero__dancer-figure {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 8px 9px rgba(0,0,0,.6));
+}
+.cinematic-hero__dancer-body {
+  transform-box: view-box;
+  transform-origin: 142px 258px;
+  transform: translateY(var(--dance-bounce)) rotate(var(--dance-lean));
+  transition: transform .18s cubic-bezier(.2,.84,.22,1);
+}
+.cinematic-hero__dancer-head {
+  transform-box: view-box;
+  transform-origin: 141px 115px;
+  transform: rotate(var(--dance-head));
+  transition: transform .2s cubic-bezier(.2,.84,.22,1);
+}
+.cinematic-hero__dancer-face {
+  transform: translateX(var(--dance-eye-x));
+  transition: transform .17s ease;
+}
+.cinematic-hero__dancer-arm,
+.cinematic-hero__dancer-leg {
+  transform-box: view-box;
+  transition: transform .2s cubic-bezier(.18,.8,.22,1);
+}
+.cinematic-hero__dancer-arm--left {
+  transform-origin: 136px 144px;
+  transform: rotate(var(--dance-left-arm));
+}
+.cinematic-hero__dancer-arm--right {
+  transform-origin: 145px 144px;
+  transform: rotate(var(--dance-right-arm));
+}
+.cinematic-hero__dancer-leg--front {
+  transform-origin: 142px 258px;
+  transform: rotate(var(--dance-left-leg));
+}
+.cinematic-hero__dancer-leg--back {
+  transform-origin: 142px 258px;
+  transform: rotate(var(--dance-right-leg));
+}
+.cinematic-hero__dancer-instruction {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+  min-height: 68px;
+  color: #ded0b7;
+  transition: color .2s ease, transform .2s ease;
+}
+.cinematic-hero__dancer-instruction strong {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: .095em;
+  color: #f4c98c;
+}
+.cinematic-hero__dancer-instruction small {
+  max-width: 265px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.cinematic-hero__dancer:hover .cinematic-hero__dancer-instruction,
+.cinematic-hero__dancer:focus-visible .cinematic-hero__dancer-instruction { color: #fff3e0; transform: translateY(-3px); }
+.cinematic-hero__dancer:focus-visible { outline: 3px solid #f2ca8f; outline-offset: -3px; border-radius: 24px; }
+.cinematic-hero__dancer:active:not(:disabled) { transform: scale(.985); }
+.cinematic-hero__dancer:disabled { cursor: default; }
+
+.cinematic-hero__dancer--throwing .cinematic-hero__dancer-body {
+  animation: cinematic-stickman-throw .92s cubic-bezier(.22,.7,.25,1) both;
+}
+.cinematic-hero__dancer--throwing .cinematic-hero__dancer-arm--right {
+  animation: cinematic-stickman-throw-arm .78s cubic-bezier(.18,.74,.2,1) both;
+}
+.cinematic-hero__dancer--throwing .cinematic-hero__dancer-hand-card {
+  animation: cinematic-stickman-release .8s linear both;
+}
+@keyframes cinematic-stickman-throw {
+  0% { transform: translateY(-4px) rotate(-2deg); }
+  20% { transform: translate(-12px, 11px) rotate(9deg); }
+  43% { transform: translate(15px, -12px) rotate(-16deg); }
+  67% { transform: translate(3px, -5px) rotate(-4deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+@keyframes cinematic-stickman-throw-arm {
+  0% { transform: rotate(22deg); }
+  24% { transform: rotate(47deg); }
+  48% { transform: rotate(-105deg); }
+  67% { transform: rotate(-78deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes cinematic-stickman-release {
+  0%, 45% { opacity: 1; }
+  48%, 96% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.cinematic-hero--stickman .cinematic-hero__details { width: min(100%, 665px); }
+.cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw {
+  display: block;
+  width: 100%;
+  height: 380px;
+  margin: 0;
+  perspective-origin: 45% 45%;
+}
+.cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card {
+  top: 16px;
+  width: min(100%, 550px);
+  height: 341px;
+}
+.cinematic-hero__card-viewport--stickman .cinematic-hero__flight-layer {
+  --flight-origin-x: clamp(350px, 57vw, 980px);
+  --flight-origin-y: -145px;
+  --flight-middle-x: clamp(150px, 30vw, 490px);
+  --flight-apex-y: -224px;
+  --flight-landing-x: -32px;
+}
+.cinematic-hero__card-viewport--stickman .cinematic-hero__flight-sheet {
+  top: 16px;
+  left: 0;
+  width: min(100%, 550px);
+  height: 341px;
+}
+.cinematic-hero__card-viewport--stickman .cinematic-hero__flight-sheet--in {
+  animation-delay: .3s;
+}
+.cinematic-hero__card-viewport--stickman .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange {
+  animation-delay: .4s;
+}
+
+@media (max-width: 1100px) and (min-width: 601px) {
+  .cinematic-hero__dancer { right: 5px; width: clamp(235px, 27vw, 325px); }
+  .cinematic-hero--stickman .cinematic-hero__details { width: min(100%, 59vw); }
+  .cinematic-hero__card-viewport--stickman .cinematic-hero__flight-layer { --flight-origin-x: 43vw; --flight-middle-x: 21vw; }
+  .cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .cinematic-hero--stickman { overflow: hidden; }
+  .cinematic-hero--stickman .cinematic-hero__content { padding: 12px 20px 32px; gap: 10px; }
+  .cinematic-hero--stickman .cinematic-hero__identity { position: relative; z-index: 2; }
+  .cinematic-hero__dancer {
+    position: relative;
+    inset: auto;
+    align-self: center;
+    width: min(78vw, 290px);
+    height: 262px;
+    min-height: 0;
+    padding: 0 5px;
+  }
+  .cinematic-hero__dancer-stage { height: 218px; }
+  .cinematic-hero__dancer-instruction { min-height: 44px; gap: 4px; }
+  .cinematic-hero__dancer-instruction strong { font-size: 11px; }
+  .cinematic-hero__dancer-instruction small { font-size: 10px; max-width: 240px; }
+  .cinematic-hero--stickman .cinematic-hero__details { width: 100%; }
+  .cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw { height: 314px; }
+  .cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track { height: 310px; }
+  .cinematic-hero__card-viewport--stickman.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { top: 5px; height: 299px; }
+  .cinematic-hero__card-viewport--stickman .cinematic-hero__flight-layer {
+    --flight-origin-x: 48px;
+    --flight-origin-y: -232px;
+    --flight-middle-x: 18px;
+    --flight-apex-y: -135px;
+    --flight-landing-x: -12px;
+  }
+  .cinematic-hero__card-viewport--stickman .cinematic-hero__flight-sheet {
+    top: 5px;
+    left: 0;
+    height: 299px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-hero__dancer-body,
+  .cinematic-hero__dancer-head,
+  .cinematic-hero__dancer-arm,
+  .cinematic-hero__dancer-leg,
+  .cinematic-hero__dancer-face { transition: none; }
+  .cinematic-page--motion-opt-in .cinematic-hero__dancer--throwing .cinematic-hero__dancer-body {
+    animation: cinematic-stickman-throw .92s cubic-bezier(.22,.7,.25,1) both !important;
+  }
+  .cinematic-page--motion-opt-in .cinematic-hero__dancer--throwing .cinematic-hero__dancer-arm--right {
+    animation: cinematic-stickman-throw-arm .78s cubic-bezier(.18,.74,.2,1) both !important;
+  }
+  .cinematic-page--motion-opt-in .cinematic-hero__dancer--throwing .cinematic-hero__dancer-hand-card {
+    animation: cinematic-stickman-release .8s linear both !important;
+  }
+  .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--stickman .cinematic-hero__flight-sheet--in {
+    animation-delay: .3s !important;
+  }
+  .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--stickman .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange {
+    animation-delay: .4s !important;
+  }
+}
