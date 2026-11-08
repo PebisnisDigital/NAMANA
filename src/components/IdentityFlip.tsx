@@ -19,6 +19,7 @@ import { originalProfileTabs, type ProfileCard, type ProfileIcon } from "../stat
 type Phase = "welcome" | "hero";
 type ShuffleStage = "rest" | "fan" | "close" | "tuck";
 type WalletMotion = "rest" | "exchanging" | "drawing";
+const MOTION_OPT_IN_KEY = "namana:wallet-motion-opt-in";
 const documentAccents = [
   "#ef694e",
   "#e6b65a",
@@ -538,8 +539,19 @@ export function IdentityFlip({
   const [activeTab, setActiveTab] = useState(-1);
   const [outgoingTab, setOutgoingTab] = useState<number | null>(null);
   const [walletMotion, setWalletMotion] = useState<WalletMotion>("rest");
+  const deviceReducedMotion = Boolean(useReducedMotion());
+  const [motionOptIn, setMotionOptIn] = useState(() => {
+    try {
+      return window.localStorage.getItem(MOTION_OPT_IN_KEY) === "yes";
+    } catch {
+      return false;
+    }
+  });
+  const needsMotionOptIn =
+    deviceReducedMotion && !motionOptIn && content?.wallet.animationPreset !== "minimal";
   const reduceMotion =
-    useReducedMotion() || content?.wallet.animationPreset === "minimal";
+    (deviceReducedMotion && !motionOptIn) ||
+    content?.wallet.animationPreset === "minimal";
   const [compactDeck, setCompactDeck] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -595,7 +607,7 @@ export function IdentityFlip({
 
     // The incoming sheet ends the exchange. This is only a backup if the
     // browser drops the animationend event while the tab is backgrounded.
-    const timer = window.setTimeout(finishWalletMotion, 1850);
+    const timer = window.setTimeout(finishWalletMotion, 2300);
     return () => window.clearTimeout(timer);
   }, [walletMotion, reduceMotion, finishWalletMotion]);
 
@@ -677,7 +689,20 @@ export function IdentityFlip({
   };
 
   const drawFromWallet = () => {
-    requestCard((activeTab + 1) % totalCards);
+    const nextIndex = (activeTab + 1) % totalCards;
+    if (needsMotionOptIn) {
+      try {
+        window.localStorage.setItem(MOTION_OPT_IN_KEY, "yes");
+      } catch {
+        // The animation still works for this visit if storage is unavailable.
+      }
+      setMotionOptIn(true);
+      setOutgoingTab(activeTab >= 0 ? activeTab : null);
+      setWalletMotion(activeTab >= 0 ? "exchanging" : "drawing");
+      setActiveTab(nextIndex);
+      return;
+    }
+    requestCard(nextIndex);
   };
 
   useEffect(() => {
@@ -723,7 +748,7 @@ export function IdentityFlip({
 
   return (
     <main
-      className={`cinematic-page cinematic-page--${phase}${content ? " cinematic-page--custom" : ""}${editMode ? " cinematic-page--editing" : ""}${content?.wallet.materialPreset === "matte" ? " cinematic-page--matte" : ""}${content?.wallet.animationPreset === "minimal" ? " cinematic-page--minimal" : ""}`}
+      className={`cinematic-page cinematic-page--${phase}${content ? " cinematic-page--custom" : ""}${editMode ? " cinematic-page--editing" : ""}${content?.wallet.materialPreset === "matte" ? " cinematic-page--matte" : ""}${content?.wallet.animationPreset === "minimal" ? " cinematic-page--minimal" : ""}${deviceReducedMotion && motionOptIn && !reduceMotion ? " cinematic-page--motion-opt-in" : ""}`}
       style={
         content
           ? ({
@@ -948,7 +973,7 @@ export function IdentityFlip({
                     type="button"
                     data-edit="wallet"
                     className={`cinematic-hero__wallet cinematic-hero__wallet--${walletMotion}`}
-                    aria-label={`Keluarkan dokumen ${profileTabs[(activeTab + 1) % totalCards].label} dari dompet`}
+                    aria-label={needsMotionOptIn ? `Aktifkan efek terbang dan keluarkan dokumen ${profileTabs[(activeTab + 1) % totalCards].label}` : `Keluarkan dokumen ${profileTabs[(activeTab + 1) % totalCards].label} dari dompet`}
                     aria-busy={walletMotion !== "rest"}
                     title={
                       walletMotion === "rest"
@@ -1014,7 +1039,7 @@ export function IdentityFlip({
                         />
                       </svg>
                       <span className="cinematic-hero__wallet-action">
-                        AMBIL FILE <span aria-hidden="true">↗</span>
+                        {needsMotionOptIn ? "AKTIFKAN ANIMASI" : "AMBIL FILE"} <span aria-hidden="true">↗</span>
                       </span>
                     </span>
                   </motion.button>
