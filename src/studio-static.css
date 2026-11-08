@@ -120,6 +120,87 @@
 .studio-alert--error { color: #ffd4d4; background: #402323; border-color: #e78a8a; }
 .studio-preview { flex: 1; min-height: 0; overflow: auto; position: relative; }
 .studio-preview > .cinematic-page { width: 100%; min-height: 100%; }
+.studio-canvas-commands {
+  position: absolute;
+  z-index: 120;
+  top: 12px;
+  right: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.studio-root .studio-canvas-commands button {
+  background: rgba(18, 16, 14, .94);
+  border-color: #a68c67;
+  font-size: 12px;
+}
+.studio-canvas-tools {
+  position: absolute;
+  z-index: 130;
+  right: 16px;
+  top: 76px;
+  width: min(340px, calc(100% - 32px));
+  max-height: min(590px, calc(100dvh - 180px));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #b99b70;
+  border-radius: 9px;
+  background: #191713;
+  color: #f6ede0;
+  box-shadow: 0 15px 48px #000b;
+}
+.studio-canvas-tools__heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 14px;
+  background: #282319;
+  border-bottom: 1px solid #54432c;
+}
+.studio-canvas-tools__heading strong { font-size: 15px; }
+.studio-canvas-tools__heading small {
+  display: block;
+  color: #d8c5a8;
+  font-size: 11px;
+  margin-top: 3px;
+}
+.studio-root .studio-canvas-tools__heading button { min-height: 36px; padding: 7px 10px; }
+.studio-canvas-tools__content {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 15px;
+}
+.studio-canvas-tools__field { display: block; margin-bottom: 15px !important; }
+.studio-canvas-tools__field input,
+.studio-canvas-tools__field textarea,
+.studio-canvas-tools__field select { display: block; margin-top: 7px; }
+.studio-canvas-tools__color {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px !important;
+}
+.studio-canvas-tools__color small { font-variant-numeric: tabular-nums; color: #dbcfba; }
+.studio-canvas-tools__media { padding-top: 9px; margin-top: 9px; border-top: 1px solid #514536; }
+.studio-canvas-tools__upload {
+  padding: 10px;
+  margin-bottom: 16px !important;
+  border: 1px dashed #b99b70;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.studio-root .studio-canvas-tools__upload input {
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 11px;
+}
+.studio-canvas-tools__tip { font-size: 12px; line-height: 1.5; color: #d9c4a5; margin: 0 0 16px; }
+.studio-canvas-tools__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.studio-root .studio-canvas-tools__danger { border-color: #ae665e; color: #ffd6d0; }
 .studio-gate { display: grid; place-items: center; padding: 24px; }
 .studio-gate__card { width: min(100%, 460px); padding: clamp(25px, 5vw, 44px); border: 1px solid #494037; background: #1e1b17; }
 .studio-gate__card h1 { margin: 22px 0; font-size: clamp(24px, 4vw, 32px); }
@@ -139,6 +220,14 @@
   .studio-preview { min-height: 450px; max-height: 65dvh; }
   .studio-sidebar { overflow: visible; border-right: 0; border-top: 1px solid #3b342c; padding: 0 18px 30px; }
   .studio-group { padding: 22px 0; }
+  .studio-canvas-commands { right: 10px; top: 10px; }
+  .studio-root .studio-canvas-commands button { min-height: 40px; padding: 8px 9px; }
+  .studio-canvas-tools {
+    top: 67px;
+    right: 10px;
+    width: min(340px, calc(100% - 20px));
+    max-height: calc(65dvh - 90px);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .studio-root button,

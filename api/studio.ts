@@ -8,6 +8,7 @@ const SESSION_TTL = 12 * 60 * 60 * 1000;
 const mediaUrl = z.string().max(2000).refine((value) => {
   if (!value) return true;
   if (/^\/videos\/[a-zA-Z0-9._-]+$/.test(value)) return true;
+  if (/^\/media\/[a-z0-9-]{3,48}\/[a-f0-9]{32}\.(?:png|jpg|webp)$/.test(value)) return true;
   try {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password;
@@ -23,6 +24,7 @@ const documentSchema = z.object({
     mobileVideo: mediaUrl,
     poster: mediaUrl,
     portrait: mediaUrl,
+    enterKey: mediaUrl.optional(),
     cards: z.record(z.string(), mediaUrl),
   }).strict(),
 }).strict();
@@ -32,14 +34,14 @@ function send(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
-async function readBody(req: ApiRequest) {
+async function readBody(req: ApiRequest, maxBytes = 262144) {
   if (req.body !== undefined) return typeof req.body === "string" ? JSON.parse(req.body) : req.body;
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     const buffer = Buffer.from(chunk);
     size += buffer.length;
-    if (size > 262144) throw new Error("Data terlalu besar.");
+    if (size > maxBytes) throw new Error("Data terlalu besar.");
     chunks.push(buffer);
   }
   return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
@@ -177,6 +179,40 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       const file = (await response.json()) as { content: string; sha: string };
       const document = documentSchema.parse(JSON.parse(Buffer.from(file.content.replace(/\s/g, ""), "base64").toString("utf8")));
       send(res, 200, { document, sha: file.sha });
+      return;
+    }
+
+    if (action === "upload" && req.method === "POST") {
+      const body = z.object({
+        slug: slugSchema,
+        mime: z.enum(["image/jpeg", "image/png", "image/webp"]),
+        base64: z.string().min(12).max(1800000).regex(/^[A-Za-z0-9+/]+={0,2}$/),
+      }).strict().parse(await readBody(req, 1900000));
+      const bytes = Buffer.from(body.base64, "base64");
+      if (bytes.length > 1300000 || bytes.length < 12) {
+        send(res, 413, { error: "Foto maksimal 1,3 MB. Kompres sebelum mengunggah." });
+        return;
+      }
+      const jpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+      const png = bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+      const webp = bytes.subarray(0, 4).toString() === "RIFF" && bytes.subarray(8, 12).toString() === "WEBP";
+      if (!((body.mime === "image/jpeg" && jpeg) || (body.mime === "image/png" && png) || (body.mime === "image/webp" && webp))) {
+        send(res, 400, { error: "File bukan gambar JPG, PNG, atau WebP yang valid." });
+        return;
+      }
+      const ext = body.mime === "image/jpeg" ? "jpg" : body.mime === "image/png" ? "png" : "webp";
+      const file = `${randomBytes(16).toString("hex")}.${ext}`;
+      const path = `public/media/${body.slug}/${file}`;
+      const response = await github(path, {
+        method: "PUT",
+        body: JSON.stringify({
+          message: `Upload media NAMANA ${body.slug}`,
+          branch,
+          content: body.base64,
+        }),
+      });
+      if (!response.ok) throw new Error(`Upload media GitHub gagal (${response.status}).`);
+      send(res, 200, { url: `/media/${body.slug}/${file}` });
       return;
     }
 

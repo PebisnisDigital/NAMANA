@@ -28,6 +28,7 @@ export type ProfileCard = {
   brandIcon?: string;
   kind?: "name" | "work" | "social";
   url?: string;
+  linkLabel?: string;
 };
 
 export const originalProfileTabs: ProfileCard[] = [

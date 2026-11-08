@@ -38,3 +38,25 @@ test("publishing requires a valid visible card and safe links", () => {
   site.content.cards[0].link = "javascript:alert(1)";
   assert.equal(siteDocumentSchema.safeParse(prepareSite(site)).success, false);
 });
+
+test("visual Studio settings, custom button graphics and per-card labels survive publication", () => {
+  const client = blankSite("pemilik-karya");
+  client.content.identity.brandLabel = "KARYA.ID";
+  client.content.identity.introLabel = "Selamat datang";
+  client.content.theme.titleColor = "#ffffff";
+  client.content.theme.roleColor = "#e6b65a";
+  client.content.theme.headingScale = 1.2;
+  client.content.theme.cardTitleScale = 1.15;
+  client.content.theme.cardValueScale = 1.1;
+  client.content.theme.cardBodyScale = 0.9;
+  client.media.enterKey = "/media/pemilik-karya/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.webp";
+  client.content.cards[0].link = "https://wa.me/6281212345678";
+  client.content.cards[0].linkLabel = "Chat saya";
+  const published = normalizeSite(client);
+  assert.equal(published.content.theme.enterKeyAssetId !== null, true);
+  assert.equal(resolveMedia(published)[published.content.theme.enterKeyAssetId!], client.media.enterKey);
+  assert.equal(published.content.cards[0].linkLabel, "Chat saya");
+  assert.equal(published.content.identity.brandLabel, "KARYA.ID");
+  client.media.enterKey = "/media/pemilik-karya/../../error.webp";
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, false);
+});

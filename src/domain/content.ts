@@ -72,6 +72,7 @@ export const cardSchema = z
       safeLink,
       "Gunakan tautan https, email, atau telepon yang valid.",
     ),
+    linkLabel: text(80).optional(),
   })
   .strict();
 export const contentSchema = z
@@ -84,6 +85,8 @@ export const contentSchema = z
         profession: text(70),
         bio: text(300),
         portraitAssetId: asset,
+        brandLabel: text(32).optional(),
+        introLabel: text(80).optional(),
       })
       .strict(),
     wallet: z
@@ -108,6 +111,12 @@ export const contentSchema = z
         accent: color,
         fontPreset: z.enum(["original", "system"]),
         headingScale: z.number().min(0.8).max(1.3).optional(),
+        cardTitleScale: z.number().min(0.75).max(1.4).optional(),
+        cardValueScale: z.number().min(0.75).max(1.4).optional(),
+        cardBodyScale: z.number().min(0.75).max(1.4).optional(),
+        titleColor: color.optional(),
+        roleColor: color.optional(),
+        enterKeyAssetId: asset.optional(),
       })
       .strict(),
     cards: z
@@ -171,6 +180,7 @@ export function assetIds(content: SiteContent) {
         content.background.desktopVideoAssetId,
         content.background.mobileVideoAssetId,
         content.background.posterAssetId,
+        content.theme.enterKeyAssetId,
         ...content.cards.map((c) => c.imageAssetId),
       ].filter((id): id is string => !!id),
     ),

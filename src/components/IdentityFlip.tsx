@@ -1,4 +1,5 @@
 import {
+  createElement,
   useCallback,
   useEffect,
   useRef,
@@ -28,6 +29,78 @@ const documentAccents = [
   "#7dca95",
   "#e4a2c5",
 ];
+
+type EditableField =
+  | "identity.brandLabel"
+  | "identity.introLabel"
+  | "identity.displayName"
+  | "identity.profession"
+  | "identity.bio"
+  | `card:${string}:title`
+  | `card:${string}:subtitle`
+  | `card:${string}:description`
+  | `card:${string}:linkLabel`;
+
+function EditableText({
+  as,
+  className,
+  value,
+  field,
+  selection,
+  editMode,
+  onEditText,
+}: {
+  as: "span" | "h2" | "p";
+  className?: string;
+  value: string;
+  field: EditableField;
+  selection: Selection;
+  editMode: boolean;
+  onEditText?: (field: EditableField, value: string) => void;
+}) {
+  const node = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (node.current && document.activeElement !== node.current)
+      node.current.textContent = value;
+  }, [value]);
+  return createElement(
+    as,
+    {
+      ref: node,
+      className,
+      "data-edit": selection,
+      "data-edit-field": field,
+      contentEditable: editMode,
+      suppressContentEditableWarning: true,
+      role: editMode ? "textbox" : undefined,
+      tabIndex: editMode ? 0 : undefined,
+      "aria-label": editMode ? `Edit ${field.split(":").at(-1)?.split(".").at(-1)}` : undefined,
+      onPointerDown: editMode ? (event: React.PointerEvent) => event.stopPropagation() : undefined,
+      onClick: editMode ? (event: React.MouseEvent) => event.stopPropagation() : undefined,
+      onKeyDown: editMode
+        ? (event: React.KeyboardEvent) => {
+            if (event.key === "Escape") {
+              event.currentTarget.textContent = value;
+              (event.currentTarget as HTMLElement).blur();
+            } else if (event.key === "Enter" && field !== "identity.bio" && !field.endsWith(":description")) {
+              event.preventDefault();
+              (event.currentTarget as HTMLElement).blur();
+            }
+            event.stopPropagation();
+          }
+        : undefined,
+      onBlur: editMode
+        ? (event: React.FocusEvent<HTMLElement>) => {
+            const next = (event.currentTarget.textContent || "").replace(/\u00a0/g, " ").trim();
+            if (next !== value && (next || !field.endsWith(":title") && field !== "identity.displayName"))
+              onEditText?.(field, next);
+            else event.currentTarget.textContent = value;
+          }
+        : undefined,
+    },
+    value,
+  );
+}
 
 function ProfileGlyph({ name }: { name: ProfileIcon }) {
   const symbols = {
@@ -234,6 +307,8 @@ function SwipeProfileCard({
   onSelect,
   totalCards,
   minimal = false,
+  editMode = false,
+  onEditText,
 }: {
   item: ProfileCard;
   index: number;
@@ -246,6 +321,8 @@ function SwipeProfileCard({
   exchangeFront: boolean;
   onSwipe: (direction: -1 | 1) => void;
   onSelect: (index: number) => void;
+  editMode?: boolean;
+  onEditText?: (field: EditableField, value: string) => void;
 }) {
   const active = offset === 0;
   const reduceMotion = useReducedMotion() || minimal;
@@ -259,6 +336,7 @@ function SwipeProfileCard({
 
   return (
     <motion.article
+      data-edit={item.id ? `card:${item.id}` : undefined}
       className={`cinematic-hero__card cinematic-hero__document${active ? " cinematic-hero__card--active" : " cinematic-hero__card--next"}${item.kind ? ` cinematic-hero__card--${item.kind}` : ""}${item.label.length > 10 ? " cinematic-hero__card--long-title" : ""}`}
       initial={
         reduceMotion
@@ -295,7 +373,7 @@ function SwipeProfileCard({
     >
       <motion.div
         className="cinematic-hero__card-swipe"
-        drag={active ? "x" : false}
+        drag={active && !editMode ? "x" : false}
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.95}
         dragMomentum={false}
@@ -343,7 +421,7 @@ function SwipeProfileCard({
           if (!active || suppressClick.current || gestureNavigated.current)
             return;
           if ((event.target as HTMLElement).closest("a, button")) return;
-          onSwipe(-1);
+          if (!editMode) onSwipe(-1);
         }}
       >
         {active && (
@@ -378,9 +456,11 @@ function SwipeProfileCard({
         )}
         {active && (
           <div className="cinematic-hero__card-body">
-            <h2 className="cinematic-hero__document-title">{item.label}</h2>
+            {item.id ? (
+              <EditableText as="h2" className="cinematic-hero__document-title" value={item.label} field={`card:${item.id}:title`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
+            ) : <h2 className="cinematic-hero__document-title">{item.label}</h2>}
             <div className="cinematic-hero__story" key={item.label}>
-              <span className="cinematic-hero__story-icon" aria-hidden="true">
+              <span className="cinematic-hero__story-icon" data-edit={item.id ? `card:${item.id}` : undefined} data-edit-media={item.id ? `card:${item.id}` : undefined} aria-hidden="true">
                 <img
                   className="cinematic-hero__flaticon"
                   src={
@@ -401,20 +481,28 @@ function SwipeProfileCard({
                   </span>
                 ) : null}
               </span>
-              <p className="cinematic-hero__story-value">{item.value}</p>
-              <p className="cinematic-hero__story-copy">{item.story}</p>
+              {item.id ? (
+                <EditableText as="p" className="cinematic-hero__story-value" value={item.value} field={`card:${item.id}:subtitle`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
+              ) : <p className="cinematic-hero__story-value">{item.value}</p>}
+              {item.id ? (
+                <EditableText as="p" className="cinematic-hero__story-copy" value={item.story} field={`card:${item.id}:description`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
+              ) : <p className="cinematic-hero__story-copy">{item.story}</p>}
               {(item.kind === "social" || item.url) &&
                 (item.url ? (
-                  <a
-                    className="cinematic-hero__story-link"
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Buka tautan ${item.label}`}
-                    onPointerDown={(event) => event.stopPropagation()}
-                  >
-                    Buka {item.label}
-                  </a>
+                  editMode && item.id ? (
+                    <EditableText as="span" className="cinematic-hero__story-link" value={item.linkLabel || `Buka ${item.label}`} field={`card:${item.id}:linkLabel`} selection={`card:${item.id}`} editMode onEditText={onEditText} />
+                  ) : (
+                    <a
+                      className="cinematic-hero__story-link"
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Buka tautan ${item.label}`}
+                      onPointerDown={(event) => event.stopPropagation()}
+                    >
+                      {item.linkLabel || `Buka ${item.label}`}
+                    </a>
+                  )
                 ) : (
                   <span className="cinematic-hero__story-unlinked">
                     Tautan akun belum ditambahkan
@@ -493,23 +581,29 @@ function EnterKeycap({
   firstActivation,
   nextCard,
   onEnter,
+  imageSrc,
+  editMode,
 }: {
   pressed: boolean;
   inactive: boolean;
   firstActivation: boolean;
   nextCard: string;
   onEnter: () => void;
+  imageSrc: string;
+  editMode: boolean;
 }) {
   return (
     <button
       type="button"
+      data-edit={editMode ? "theme" : undefined}
+      data-edit-media={editMode ? "enterKey" : undefined}
       className={`cinematic-hero__enter-key${pressed ? " cinematic-hero__enter-key--pressed" : ""}`}
       aria-label={firstActivation ? `Aktifkan animasi dan tampilkan kartu ${nextCard}` : `ENTER, tampilkan kartu ${nextCard}`}
       title={firstActivation ? "Aktifkan animasi kartu" : "Tekan ENTER untuk menjatuhkan kartu berikutnya"}
       onClick={onEnter}
       disabled={inactive}
     >
-      <img src="/images/enter-key-square-tight.webp" alt="" width={512} height={512} fetchPriority="high" draggable={false} />
+      <img src={imageSrc} alt="" width={512} height={512} fetchPriority="high" draggable={false} />
       <span className="cinematic-hero__sr-only">{firstActivation ? "Aktifkan gerakan kartu" : "Keluarkan kartu"}</span>
     </button>
   );
@@ -522,6 +616,7 @@ export function IdentityFlip({
   onSelect,
   startOpen = false,
   selectedCardId,
+  onEditText,
 }: {
   content?: SiteContent;
   assetUrls?: AssetUrls;
@@ -529,6 +624,7 @@ export function IdentityFlip({
   onSelect?: (selection: Selection) => void;
   startOpen?: boolean;
   selectedCardId?: string;
+  onEditText?: (field: EditableField, value: string) => void;
 }) {
   const profileTabs: ProfileCard[] = content
     ? content.cards
@@ -543,6 +639,7 @@ export function IdentityFlip({
           brandIcon: c.brandIcon,
           kind: c.kind || (c.link ? "social" : undefined),
           url: c.link,
+          linkLabel: c.linkLabel,
           owner: content.identity.displayName,
           color: c.color,
           imageUrl: c.imageAssetId ? assetUrls[c.imageAssetId] : undefined,
@@ -587,7 +684,7 @@ export function IdentityFlip({
     : "/videos/hero.mp4";
 
   useEffect(() => {
-    if (!editMode || !selectedCardId || !content) return;
+    if (!editMode || !content) return;
     const index = content.cards
       .filter((c) => c.visible)
       .findIndex((c) => c.id === selectedCardId);
@@ -595,8 +692,10 @@ export function IdentityFlip({
       setActiveTab(index);
       setWalletMotion("rest");
       setOutgoingTab(null);
+    } else if (activeTab !== 0 && content.cards.some((c) => c.visible)) {
+      setActiveTab(0);
     }
-  }, [selectedCardId, editMode, content]);
+  }, [selectedCardId, editMode, content, activeTab]);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 600px)");
@@ -771,6 +870,11 @@ export function IdentityFlip({
               "--namana-wallet": content.wallet.color,
               "--namana-accent": content.theme.accent,
               "--namana-heading-scale": content.theme.headingScale || 1,
+              "--namana-card-title-scale": content.theme.cardTitleScale || 1,
+              "--namana-card-value-scale": content.theme.cardValueScale || 1,
+              "--namana-card-body-scale": content.theme.cardBodyScale || 1,
+              "--namana-title-color": content.theme.titleColor || "#f8f3e8",
+              "--namana-role-color": content.theme.roleColor || "#d8ad67",
               fontFamily:
                 content.theme.fontPreset === "system"
                   ? "system-ui, sans-serif"
@@ -782,9 +886,11 @@ export function IdentityFlip({
         if (!editMode || !onSelect) return;
         const target = (event.target as HTMLElement).closest("[data-edit]");
         if (target) {
-          event.preventDefault();
-          event.stopPropagation();
           onSelect(target.getAttribute("data-edit") as Selection);
+          if (!(event.target as HTMLElement).closest("[data-edit-field]")) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
         }
       }}
     >
@@ -803,9 +909,7 @@ export function IdentityFlip({
           />
 
           <div className="cinematic-welcome__nav">
-            <span className="cinematic-brand">
-              NAMANA.PRO
-            </span>
+            <span className="cinematic-brand">{content?.identity.brandLabel || "NAMANA.PRO"}</span>
             <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
           </div>
 
@@ -819,9 +923,7 @@ export function IdentityFlip({
               <strong>NAMANA.PRO</strong>
             </h1>
             <p>
-              {content
-                ? content.identity.bio
-                : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
+              {content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
             </p>
             <button
               type="button"
@@ -932,34 +1034,31 @@ export function IdentityFlip({
           <div className="cinematic-hero__grain" aria-hidden="true" />
 
           <header className="cinematic-hero__nav">
-            <span className="cinematic-brand">
-              NAMANA.PRO
-            </span>
+            <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMANA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
           </header>
 
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__headline-row">
               <EnterKeycap
                 pressed={walletMotion !== "rest"}
-                inactive={walletMotion !== "rest" || totalCards === 0 || editMode}
+                inactive={walletMotion !== "rest" || totalCards === 0}
                 firstActivation={needsMotionOptIn}
                 nextCard={profileTabs[(activeTab + 1) % totalCards]?.label || "pertama"}
                 onEnter={triggerEnter}
+                imageSrc={content?.theme.enterKeyAssetId && assetUrls[content.theme.enterKeyAssetId] || "/images/enter-key-square-tight.webp"}
+                editMode={editMode}
               />
               <div className="cinematic-hero__identity" data-edit="identity">
-                <span className="cinematic-kicker">Hello, kenalain saya</span>
+                <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || "Hello, kenalain saya"} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 <h1 ref={heroHeading} tabIndex={-1}>
-                  <span className="cinematic-hero__stamp cinematic-hero__stamp--name">
-                    {content?.identity.displayName || "TEH VINI"}
-                  </span>
-                  <span className="cinematic-hero__stamp cinematic-hero__stamp--role">
-                    {content ? content.identity.profession : "AI ENTHUSIAST"}
-                  </span>
+                  <EditableText as="span" className="cinematic-hero__stamp cinematic-hero__stamp--name" value={content?.identity.displayName || "TEH VINI"} field="identity.displayName" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+                  <EditableText as="span" className="cinematic-hero__stamp cinematic-hero__stamp--role" value={content ? content.identity.profession : "AI ENTHUSIAST"} field="identity.profession" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 </h1>
                 {content?.identity.portraitAssetId &&
                   assetUrls[content.identity.portraitAssetId] && (
                     <img
                       data-edit="identity"
+                      data-edit-media="portrait"
                       className="namana-portrait"
                       src={assetUrls[content.identity.portraitAssetId]}
                       alt={`Foto ${content.identity.displayName}`}
@@ -1020,6 +1119,8 @@ export function IdentityFlip({
                           index={activeTab}
                           totalCards={totalCards}
                           minimal={reduceMotion || walletMotion !== "rest"}
+                          editMode={editMode}
+                          onEditText={onEditText}
                           offset={0}
                           compact={compactDeck}
                           shuffleStage="rest"

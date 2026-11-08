@@ -5,6 +5,7 @@ import { originalProfileTabs } from "./originalProfileTabs";
 const mediaUrl = z.string().max(2000).refine((value) => {
   if (!value) return true;
   if (/^\/videos\/[a-zA-Z0-9._-]+$/.test(value)) return true;
+  if (/^\/media\/[a-z0-9-]{3,48}\/[a-f0-9]{32}\.(?:png|jpg|webp)$/.test(value)) return true;
   try {
     const parsed = new URL(value);
     return parsed.protocol === "https:" && !parsed.username && !parsed.password;
@@ -21,6 +22,7 @@ export const siteDocumentSchema = z.object({
     mobileVideo: mediaUrl,
     poster: mediaUrl,
     portrait: mediaUrl,
+    enterKey: mediaUrl.optional(),
     cards: z.record(z.string(), mediaUrl),
   }).strict(),
 }).strict();
@@ -32,6 +34,7 @@ export const mediaIds = {
   mobileVideo: "22222222-2222-4222-8222-222222222222",
   poster: "33333333-3333-4333-8333-333333333333",
   portrait: "44444444-4444-4444-8444-444444444444",
+  enterKey: "55555555-5555-4555-8555-555555555555",
 };
 
 const originalColors = ["#ef694e", "#e6b65a", "#a4a3f0", "#67b5d6", "#7dca95", "#e4a2c5"];
@@ -78,6 +81,7 @@ export const viniSeed: SiteDocument = {
     mobileVideo: "",
     poster: "/videos/hero-poster.jpg",
     portrait: "",
+    enterKey: "",
     cards: {},
   },
 };
@@ -103,7 +107,7 @@ export function blankSite(slug: string): SiteDocument {
         },
       ],
     },
-    media: { desktopVideo: "", mobileVideo: "", poster: "", portrait: "", cards: {} },
+    media: { desktopVideo: "", mobileVideo: "", poster: "", portrait: "", enterKey: "", cards: {} },
   };
 }
 
@@ -113,6 +117,7 @@ export function resolveMedia(document: SiteDocument): AssetUrls {
     [mediaIds.mobileVideo, document.media.mobileVideo],
     [mediaIds.poster, document.media.poster],
     [mediaIds.portrait, document.media.portrait],
+    [mediaIds.enterKey, document.media.enterKey || ""],
   ];
   for (const card of document.content.cards) {
     const url = document.media.cards[card.id];
@@ -127,6 +132,7 @@ export function prepareSite(document: SiteDocument): SiteDocument {
   site.content.background.mobileVideoAssetId = site.media.mobileVideo ? mediaIds.mobileVideo : null;
   site.content.background.posterAssetId = site.media.poster ? mediaIds.poster : null;
   site.content.identity.portraitAssetId = site.media.portrait ? mediaIds.portrait : null;
+  site.content.theme.enterKeyAssetId = site.media.enterKey ? mediaIds.enterKey : null;
   site.content.cards.forEach((card) => {
     card.imageAssetId = site.media.cards[card.id] ? card.id : null;
   });

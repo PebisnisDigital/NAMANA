@@ -2646,3 +2646,51 @@
     animation: cinematic-enter-card-clear .35s ease-in both !important;
   }
 }
+
+.cinematic-page--custom .cinematic-hero__stamp--name {
+  color: var(--namana-title-color, #f8f3e8);
+}
+.cinematic-page--custom .cinematic-hero__stamp--role {
+  color: var(--namana-role-color, #d8ad67);
+}
+.cinematic-page--custom .cinematic-hero__document-title {
+  font-size: calc(clamp(29px, 3vw, 41px) * var(--namana-card-title-scale, 1));
+}
+.cinematic-page--custom .cinematic-hero__document .cinematic-hero__story-value {
+  font-size: calc(clamp(19px, 2vw, 28px) * var(--namana-card-value-scale, 1));
+}
+.cinematic-page--custom .cinematic-hero__document .cinematic-hero__story-copy {
+  font-size: calc(15px * var(--namana-card-body-scale, 1));
+}
+.cinematic-page--editing [data-edit-field] {
+  cursor: text;
+  border-radius: 3px;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.cinematic-page--editing [data-edit-field]:focus-visible {
+  outline: 2px solid #f3cd91;
+  outline-offset: 3px;
+  background: rgba(9, 9, 11, .65);
+}
+.cinematic-page--editing .cinematic-hero__card-swipe,
+.cinematic-page--editing .cinematic-hero__card-viewport {
+  touch-action: auto;
+}
+.cinematic-page--editing .cinematic-hero__enter-key {
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .cinematic-page--custom .cinematic-hero--enter .cinematic-hero__identity h1 {
+    font-size: calc(clamp(29px, 9.2vw, 46px) * var(--namana-heading-scale, 1));
+  }
+  .cinematic-page--custom .cinematic-hero__card-viewport--enter .cinematic-hero__document-title {
+    font-size: calc(clamp(25px, 7.4vw, 33px) * var(--namana-card-title-scale, 1));
+  }
+  .cinematic-page--custom .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__story-value {
+    font-size: calc(clamp(15px, 4.2vw, 20px) * var(--namana-card-value-scale, 1));
+  }
+  .cinematic-page--custom .cinematic-hero__card-viewport--enter .cinematic-hero__document .cinematic-hero__story-copy {
+    font-size: calc(clamp(11px, 2.9vw, 13px) * var(--namana-card-body-scale, 1));
+  }
+}
