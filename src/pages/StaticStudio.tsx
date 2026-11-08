@@ -306,7 +306,7 @@ export function StaticStudio() {
     return (
       <main className="studio-gate">
         <div className="studio-gate__card">
-          <a className="studio-wordmark" href="/">NAMANA.PRO</a>
+          <a className="studio-wordmark" href="/">NAMINA.PRO</a>
           <h1>{session.configured ? "Masuk Studio" : "Studio menunggu konfigurasi"}</h1>
           {session.configured ? (
             <form onSubmit={login}>
@@ -333,7 +333,7 @@ export function StaticStudio() {
   return (
     <main className="studio-root">
       <header className="studio-header">
-        <a className="studio-wordmark" href="/">NAMANA.PRO</a>
+        <a className="studio-wordmark" href="/">NAMINA.PRO</a>
         <strong>Studio / Tim admin</strong>
         <div className="studio-header__actions">
           {document && <a href={`/${document.slug}`} target="_blank" rel="noreferrer">Buka website</a>}
@@ -361,7 +361,7 @@ export function StaticStudio() {
               <section className="studio-group">
                 <h2>Identitas</h2>
                 <Field label="Sapaan di atas judul" value={document.content.identity.introLabel ?? "Hello, kenalain saya"} onChange={(value) => change((site) => { site.content.identity.introLabel = value; })} />
-                <Field label="Tulisan merek" value={document.content.identity.brandLabel ?? "NAMANA.PRO"} onChange={(value) => change((site) => { site.content.identity.brandLabel = value; })} />
+                <Field label="Tulisan merek" value={document.content.identity.brandLabel ?? "NAMINA.PRO"} onChange={(value) => change((site) => { site.content.identity.brandLabel = value; })} />
                 <Field label="Nama lengkap" value={document.content.identity.displayName} onChange={(value) => change((site) => { site.content.identity.displayName = value; })} />
                 <Field label="Profesi" value={document.content.identity.profession} onChange={(value) => change((site) => { site.content.identity.profession = value; })} />
                 <Field label="Perkenalan" multiline value={document.content.identity.bio} onChange={(value) => change((site) => { site.content.identity.bio = value; })} />

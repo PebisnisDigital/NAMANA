@@ -8,7 +8,7 @@ export const configured = !!url && !!key;
 export const supabase = configured ? createClient(url, key) : null;
 export function db() {
   if (!supabase)
-    throw new Error("Koneksi NAMANA belum dikonfigurasi. Hubungi pengelola.");
+    throw new Error("Koneksi NAMINA belum dikonfigurasi. Hubungi pengelola.");
   return supabase;
 }
 export async function rpc<T>(

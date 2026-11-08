@@ -1,12 +1,12 @@
-# NAMANA.PRO
+# NAMINA.PRO
 
-NAMANA is a multi-client cinematic website built from one GitHub repository and one Vercel project. The ORIGINAL wallet and 3D card experience is reused for each client's profile. This repository is separate from the existing PESONAFLIX production system.
+NAMINA is a multi-client cinematic website built from one GitHub repository and one Vercel project. The ORIGINAL wallet and 3D card experience is reused for each client's profile. This repository is separate from the existing PESONAFLIX production system.
 
 ## Routes
 
 | Route | Purpose |
 | --- | --- |
-| `/` | NAMANA landing page |
+| `/` | NAMINA landing page |
 | `/vini` | ORIGINAL cinematic demo with Vini's profile and video |
 | `/studio` | Password-protected content editor for the admin team |
 | `/:client-slug` | Published client website |
@@ -24,11 +24,13 @@ NAMANA is a multi-client cinematic website built from one GitHub repository and 
 
 Images and videos are not uploaded to GitHub or Supabase through Studio. Admins paste an HTTPS media URL. Dropbox shared links normally need `raw=1` for direct display. Keep a poster image as fallback: external hosts may throttle streaming or block embedded playback. `public/videos/hero.mp4` remains the default Vini video.
 
+> Rebranding note: deployment remains linked to the existing Supabase database. Legacy `NAMANA_*` environment variable names and `namana_*` database identifiers are preserved to keep active Studio sessions, media, and data working. The production URL is `https://naminapro.vercel.app`, and the GitHub repository is `PebisnisDigital/NAMINA`.
+
 ## Environment configuration
 
 Use `.env.example` as a checklist. Set these **server-only** variables on Vercel:
 
-- `NAMANA_GITHUB_REPO`: repository owner/name, e.g. `PebisnisDigital/NAMANA`.
+- `NAMANA_GITHUB_REPO`: repository owner/name, e.g. `PebisnisDigital/NAMINA`.
 - `NAMANA_GITHUB_BRANCH`: exact target branch. Production typically uses `main`. Use a separate preview branch for staging; otherwise a publish from a preview deployment can update production.
 - `NAMANA_GITHUB_TOKEN`: fine-grained GitHub PAT with **Contents: Read and write** on this repo only.
 - `NAMANA_ADMIN_PASSWORD`: unique password of at least 12 characters for the Studio team.

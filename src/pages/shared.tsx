@@ -23,7 +23,7 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="app-shell">
       <header className="app-nav">
         <a className="wordmark" href="/">
-          NAMANA<span>.PRO</span>
+          NAMINA<span>.PRO</span>
         </a>
         <nav aria-label="Navigasi aplikasi">
           <a href="/vini">Demo ORIGINAL</a>
@@ -42,7 +42,7 @@ export function Protected({ children }: { children: ReactNode }) {
         <main className="page">
           <h1>Koneksi belum tersedia</h1>
           <Notice>
-            Koneksi Supabase NAMANA belum dikonfigurasi. Login dan penyimpanan
+            Koneksi Supabase NAMINA belum dikonfigurasi. Login dan penyimpanan
             belum dapat digunakan.
           </Notice>
           <a href="/vini">Lihat demo ORIGINAL</a>

@@ -32,7 +32,7 @@ export function PublicSite({ slug, token }: { slug?: string; token?: string }) {
   }, [token]);
   useEffect(() => {
     if (data)
-      document.title = `${data.content.identity.displayName} | NAMANA.PRO`;
+      document.title = `${data.content.identity.displayName} | NAMINA.PRO`;
   }, [data]);
   if (error)
     return (

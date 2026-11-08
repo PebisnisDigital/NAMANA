@@ -56,7 +56,7 @@ export default async function handler(
     if (!url || !key || !service || url !== process.env.VITE_SUPABASE_URL) {
       res.writeHead(503).end(
         JSON.stringify({
-          error: "Backend NAMANA belum dikonfigurasi atau proyek tidak cocok.",
+          error: "Backend NAMINA belum dikonfigurasi atau proyek tidak cocok.",
         }),
       );
       return;
@@ -90,7 +90,7 @@ export default async function handler(
           .end(
             JSON.stringify({
               error:
-                "Backend NAMANA belum siap. Periksa migration dan konfigurasi server.",
+                "Backend NAMINA belum siap. Periksa migration dan konfigurasi server.",
             }),
           );
         return;
@@ -142,7 +142,7 @@ export default async function handler(
       if (!origin || new URL(origin).protocol !== "https:") {
         res
           .writeHead(503)
-          .end(JSON.stringify({ error: "APP_ORIGIN NAMANA belum disetel." }));
+          .end(JSON.stringify({ error: "APP_ORIGIN NAMINA belum disetel." }));
         return;
       }
       if (body.action === "resend") {

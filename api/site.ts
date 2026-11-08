@@ -66,7 +66,7 @@ export default async function handler(
           "Content-Type": "text/plain; charset=utf-8",
           "Retry-After": "60",
         })
-        .end("Backend NAMANA belum dikonfigurasi.");
+        .end("Backend NAMINA belum dikonfigurasi.");
       return;
     }
     const client = createClient(url, key, { auth: { persistSession: false } });
@@ -107,7 +107,7 @@ export default async function handler(
       displayName: string;
       bio: string;
     };
-    const title = escapeHtml(`${identity.displayName} | NAMANA.PRO`);
+    const title = escapeHtml(`${identity.displayName} | NAMINA.PRO`);
     const description = escapeHtml(identity.bio);
     let html = (await template())
       .replace(/<title>.*?<\/title>/s, () => `<title>${title}</title>`)

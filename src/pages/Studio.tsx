@@ -443,7 +443,7 @@ function StudioEditor({
     <div className="studio">
       <header className="studio-toolbar">
         <a href="/dashboard" className="wordmark">
-          NAMANA<span> Studio</span>
+          NAMINA<span> Studio</span>
         </a>
         <span>/{slug}</span>
         <div className="toolbar-group">
@@ -966,7 +966,7 @@ function StudioEditor({
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "namana-draft.json";
+                a.download = "namina-draft.json";
                 a.click();
                 URL.revokeObjectURL(url);
               }}

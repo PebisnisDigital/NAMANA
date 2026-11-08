@@ -46,11 +46,11 @@ export function Login({ recovery = false }: { recovery?: boolean }) {
   return (
     <Shell>
       <main className="page login-page">
-        <p>NAMANA Studio</p>
+        <p>NAMINA Studio</p>
         <h1>{recovery ? "Atur password Anda" : "Kembali ke cerita Anda."}</h1>
         {!configured && (
           <Notice error>
-            Koneksi Supabase NAMANA belum dikonfigurasi. Login belum tersedia.
+            Koneksi Supabase NAMINA belum dikonfigurasi. Login belum tersedia.
           </Notice>
         )}
         <form onSubmit={submit} className="form-stack">

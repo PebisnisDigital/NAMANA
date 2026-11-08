@@ -1,12 +1,14 @@
-# Connect the existing NAMANA services
+# Connect the existing NAMINA services
+
+> Name updated to NAMINA.PRO on 8 Nov 2026. Existing Supabase project, `NAMANA_*` environment variable names, migration filenames and storage identifiers remain unchanged to preserve compatibility.
 
 For the current integration prerequisites see [INTEGRATION_STATUS.md](INTEGRATION_STATUS.md). No remote database migration, project creation, DNS change or production deployment has been performed. Local test transports are fixtures, never an application fallback.
 
 ## Confirm the projects
 
 1. The owner confirmed the existing **NAMANA** Supabase project `xglpwdgygzhjsmiwkzgj`, URL `https://xglpwdgygzhjsmiwkzgj.supabase.co`. Keep key values in settings, not chat or Git. Do not select PESONAFLIX or BADAI.
-2. The owner confirmed the existing Vercel project **namana**, domain **namanapro.vercel.app**. Under Git confirm `PebisnisDigital/NAMANA`. Do not import a new project or reconnect a PESONAFLIX project. The feature branch is `feat/namana-studio-mvp`.
-3. The cloud instance currently has no Supabase/Vercel variables, no `.env` or `.vercel/project.json`, and no Vercel login. Git read works, but GitHub deployment API and the supplied live reference are blocked by outbound policy. Add required destinations in environment network settings: `api.github.com`, `api.vercel.com`, `namanapro.vercel.app`, the exact supplied reference hostname, and the verified `<project-ref>.supabase.co`. Add the actual generated Preview hostname after it is known. Never replace an unknown allowlist.
+2. The owner confirmed the existing Vercel project **namana**, domain **naminapro.vercel.app**. Under Git confirm `PebisnisDigital/NAMINA`. Do not import a new project or reconnect a PESONAFLIX project. The feature branch is `feat/namana-studio-mvp`.
+3. The cloud instance currently has no Supabase/Vercel variables, no `.env` or `.vercel/project.json`, and no Vercel login. Git read works, but GitHub deployment API and the supplied live reference are blocked by outbound policy. Add required destinations in environment network settings: `api.github.com`, `api.vercel.com`, `naminapro.vercel.app`, the exact supplied reference hostname, and the verified `<project-ref>.supabase.co`. Add the actual generated Preview hostname after it is known. Never replace an unknown allowlist.
 
 ## Environment values
 

@@ -450,7 +450,7 @@ function SwipeProfileCard({
             aria-label={`Buka kartu ${item.label}`}
             onClick={() => onSelect(index)}
           >
-            <span className="cinematic-hero__card-eyebrow">NAMANA</span>
+            <span className="cinematic-hero__card-eyebrow">NAMINA</span>
             <span className="cinematic-hero__card-chip" aria-hidden="true" />
             <strong>{item.label}</strong>
           </button>
@@ -1036,7 +1036,7 @@ export function IdentityFlip({
       {phase !== "hero" && (
         <section
           className="cinematic-welcome"
-          aria-label="Selamat datang di NAMANA"
+          aria-label="Selamat datang di NAMINA"
         >
           <div
             className="cinematic-welcome__beam cinematic-welcome__beam--left"
@@ -1048,7 +1048,7 @@ export function IdentityFlip({
           />
 
           <div className="cinematic-welcome__nav">
-            <span className="cinematic-brand">{content?.identity.brandLabel || "NAMANA.PRO"}</span>
+            <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA.PRO"}</span>
             <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
           </div>
 
@@ -1059,7 +1059,7 @@ export function IdentityFlip({
             <h1 className="cinematic-welcome__title">
               <span>WELCOME</span>
               <small>TO</small>
-              <strong>NAMANA.PRO</strong>
+              <strong>NAMINA.PRO</strong>
             </h1>
             <p>
               {textMode ? "Di balik setiap karya, ada cerita yang ingin kubagikan." : content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
@@ -1180,7 +1180,7 @@ export function IdentityFlip({
 
           {!textMode && (
             <header className="cinematic-hero__nav">
-              <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMANA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+              <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMINA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
             </header>
           )}
 
@@ -1198,7 +1198,7 @@ export function IdentityFlip({
               />
               <div className="cinematic-hero__identity" data-edit="identity">
                 {textMode && (
-                  <EditableText as="span" className="cinematic-brand namana-text-brand" value={content?.identity.brandLabel || "NAMANA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+                  <EditableText as="span" className="cinematic-brand namana-text-brand" value={content?.identity.brandLabel || "NAMINA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 )}
                 <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || (textMode ? "Hallo, Kenalin Saya adalah..." : "Hello, kenalain saya")} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 <h1 ref={heroHeading} tabIndex={-1}>

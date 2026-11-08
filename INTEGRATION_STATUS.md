@@ -2,8 +2,8 @@
 
 ## Owner-confirmed targets
 
-- GitHub: PebisnisDigital/NAMANA, feature branch feat/namana-studio-mvp.
-- Vercel: existing project `namana`, production domain `namanapro.vercel.app`.
+- GitHub: PebisnisDigital/NAMINA, feature branch feat/namana-studio-mvp.
+- Vercel: existing project `namana`, production domain `naminapro.vercel.app`.
 - Supabase: existing NAMANA project `xglpwdgygzhjsmiwkzgj`.
 - Vercel already has `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for All Environments. Reuse these; do not create a duplicate anon key or URL variable.
 
@@ -17,7 +17,7 @@ Private server actions require the existing NAMANA `SUPABASE_SERVICE_ROLE_KEY`. 
 
 - Cloud has no Supabase variables, Supabase Management token, database connection, Vercel token or Vercel project binding. Variables saved in Vercel are not automatically injected into this cloud machine.
 - Git remote reads work through existing platform authentication.
-- HTTPS CONNECT requests to `xglpwdgygzhjsmiwkzgj.supabase.co`, `namanapro.vercel.app` and `api.vercel.com` are denied with proxy 403. GitHub deployment API access is also denied.
+- HTTPS CONNECT requests to `xglpwdgygzhjsmiwkzgj.supabase.co`, `naminapro.vercel.app` and `api.vercel.com` are denied with proxy 403. GitHub deployment API access is also denied.
 - Cloud configuration draft now includes the required network destinations (including `mcp.supabase.com` and `api.supabase.com`), the two existing public variable names and a server-key requirement. Saving the draft did NOT apply it, supply values or publish an environment.
 - No hosted schema/RLS/Storage inspection or database mutation has been performed. The existing migration file is unchanged.
 - Vercel CLI 65.12.1 reports `Logged out` when run with a writable task-specific config directory. No anonymous/temporary deployment was created.
@@ -35,7 +35,7 @@ The requested `codex mcp add supabase --url 'https://mcp.supabase.com/mcp?projec
 3. Only after inspection confirms the migration is absent and there are no conflicts, apply `supabase/migrations/202611070001_namana.sql` through the project's supported migration workflow. It is not a destructive replacement. Retain existing users/data. Then repeat the inspection and test actual negative cross-tenant requests.
 4. In Vercel project `namana` → Settings → Environment Variables, keep the two existing public variables unchanged. Add the EXISTING NAMANA `SUPABASE_SERVICE_ROLE_KEY` for Preview (server only). SUPABASE_URL and VITE_SUPABASE_ANON_KEY are not required. Set APP_ORIGIN to the actual Preview origin once created, then redeploy Preview.
 5. In Supabase Authentication → URL Configuration add the exact Preview callback `<preview-origin>/auth`. Keep the existing production Site URL unchanged; no production deployment is authorized. Confirm invitation-only registration and the existing SMTP configuration. Use controlled real admin/A/B accounts for Auth, upload, autosave, publish/restore and isolation tests.
-6. In Vercel project `namana` → Settings → Git confirm PebisnisDigital/NAMANA and confirm the feature branch is NOT the Production Branch. After the branch push, open Deployments and select the Preview for feat/namana-studio-mvp and the pushed commit. If no automatic Preview appears, use Create Deployment for that Git ref with target Preview, or use the following commands from an authenticated machine:
+6. In Vercel project `namana` → Settings → Git confirm PebisnisDigital/NAMINA and confirm the feature branch is NOT the Production Branch. After the branch push, open Deployments and select the Preview for feat/namana-studio-mvp and the pushed commit. If no automatic Preview appears, use Create Deployment for that Git ref with target Preview, or use the following commands from an authenticated machine:
 
 ```sh
 vercel link --project namana --scope <existing-team-slug>

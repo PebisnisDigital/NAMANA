@@ -12,7 +12,7 @@ export function Landing() {
           </h1>
           <p>
             Perkenalkan diri lewat dompet dan kartu 3D interaktif. Ubah cerita,
-            foto, video latar, dan tautan dari NAMANA Studio.
+            foto, video latar, dan tautan dari NAMINA Studio.
           </p>
           <div className="actions">
             <a className="primary" href="/vini">
@@ -45,7 +45,7 @@ export function Landing() {
         </section>
       </main>
       <footer className="app-footer">
-        <span>NAMANA.PRO</span>
+        <span>NAMINA.PRO</span>
         <a href="/privacy">Privasi</a>
         <a href="/terms">Ketentuan</a>
       </footer>
@@ -58,7 +58,7 @@ export function Legal({ terms }: { terms: boolean }) {
       <main className="page prose">
         <h1>{terms ? "Ketentuan penggunaan" : "Privasi website"}</h1>
         <p>
-          NAMANA.PRO sedang mempersiapkan layanan website personal.
+          NAMINA.PRO sedang mempersiapkan layanan website personal.
           Pengelolaan halaman dilakukan tim admin.
         </p>
         {terms ? (
@@ -83,7 +83,7 @@ export function Legal({ terms }: { terms: boolean }) {
           <>
             <p>
               Data halaman yang dipublikasikan tersimpan sebagai berkas di
-              repositori GitHub NAMANA. Tautan media dapat merujuk ke layanan
+              repositori GitHub NAMINA. Tautan media dapat merujuk ke layanan
               pihak ketiga, misalnya Dropbox. Halaman klien dapat diakses umum.
             </p>
             <p>

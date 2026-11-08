@@ -83,7 +83,7 @@ function matchesPassword(value: string) {
 }
 
 function githubConfig() {
-  const repo = process.env.NAMANA_GITHUB_REPO || "PebisnisDigital/NAMANA";
+  const repo = process.env.NAMANA_GITHUB_REPO || "PebisnisDigital/NAMINA";
   const branch = process.env.NAMANA_GITHUB_BRANCH || "main";
   if (!/^[\w.-]+\/[\w.-]+$/.test(repo) || !/^[\w./-]+$/.test(branch)) throw new Error("Repositori tidak valid.");
   return { repo, branch };
@@ -206,7 +206,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       const response = await github(path, {
         method: "PUT",
         body: JSON.stringify({
-          message: `Upload media NAMANA ${body.slug}`,
+          message: `Upload media NAMINA ${body.slug}`,
           branch,
           content: body.base64,
         }),
@@ -229,7 +229,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       const response = await github(path, {
         method: "PUT",
         body: JSON.stringify({
-          message: `Update NAMANA ${payload.document.slug} via Studio`,
+          message: `Update NAMINA ${payload.document.slug} via Studio`,
           branch,
           content: Buffer.from(`${JSON.stringify(payload.document, null, 2)}\n`).toString("base64"),
           ...(existing ? { sha: existing.sha } : {}),

@@ -67,7 +67,7 @@ export function CanvasTools({ document, selection, selectedCardId, uploading, on
         <TextControl label="Nama" value={document.content.identity.displayName} onChange={(value) => onChange((d) => { d.content.identity.displayName = value; })} />
         <TextControl label="Profesi" value={document.content.identity.profession} onChange={(value) => onChange((d) => { d.content.identity.profession = value; })} />
         <TextControl label="Sapaan" value={document.content.identity.introLabel ?? "Hello, kenalain saya"} onChange={(value) => onChange((d) => { d.content.identity.introLabel = value; })} />
-        <TextControl label="Teks merek di pojok" value={document.content.identity.brandLabel ?? "NAMANA.PRO"} onChange={(value) => onChange((d) => { d.content.identity.brandLabel = value; })} />
+        <TextControl label="Teks merek di pojok" value={document.content.identity.brandLabel ?? "NAMINA.PRO"} onChange={(value) => onChange((d) => { d.content.identity.brandLabel = value; })} />
         <TextControl label="Bio pada halaman pembuka" multiline value={document.content.identity.bio} onChange={(value) => onChange((d) => { d.content.identity.bio = value; })} />
         <ImageControl label="Foto profil" value={document.media.portrait} disabled={uploading} onChange={(value) => onChange((d) => { d.media.portrait = value; })} onUpload={(file) => onUpload("portrait", file)} />
       </>}

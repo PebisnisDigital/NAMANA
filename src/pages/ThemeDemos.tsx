@@ -183,7 +183,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   return (
     <div className={`theme-demo theme-demo--${theme.id}${dropping ? " theme-demo--motion-opt-in" : ""}`} style={pageVars}>
       <header className="theme-demo__header">
-        <a className="theme-demo__brand" href="/gaya" aria-label="NAMANA.PRO, buka galeri gaya">NAMANA.PRO</a>
+        <a className="theme-demo__brand" href="/gaya" aria-label="NAMINA.PRO, buka galeri gaya">NAMINA.PRO</a>
         <nav className="theme-demo__switcher" aria-label="Pindah gaya demo">
           <a href={`/gaya${prevId}`} aria-label={`Gaya sebelumnya, ${demoThemes[prevId - 1].name}`}><span aria-hidden="true">‹</span><span className="theme-demo__switcher-text"> Sebelumnya</span></a>
           <a href="/gaya" className="theme-demo__switcher-all">{String(theme.id).padStart(2, "0")} / 16 <span className="theme-demo__switcher-text"> gaya</span></a>
@@ -284,7 +284,7 @@ export function ThemeDemo({ theme }: { theme: DemoTheme }) {
   const demo = useViniProfile();
 
   useEffect(() => {
-    document.title = `${theme.name} | Demo NAMANA.PRO`;
+    document.title = `${theme.name} | Demo NAMINA.PRO`;
   }, [theme.name]);
 
   if (demo.state !== "ready") return <DemoStatus state={demo.state} />;
@@ -305,17 +305,17 @@ export function ThemeGallery() {
   const [category, setCategory] = useState<(typeof demoCategories)[number]>("Semua");
   const themes = demoThemes.filter((theme) => category === "Semua" || theme.category === category);
 
-  useEffect(() => { document.title = "16 gaya | Galeri NAMANA.PRO"; }, []);
+  useEffect(() => { document.title = "16 gaya | Galeri NAMINA.PRO"; }, []);
 
   return (
     <div className="demo-gallery">
       <header className="demo-gallery__header">
-        <a href="/" className="demo-gallery__brand">NAMANA.PRO</a>
+        <a href="/" className="demo-gallery__brand">NAMINA.PRO</a>
         <a className="demo-gallery__home" href="/vini">Lihat Original</a>
       </header>
       <main className="demo-gallery__main">
         <div className="demo-gallery__intro">
-          <p>GALERI GAYA NAMANA</p>
+          <p>GALERI GAYA NAMINA</p>
           <h1>Satu cerita. <em>Enam belas</em> panggung.</h1>
           <span>Semua contoh memakai data dan video Teh Vini. Pilih satu, lalu rasakan karakter desainnya.</span>
         </div>
@@ -344,7 +344,7 @@ export function ThemeGallery() {
           ))}
         </div>
       </main>
-      <footer className="demo-gallery__footer">NAMANA.PRO | Galeri 16 gaya</footer>
+      <footer className="demo-gallery__footer">NAMINA.PRO | Galeri 16 gaya</footer>
     </div>
   );
 }

@@ -123,7 +123,7 @@ function AdminContent() {
   const tab = location.pathname.split("/")[2] || "overview";
   return (
     <>
-      <p>Operasional NAMANA.PRO</p>
+      <p>Operasional NAMINA.PRO</p>
       <h1>Superadmin</h1>
       <nav className="admin-tabs" aria-label="Bagian admin">
         {[

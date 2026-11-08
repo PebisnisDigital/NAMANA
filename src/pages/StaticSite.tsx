@@ -43,7 +43,7 @@ export function StaticSite({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (state.status !== "ready") return;
-    document.title = `${state.document.content.identity.displayName} | NAMANA.PRO`;
+    document.title = `${state.document.content.identity.displayName} | NAMINA.PRO`;
   }, [state]);
 
   if (state.status === "ready") {
@@ -58,13 +58,13 @@ export function StaticSite({ slug }: { slug: string }) {
         ) : state.status === "missing" ? (
           <>
             <h1>Website belum tersedia</h1>
-            <p>Alamat ini belum memiliki halaman NAMANA yang dipublikasikan.</p>
-            <a href="/">Kembali ke NAMANA</a>
+            <p>Alamat ini belum memiliki halaman NAMINA yang dipublikasikan.</p>
+            <a href="/">Kembali ke NAMINA</a>
           </>
         ) : (
           <>
             <h1>Website gagal dimuat</h1>
-            <p>Coba segarkan halaman. Jika masih gagal, hubungi tim NAMANA.</p>
+            <p>Coba segarkan halaman. Jika masih gagal, hubungi tim NAMINA.</p>
             <button type="button" onClick={() => window.location.reload()}>Muat ulang</button>
           </>
         )}
