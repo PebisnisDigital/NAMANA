@@ -40,7 +40,16 @@ test("every demo reuses the Original Enter key and physical card drop", () => {
   const demoStyles = readFileSync(new URL("../src/theme-demos.css", import.meta.url), "utf8");
 
   assert.match(demo, /<EnterKeycap\s/);
-  assert.match(demo, /theme-demo__story-card--dropping/);
+  assert.match(demo, /className=\{`theme-demo__story-flight/);
+  assert.match(demo, /<section className="theme-demo__story"/);
+  assert.match(demo, /<article className="theme-demo__story-card"/);
+  assert.doesNotMatch(demoStyles, /\.theme-demo__story-card--dropping/);
+  assert.match(demoStyles, /\.theme-demo__story-flight--dropping\s*\{[^}]*animation:\s*cinematic-enter-card-drop-bounce/s);
+  assert.match(demo, /identityRef\.current\?\.querySelector\("\.cinematic-hero__enter-key"\)/);
+  assert.match(demo, /flightPoint\(\.2, 0\)/);
+  assert.match(demo, /setHasEntered\(true\)/);
+  assert.match(demo, /aria-hidden=\{!hasEntered\} inert=\{!hasEntered\}/);
+  assert.match(demo, /theme-demo__impact-shadow/);
   assert.match(original, /export function EnterKeycap/);
   assert.match(originalStyles, /@keyframes cinematic-enter-card-drop-bounce/);
   assert.match(demoStyles, /animation:cinematic-enter-card-drop-bounce 2\.35s linear both/);

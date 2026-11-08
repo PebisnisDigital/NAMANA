@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type AnimationEvent, type CSSProperties, type PointerEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type AnimationEvent, type CSSProperties, type PointerEvent } from "react";
 import { EnterKeycap, IdentityFlip } from "../components/IdentityFlip";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import { demoCategories, demoThemes, type DemoTheme } from "../themes/catalog";
@@ -58,10 +58,15 @@ function DemoOriginalNav() {
 
 function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hasEntered, setHasEntered] = useState(false);
   const [dropping, setDropping] = useState(false);
+  const [flightReady, setFlightReady] = useState(false);
+  const [flightOrigin, setFlightOrigin] = useState<CSSProperties>({});
   const [dropSequence, setDropSequence] = useState(0);
   const [videoFailed, setVideoFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const identityRef = useRef<HTMLElement>(null);
+  const flightRef = useRef<HTMLDivElement>(null);
   const pointerX = useRef<number | null>(null);
   const cards = site.content.cards.filter((card) => card.visible);
   const current = cards[activeIndex % cards.length];
@@ -69,14 +74,53 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   const videoSrc = assetUrls[site.content.background.desktopVideoAssetId || ""] || "/videos/hero.mp4";
   const posterSrc = assetUrls[site.content.background.posterAssetId || ""] || "/videos/hero-poster.jpg";
   const customImage = current?.imageAssetId ? assetUrls[current.imageAssetId] : undefined;
-  const nextCard = cards.length ? cards[(activeIndex + 1) % cards.length] : undefined;
+  const nextCard = cards.length ? cards[hasEntered ? (activeIndex + 1) % cards.length : 0] : undefined;
   const enterImage = assetUrls[site.content.theme.enterKeyAssetId || ""] || "/images/enter-key-square-tight.webp";
 
   useEffect(() => {
     setActiveIndex(0);
+    setHasEntered(false);
     setDropping(false);
+    setFlightReady(false);
     setVideoFailed(false);
   }, [theme.id]);
+
+  useLayoutEffect(() => {
+    if (!dropping) return;
+    const enter = identityRef.current?.querySelector(".cinematic-hero__enter-key")?.getBoundingClientRect();
+    const card = flightRef.current?.getBoundingClientRect();
+    if (!enter || !card || !card.width || !card.height) {
+      setFlightReady(true);
+      return;
+    }
+
+    // Match the Original's bottom-left transform origin, but measure the
+    // actual Enter key so every theme and breakpoint starts at its button.
+    const keyX = enter.left + enter.width / 2;
+    const keyY = enter.top + enter.height / 2;
+    const restX = card.left + card.width / 2;
+    const restY = card.top + card.height / 2;
+    const flightPoint = (scale: number, travel: number, extraY = 0) => ({
+      x: keyX + (restX - keyX) * travel - card.left - card.width * scale / 2,
+      y: keyY + (restY - keyY) * travel + extraY - card.top - card.height * (1 - scale / 2),
+    });
+    const start = flightPoint(.2, 0);
+    const early = flightPoint(.3, .08, 8);
+    const middle = flightPoint(.7, .48);
+    const px = (value: number) => `${Math.round(value * 10) / 10}px`;
+
+    setFlightOrigin({
+      "--drop-from-x": px(start.x),
+      "--drop-mid-x": px(middle.x),
+      "--drop-from-y": px(start.y),
+      "--drop-early-y": px(early.y),
+      "--drop-mid-y": px(middle.y),
+      "--drop-bounce-high": px(-Math.min(96, card.height * .28)),
+      "--drop-bounce-mid": px(-Math.min(39, card.height * .11)),
+      "--drop-bounce-low": px(-Math.min(12, card.height * .035)),
+    } as CSSProperties);
+    setFlightReady(true);
+  }, [activeIndex, dropSequence, dropping]);
 
   useEffect(() => {
     if (!dropping) return;
@@ -105,8 +149,14 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
 
   const selectCard = (delta: number) => {
     if (!cards.length || dropping) return;
-    setActiveIndex((currentIndex) => (currentIndex + delta + cards.length) % cards.length);
+    if (!hasEntered) {
+      setActiveIndex(delta < 0 ? cards.length - 1 : 0);
+      setHasEntered(true);
+    } else {
+      setActiveIndex((currentIndex) => (currentIndex + delta + cards.length) % cards.length);
+    }
     setDropSequence((sequence) => sequence + 1);
+    setFlightReady(false);
     setDropping(true);
   };
   const finishDrop = (event: AnimationEvent<HTMLElement>) => {
@@ -142,7 +192,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
       </header>
 
       <main className="theme-demo__stage">
-        <section className="theme-demo__identity" aria-label="Identitas Teh Vini">
+        <section ref={identityRef} className="theme-demo__identity" aria-label="Identitas Teh Vini">
           <div className="theme-demo__identity-copy">
             <p className="theme-demo__salutation">{site.content.identity.introLabel || "Hello, kenalain saya"}</p>
             <h1 className="theme-demo__name">{site.content.identity.displayName}</h1>
@@ -151,7 +201,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
           <EnterKeycap
             pressed={dropping}
             inactive={dropping || !nextCard}
-            firstActivation={false}
+            firstActivation={!hasEntered}
             nextCard={nextCard?.title || "berikutnya"}
             onEnter={() => selectCard(1)}
             imageSrc={enterImage}
@@ -179,7 +229,14 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
           <span className="theme-demo__visual-caption" aria-hidden="true">{theme.name}</span>
         </div>
 
-        <section className="theme-demo__story" aria-label="Kartu cerita Teh Vini">
+        <div className="theme-demo__story-platform">
+          <div
+            ref={flightRef}
+            className={`theme-demo__story-flight${!hasEntered || (dropping && !flightReady) ? " theme-demo__story-flight--hidden" : ""}${dropping && flightReady ? " theme-demo__story-flight--dropping" : ""}`}
+            style={flightOrigin}
+            onAnimationEnd={finishDrop}
+          >
+            <section className="theme-demo__story" aria-label="Kartu cerita Teh Vini" aria-hidden={!hasEntered} inert={!hasEntered}>
           {current ? (
             <>
               <div className="theme-demo__story-topline">
@@ -187,11 +244,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
                 <span aria-label={`Kartu ${activeIndex + 1} dari ${cards.length}`}>{String(activeIndex + 1).padStart(2, "0")} / {String(cards.length).padStart(2, "0")}</span>
               </div>
               <div className="theme-demo__story-content" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { pointerX.current = null; }}>
-                <article
-                    className={`theme-demo__story-card${dropping ? " theme-demo__story-card--dropping" : ""}`}
-                    key={`${current.id}-${dropSequence}`}
-                    onAnimationEnd={finishDrop}
-                  >
+                <article className="theme-demo__story-card" key={`${current.id}-${dropSequence}`}>
                     <div className="theme-demo__story-heading">
                       <div className="theme-demo__story-monogram" aria-hidden="true">
                         {customImage ? <img src={customImage} alt="" width={64} height={64} /> : current.title.slice(0, 2)}
@@ -204,7 +257,6 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
                     <p className="theme-demo__story-description">{current.description}</p>
                     {current.link && <a className="theme-demo__story-link" href={current.link} target="_blank" rel="noopener noreferrer">{current.linkLabel || `Buka ${current.title}`}</a>}
                   </article>
-                {dropping && <span className="theme-demo__impact-shadow" aria-hidden="true" />}
               </div>
               <div className="theme-demo__story-actions">
                 <button type="button" onClick={() => selectCard(-1)} disabled={dropping} aria-label="Kartu sebelumnya">‹ <span>Sebelumnya</span></button>
@@ -214,7 +266,10 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
           ) : (
             <div className="theme-demo__empty">Kartu profil belum ditambahkan.</div>
           )}
-        </section>
+            </section>
+          </div>
+          {dropping && flightReady && <span className="theme-demo__impact-shadow" aria-hidden="true" />}
+        </div>
       </main>
 
       <footer className="theme-demo__footer">

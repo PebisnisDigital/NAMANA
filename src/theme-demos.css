@@ -139,12 +139,24 @@
   pointer-events: none;
 }
 
-.theme-demo__story {
+.theme-demo__story-platform {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   grid-area: story;
   min-width: 0;
   align-self: start;
+}
+.theme-demo__story-flight { width: 100%; min-width: 0; transform-origin: left bottom; }
+.theme-demo__story-flight--hidden { visibility: hidden; pointer-events: none; }
+.theme-demo__story-flight--dropping {
+  position: relative;
+  z-index: 2;
+  will-change: transform, opacity;
+  animation: cinematic-enter-card-drop-bounce 2.35s linear both;
+}
+.theme-demo__story {
+  position: relative;
+  min-width: 0;
   border: 1px solid var(--demo-border);
   color: var(--demo-ink);
   background: var(--demo-paper);
@@ -154,25 +166,12 @@
 .theme-demo__story-topline { display: flex; justify-content: space-between; gap: 12px; font-size: 10px; letter-spacing: .11em; font-weight: 800; opacity: .76; }
 .theme-demo__story-content { position: relative; min-height: 142px; touch-action: pan-y; }
 .theme-demo__story-card { width: 100%; }
-.theme-demo__story-card--dropping {
-  --drop-from-x:0px;
-  --drop-mid-x:0px;
-  --drop-from-y:-315px;
-  --drop-early-y:-280px;
-  --drop-mid-y:-175px;
-  --drop-bounce-high:-96px;
-  --drop-bounce-mid:-39px;
-  --drop-bounce-low:-12px;
-  position:relative;
-  z-index:2;
-  transform-origin:left bottom;
-  animation:cinematic-enter-card-drop-bounce 2.35s linear both;
-}
 .theme-demo__impact-shadow {
   position:absolute;
+  z-index:1;
   left:1%;
   right:1%;
-  bottom:-10px;
+  bottom:-14px;
   height:22px;
   border-radius:50%;
   background:radial-gradient(ellipse at center,rgba(0,0,0,.65),rgba(0,0,0,.28) 48%,transparent 73%);
@@ -447,16 +446,9 @@
   .theme-demo--14 .theme-demo__profession,
   .theme-demo--15 .theme-demo__profession,
   .theme-demo--16 .theme-demo__profession { font-size:clamp(20px,6.4vw,30px); margin:2px 0 0; }
-  .theme-demo__story-card--dropping {
-    --drop-from-y:-210px;
-    --drop-early-y:-187px;
-    --drop-mid-y:-116px;
-    --drop-bounce-high:-67px;
-    --drop-bounce-mid:-26px;
-    --drop-bounce-low:-7px;
-  }
   .theme-demo__impact-shadow { height:15px; bottom:-7px; filter:blur(5px); }
-  .theme-demo__story { order:2; padding:13px 15px; transform:none !important; box-shadow:none !important; }
+  .theme-demo__story-platform { order:2; width:100%; }
+  .theme-demo__story { padding:13px 15px; transform:none !important; box-shadow:none !important; }
   .theme-demo__story-topline { font-size:9px; }
   .theme-demo__story-content { min-height:0; }
   .theme-demo__story-heading { margin:9px 0 5px; gap:9px; }
@@ -493,7 +485,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .theme-demo *, .demo-gallery * { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
-  .theme-demo--motion-opt-in .theme-demo__story-card--dropping {
+  .theme-demo--motion-opt-in .theme-demo__story-flight--dropping {
     animation:cinematic-enter-card-drop-bounce 2.35s linear both !important;
   }
   .theme-demo--motion-opt-in .theme-demo__impact-shadow {
