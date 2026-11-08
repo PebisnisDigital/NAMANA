@@ -17,6 +17,7 @@ import "../identity-flip.css";
 import "../identity-text-mode.css";
 import type { AssetUrls, Selection, SiteContent } from "../domain/content";
 import { originalProfileTabs, type ProfileCard, type ProfileIcon } from "../static/originalProfileTabs";
+import { NaminaLogo } from "./NaminaLogo";
 
 type Phase = "welcome" | "hero";
 type ShuffleStage = "rest" | "fan" | "close" | "tuck";
@@ -1048,7 +1049,7 @@ export function IdentityFlip({
           />
 
           <div className="cinematic-welcome__nav">
-            <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA.PRO"}</span>
+            {textMode ? <NaminaLogo variant="compact" /> : <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA.PRO"}</span>}
             <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
           </div>
 
@@ -1059,7 +1060,7 @@ export function IdentityFlip({
             <h1 className="cinematic-welcome__title">
               <span>WELCOME</span>
               <small>TO</small>
-              <strong>NAMINA.PRO</strong>
+              {textMode ? <NaminaLogo variant="hero" /> : <strong>NAMINA.PRO</strong>}
             </h1>
             <p>
               {textMode ? "Di balik setiap karya, ada cerita yang ingin kubagikan." : content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
