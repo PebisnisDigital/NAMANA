@@ -818,6 +818,22 @@ export function IdentityFlip({
     setVideoFailed(false);
   }, [videoUrl]);
 
+  // Buffer the Original demo while the welcome screen is visible.
+  // The video-matched poster covers any Dropbox startup delay.
+  useEffect(() => {
+    if (!textMode || !videoUrl || startOpen) return;
+    const preloader = document.createElement("video");
+    preloader.preload = "auto";
+    preloader.muted = true;
+    preloader.playsInline = true;
+    preloader.src = videoUrl;
+    preloader.load();
+    return () => {
+      preloader.removeAttribute("src");
+      preloader.load();
+    };
+  }, [textMode, videoUrl, startOpen]);
+
   const finishWalletMotion = useCallback(() => {
     setWalletMotion("rest");
     setOutgoingTab(null);
@@ -1105,7 +1121,7 @@ export function IdentityFlip({
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload={textMode ? "auto" : "metadata"}
                 width={1280}
                 height={720}
                 aria-hidden="true"
