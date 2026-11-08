@@ -57,6 +57,7 @@
   width: max-content;
   max-width: 100%;
   isolation: isolate;
+  overflow: hidden;
 }
 
 .namina-liquid-loader__sound-trigger {

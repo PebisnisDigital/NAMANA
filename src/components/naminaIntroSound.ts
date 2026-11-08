@@ -3,6 +3,7 @@ export function createNaminaIntroSound() {
   let context: AudioContext | null = null;
   let played = false;
   let disposed = false;
+  let lastStartedAt = -Infinity;
 
   const ensureContext = () => {
     if (context) return context;
@@ -56,14 +57,16 @@ export function createNaminaIntroSound() {
     noise.stop(origin + 1.2);
   };
 
-  const play = async () => {
-    if (disposed || played) return played;
+  const play = async (restart = false) => {
+    if (disposed || (played && !restart)) return played;
     try {
       const audio = ensureContext();
       if (!audio) return false;
       if (audio.state !== "running") await audio.resume();
-      if (disposed || played || audio.state !== "running") return played;
+      if (disposed || (played && !restart) || audio.state !== "running") return played;
+      if (restart && audio.currentTime - lastStartedAt < 0.7) return true;
       played = true;
+      lastStartedAt = audio.currentTime;
       playSoundMark(audio);
       return true;
     } catch {
@@ -73,7 +76,6 @@ export function createNaminaIntroSound() {
 
   return {
     play,
-    hasPlayed: () => played,
     dispose() {
       disposed = true;
       if (context) void context.close().catch(() => {});

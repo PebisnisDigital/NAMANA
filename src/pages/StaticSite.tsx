@@ -32,11 +32,9 @@ export function StaticSite({ slug }: { slug: string }) {
   const activateIntroSound = useCallback(() => {
     const sound = introSound.current;
     if (!sound) return;
-    if (!sound.hasPlayed()) {
-      setIntroStart(Date.now());
-      setIntroMotionOptIn(true);
-    }
-    void sound.play();
+    setIntroStart(Date.now());
+    setIntroMotionOptIn(true);
+    void sound.play(true);
   }, []);
 
   useEffect(() => {
