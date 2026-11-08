@@ -750,6 +750,8 @@ export function IdentityFlip({
   const totalCards = profileTabs.length;
   const [phase, setPhase] = useState<Phase>(startOpen ? "hero" : "welcome");
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [enterPending, setEnterPending] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const heroStage = useRef<HTMLElement>(null);
@@ -786,9 +788,6 @@ export function IdentityFlip({
           ""
       ]
     : "/videos/hero.mp4";
-  const videoPosterUrl = content?.background.posterAssetId
-    ? assetUrls[content.background.posterAssetId]
-    : undefined;
 
   useEffect(() => {
     if (!editMode || !content) return;
@@ -819,31 +818,16 @@ export function IdentityFlip({
 
   useEffect(() => {
     setVideoFailed(false);
+    setVideoReady(false);
   }, [videoUrl]);
 
-  // Buffer the Original demo while the welcome screen is visible.
-  // The video-matched poster covers any Dropbox startup delay.
+  // WELCOME is the loading screen. Decode one persistent video under it.
   useEffect(() => {
-    if (!textMode || !videoUrl || startOpen) return;
-    const posterPreload = videoPosterUrl ? document.createElement("link") : null;
-    if (posterPreload && videoPosterUrl) {
-      posterPreload.rel = "preload";
-      posterPreload.as = "image";
-      posterPreload.href = videoPosterUrl;
-      document.head.appendChild(posterPreload);
+    if (textMode && enterPending && videoReady) {
+      setPhase("hero");
+      setEnterPending(false);
     }
-    const preloader = document.createElement("video");
-    preloader.preload = "auto";
-    preloader.muted = true;
-    preloader.playsInline = true;
-    preloader.src = videoUrl;
-    preloader.load();
-    return () => {
-      posterPreload?.remove();
-      preloader.removeAttribute("src");
-      preloader.load();
-    };
-  }, [textMode, videoUrl, startOpen, videoPosterUrl]);
+  }, [textMode, enterPending, videoReady]);
 
   const finishWalletMotion = useCallback(() => {
     setWalletMotion("rest");
@@ -864,8 +848,8 @@ export function IdentityFlip({
   }, [walletMotion, reduceMotion, finishWalletMotion]);
 
   useEffect(() => {
-    if (phase !== "hero" || videoFailed) return;
-    heroHeading.current?.focus({ preventScroll: true });
+    if ((phase !== "hero" && !textMode) || videoFailed) return;
+    if (phase === "hero") heroHeading.current?.focus({ preventScroll: true });
     const video = videoRef.current;
     if (!video) return;
 
@@ -898,6 +882,16 @@ export function IdentityFlip({
 
   const enterExperience = () => {
     if (phase !== "welcome") return;
+    if (textMode && videoFailed) {
+      setVideoFailed(false);
+      setVideoReady(false);
+      setEnterPending(true);
+      return;
+    }
+    if (textMode && !videoReady) {
+      setEnterPending(true);
+      return;
+    }
     setPhase("hero");
   };
 
@@ -1074,8 +1068,9 @@ export function IdentityFlip({
               type="button"
               className="cinematic-welcome__enter"
               onClick={enterExperience}
+              aria-busy={enterPending && !videoFailed}
             >
-              <span>LIHAT PROFIL</span>
+              <span>{videoFailed ? "COBA LAGI" : enterPending ? "MENYIAPKAN VIDEO..." : "LIHAT PROFIL"}</span>
               <span
                 className="cinematic-welcome__enter-arrow"
                 aria-hidden="true"
@@ -1094,12 +1089,14 @@ export function IdentityFlip({
         </section>
       )}
 
-      {phase === "hero" && (
+      {(phase === "hero" || textMode) && (
         <section
           ref={heroStage}
-          className="cinematic-hero cinematic-hero--enter"
+          className={`cinematic-hero cinematic-hero--enter${phase !== "hero" ? " cinematic-hero--preparing" : ""}`}
           data-edit="background"
           aria-label="Profil digital cinematic"
+          aria-hidden={phase !== "hero"}
+          inert={phase !== "hero"}
         >
           <div
             className="cinematic-hero__video"
@@ -1107,7 +1104,7 @@ export function IdentityFlip({
             style={{
               background: "#151310",
               backgroundImage:
-                content?.background.posterAssetId &&
+                !textMode && content?.background.posterAssetId &&
                 assetUrls[content.background.posterAssetId]
                   ? `url("${assetUrls[content.background.posterAssetId]}")`
                   : content
@@ -1137,8 +1134,11 @@ export function IdentityFlip({
                 height={720}
                 aria-hidden="true"
                 onError={() => setVideoFailed(true)}
+                onPlaying={() => setVideoReady(true)}
                 poster={
-                  content?.background.posterAssetId
+                  textMode
+                    ? undefined
+                    : content?.background.posterAssetId
                     ? assetUrls[content.background.posterAssetId]
                     : content
                       ? undefined

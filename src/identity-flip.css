@@ -168,6 +168,14 @@
   background: #090909;
   animation: cinematic-hero-reveal .7s ease both;
 }
+/* Decode the video beneath WELCOME without showing a poster. */
+.cinematic-hero--preparing {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
 .cinematic-hero__video {
   position: absolute;
   z-index: -3;
