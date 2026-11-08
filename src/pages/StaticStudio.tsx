@@ -450,6 +450,7 @@ export function StaticStudio() {
                 key={`${document.slug}:${isPreview ? "preview" : "edit"}`}
                 content={prepared!.content}
                 assetUrls={assetUrls}
+                textMode={document.slug === "vini"}
                 editMode={!isPreview}
                 startOpen
                 selectedCardId={selectedCard}

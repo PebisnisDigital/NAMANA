@@ -14,6 +14,7 @@ import {
   useTransform,
 } from "framer-motion";
 import "../identity-flip.css";
+import "../identity-text-mode.css";
 import type { AssetUrls, Selection, SiteContent } from "../domain/content";
 import { originalProfileTabs, type ProfileCard, type ProfileIcon } from "../static/originalProfileTabs";
 
@@ -583,6 +584,7 @@ export function EnterKeycap({
   onEnter,
   imageSrc,
   editMode,
+  textMode = false,
 }: {
   pressed: boolean;
   inactive: boolean;
@@ -591,6 +593,7 @@ export function EnterKeycap({
   onEnter: () => void;
   imageSrc: string;
   editMode: boolean;
+  textMode?: boolean;
 }) {
   return (
     <button
@@ -598,14 +601,123 @@ export function EnterKeycap({
       data-edit={editMode ? "theme" : undefined}
       data-edit-media={editMode ? "enterKey" : undefined}
       className={`cinematic-hero__enter-key${pressed ? " cinematic-hero__enter-key--pressed" : ""}`}
-      aria-label={firstActivation ? `Aktifkan animasi dan tampilkan kartu ${nextCard}` : `ENTER, tampilkan kartu ${nextCard}`}
-      title={firstActivation ? "Aktifkan animasi kartu" : "Tekan ENTER untuk menjatuhkan kartu berikutnya"}
+      aria-label={textMode ? `ENTER, tampilkan cerita ${nextCard}` : firstActivation ? `Aktifkan animasi dan tampilkan kartu ${nextCard}` : `ENTER, tampilkan kartu ${nextCard}`}
+      title={textMode ? "Tampilkan cerita berikutnya" : firstActivation ? "Aktifkan animasi kartu" : "Tekan ENTER untuk menjatuhkan kartu berikutnya"}
       onClick={onEnter}
       disabled={inactive}
     >
       <img src={imageSrc} alt="" width={512} height={512} fetchPriority="high" draggable={false} />
-      <span className="cinematic-hero__sr-only">{firstActivation ? "Aktifkan gerakan kartu" : "Keluarkan kartu"}</span>
+      <span className="cinematic-hero__sr-only">{textMode ? "Tampilkan cerita" : firstActivation ? "Aktifkan gerakan kartu" : "Keluarkan kartu"}</span>
     </button>
+  );
+}
+
+/** The same profile data, presented as an editorial story instead of a physical card. */
+function TextProfileStory({
+  items,
+  page,
+  pageSize,
+  editMode,
+  reduceMotion,
+  onEditText,
+  onPrevious,
+  onNext,
+}: {
+  items: ProfileCard[];
+  page: number;
+  pageSize: number;
+  editMode: boolean;
+  reduceMotion: boolean;
+  onEditText?: (field: EditableField, value: string) => void;
+  onPrevious: () => void;
+  onNext: () => void;
+}) {
+  const totalPages = Math.ceil(items.length / pageSize);
+  const visibleItems = items.slice(page * pageSize, (page + 1) * pageSize);
+
+  return (
+    <section className="namana-text-story" aria-label="Cerita Teh Vini">
+      <AnimatePresence mode="wait" initial={false}>
+        {page < 0 ? (
+          <motion.div
+            key="invite"
+            className="namana-text-story__invite"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <span className="namana-text-story__overline">Kenali lebih dekat</span>
+            <p>Tekan ENTER untuk membaca ceritaku.</p>
+          </motion.div>
+        ) : (
+          <motion.div
+            key={`story-${page}-${pageSize}`}
+            className="namana-text-story__chapter"
+            initial={reduceMotion ? false : { opacity: 0, y: 26, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -20, filter: "blur(3px)" }}
+            transition={{ duration: reduceMotion ? 0 : 0.48, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <div className="namana-text-story__entries">
+              {visibleItems.map((item, index) => (
+                <motion.article
+                  key={item.id || item.label}
+                  className="namana-text-story__entry"
+                  data-edit={item.id ? `card:${item.id}` : undefined}
+                  initial={reduceMotion ? false : { opacity: 0, x: 18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: reduceMotion ? 0 : index * 0.12, duration: reduceMotion ? 0 : 0.42 }}
+                >
+                  <div className="namana-text-story__topline">
+                    <span className="namana-text-story__icon" data-edit-media={item.id ? `card:${item.id}` : undefined} aria-hidden="true">
+                      <img
+                        src={item.imageUrl || `/animated-icons/${item.animatedIcon}.webp`}
+                        alt=""
+                        width={54}
+                        height={54}
+                        decoding="async"
+                      />
+                      {item.icon && <span className="namana-text-story__static-glyph"><ProfileGlyph name={item.icon} /></span>}
+                    </span>
+                    <div className="namana-text-story__copy">
+                      {item.id ? (
+                        <EditableText as="span" className="namana-text-story__label" value={item.label} field={`card:${item.id}:title`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
+                      ) : (
+                        <span className="namana-text-story__label">{item.label}</span>
+                      )}
+                      {item.id ? (
+                        <EditableText as="h2" className="namana-text-story__value" value={item.value} field={`card:${item.id}:subtitle`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
+                      ) : (
+                        <h2 className="namana-text-story__value">{item.value}</h2>
+                      )}
+                    </div>
+                  </div>
+                  {item.id ? (
+                    <EditableText as="p" className="namana-text-story__description" value={item.story} field={`card:${item.id}:description`} selection={`card:${item.id}`} editMode={editMode} onEditText={onEditText} />
+                  ) : (
+                    <p className="namana-text-story__description">{item.story}</p>
+                  )}
+                  {item.url && (
+                    editMode && item.id ? (
+                      <EditableText as="span" className="namana-text-story__external" value={item.linkLabel || `Buka ${item.label}`} field={`card:${item.id}:linkLabel`} selection={`card:${item.id}`} editMode onEditText={onEditText} />
+                    ) : (
+                      <a className="namana-text-story__external" href={item.url} target="_blank" rel="noopener noreferrer">{item.linkLabel || `Buka ${item.label}`}</a>
+                    )
+                  )}
+                </motion.article>
+              ))}
+            </div>
+            <nav className="namana-text-story__navigation" aria-label="Pindah cerita">
+              <button type="button" onClick={onPrevious} aria-label="Cerita sebelumnya">Sebelumnya</button>
+              <span aria-label={`Cerita ${page + 1} dari ${totalPages}`}>
+                {String(page + 1).padStart(2, "0")} <span aria-hidden="true">/</span> {String(totalPages).padStart(2, "0")}
+              </span>
+              <button type="button" onClick={onNext} aria-label="Cerita berikutnya">Berikutnya</button>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 }
 
@@ -617,6 +729,7 @@ export function IdentityFlip({
   startOpen = false,
   selectedCardId,
   onEditText,
+  textMode = false,
 }: {
   content?: SiteContent;
   assetUrls?: AssetUrls;
@@ -625,6 +738,7 @@ export function IdentityFlip({
   startOpen?: boolean;
   selectedCardId?: string;
   onEditText?: (field: EditableField, value: string) => void;
+  textMode?: boolean;
 }) {
   const profileTabs: ProfileCard[] = content
     ? content.cards
@@ -666,15 +780,17 @@ export function IdentityFlip({
     }
   });
   const needsMotionOptIn =
-    deviceReducedMotion && !motionOptIn && content?.wallet.animationPreset !== "minimal";
+    !textMode && deviceReducedMotion && !motionOptIn && content?.wallet.animationPreset !== "minimal";
   const reduceMotion =
     (deviceReducedMotion && !motionOptIn) ||
     content?.wallet.animationPreset === "minimal";
   const [compactDeck, setCompactDeck] = useState(
     () =>
       typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 600px)").matches,
+      window.matchMedia(textMode ? "(max-width: 700px)" : "(max-width: 600px)").matches,
   );
+  const storyPageSize = compactDeck ? 1 : 3;
+  const totalStoryPages = Math.ceil(totalCards / storyPageSize);
   const videoUrl = content
     ? assetUrls[
         (compactDeck && content.background.mobileVideoAssetId) ||
@@ -689,20 +805,26 @@ export function IdentityFlip({
       .filter((c) => c.visible)
       .findIndex((c) => c.id === selectedCardId);
     if (index >= 0) {
-      setActiveTab(index);
+      setActiveTab(textMode ? Math.floor(index / storyPageSize) : index);
       setWalletMotion("rest");
       setOutgoingTab(null);
     } else if (activeTab !== 0 && content.cards.some((c) => c.visible)) {
       setActiveTab(0);
     }
-  }, [selectedCardId, editMode, content, activeTab]);
+  }, [selectedCardId, editMode, content, activeTab, textMode, storyPageSize]);
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 600px)");
+    const media = window.matchMedia(textMode ? "(max-width: 700px)" : "(max-width: 600px)");
     const onChange = () => setCompactDeck(media.matches);
+    onChange();
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
-  }, []);
+  }, [textMode]);
+
+  useEffect(() => {
+    if (!textMode) return;
+    setActiveTab((current) => current >= totalStoryPages ? totalStoryPages - 1 : current);
+  }, [textMode, totalStoryPages]);
 
   useEffect(() => {
     setVideoFailed(false);
@@ -790,9 +912,13 @@ export function IdentityFlip({
   const navigateCards = useCallback(
     (direction: -1 | 1) => {
       if (activeTab < 0) return;
+      if (textMode) {
+        setActiveTab((activeTab + direction + totalStoryPages) % totalStoryPages);
+        return;
+      }
       requestCard((activeTab + direction + totalCards) % totalCards);
     },
-    [activeTab, requestCard, totalCards],
+    [activeTab, requestCard, totalCards, textMode, totalStoryPages],
   );
 
   const swipeCard = (direction: -1 | 1) => {
@@ -804,6 +930,10 @@ export function IdentityFlip({
 
   const triggerEnter = useCallback(() => {
     if (totalCards === 0 || walletMotion !== "rest") return;
+    if (textMode) {
+      setActiveTab((current) => (current + 1) % totalStoryPages);
+      return;
+    }
     const nextIndex = (activeTab + 1) % totalCards;
     if (needsMotionOptIn) {
       try {
@@ -818,7 +948,7 @@ export function IdentityFlip({
       return;
     }
     requestCard(nextIndex);
-  }, [activeTab, needsMotionOptIn, requestCard, totalCards, walletMotion]);
+  }, [activeTab, needsMotionOptIn, requestCard, totalCards, walletMotion, textMode, totalStoryPages]);
 
   useEffect(() => {
     const stage = heroStage.current;
@@ -863,7 +993,7 @@ export function IdentityFlip({
 
   return (
     <main
-      className={`cinematic-page cinematic-page--${phase}${content ? " cinematic-page--custom" : ""}${editMode ? " cinematic-page--editing" : ""}${content?.wallet.materialPreset === "matte" ? " cinematic-page--matte" : ""}${content?.wallet.animationPreset === "minimal" ? " cinematic-page--minimal" : ""}${deviceReducedMotion && motionOptIn && !reduceMotion ? " cinematic-page--motion-opt-in" : ""}`}
+      className={`cinematic-page cinematic-page--${phase}${content ? " cinematic-page--custom" : ""}${editMode ? " cinematic-page--editing" : ""}${textMode ? " cinematic-page--text-mode" : ""}${content?.wallet.materialPreset === "matte" ? " cinematic-page--matte" : ""}${content?.wallet.animationPreset === "minimal" ? " cinematic-page--minimal" : ""}${deviceReducedMotion && motionOptIn && !reduceMotion ? " cinematic-page--motion-opt-in" : ""}`}
       style={
         content
           ? ({
@@ -923,7 +1053,7 @@ export function IdentityFlip({
               <strong>NAMANA.PRO</strong>
             </h1>
             <p>
-              {content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
+              {textMode ? "Di balik setiap karya, ada cerita yang ingin kubagikan." : content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
             </p>
             <button
               type="button"
@@ -1040,13 +1170,14 @@ export function IdentityFlip({
           <div className="cinematic-hero__content">
             <div className="cinematic-hero__headline-row">
               <EnterKeycap
-                pressed={walletMotion !== "rest"}
-                inactive={walletMotion !== "rest" || totalCards === 0}
+                pressed={!textMode && walletMotion !== "rest"}
+                inactive={(!textMode && walletMotion !== "rest") || totalCards === 0}
                 firstActivation={needsMotionOptIn}
-                nextCard={profileTabs[(activeTab + 1) % totalCards]?.label || "pertama"}
+                nextCard={textMode ? profileTabs[((activeTab + 1) * storyPageSize) % totalCards]?.label || "pertama" : profileTabs[(activeTab + 1) % totalCards]?.label || "pertama"}
                 onEnter={triggerEnter}
                 imageSrc={content?.theme.enterKeyAssetId && assetUrls[content.theme.enterKeyAssetId] || "/images/enter-key-square-tight.webp"}
                 editMode={editMode}
+                textMode={textMode}
               />
               <div className="cinematic-hero__identity" data-edit="identity">
                 <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || "Hello, kenalain saya"} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
@@ -1070,6 +1201,18 @@ export function IdentityFlip({
             </div>
 
             <div className="cinematic-hero__details">
+              {textMode ? (
+                <TextProfileStory
+                  items={profileTabs}
+                  page={activeTab}
+                  pageSize={storyPageSize}
+                  editMode={editMode}
+                  reduceMotion={reduceMotion}
+                  onEditText={onEditText}
+                  onPrevious={() => activeTab < 0 ? triggerEnter() : navigateCards(-1)}
+                  onNext={() => activeTab < 0 ? triggerEnter() : navigateCards(1)}
+                />
+              ) : (
               <div
                 className="cinematic-hero__panel"
                 aria-label="Koleksi kartu profil 3D"
@@ -1168,6 +1311,7 @@ export function IdentityFlip({
                       : `Dokumen ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
                 </span>
               </div>
+              )}
             </div>
           </div>
         </section>

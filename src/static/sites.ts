@@ -47,7 +47,7 @@ export const viniSeed: SiteDocument = {
     identity: {
       displayName: "TEH VINI",
       profession: "AI ENTHUSIAST",
-      bio: "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat.",
+      bio: "Di balik setiap karya, ada cerita yang ingin kubagikan.",
       portraitAssetId: null,
     },
     wallet: { color: "#382c28", materialPreset: "original", animationPreset: "normal" },

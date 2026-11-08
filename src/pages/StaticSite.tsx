@@ -47,7 +47,7 @@ export function StaticSite({ slug }: { slug: string }) {
   }, [state]);
 
   if (state.status === "ready") {
-    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} />;
+    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} />;
   }
 
   return (
