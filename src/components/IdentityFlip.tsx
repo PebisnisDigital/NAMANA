@@ -436,11 +436,13 @@ function FlyingDocument({
   index,
   direction,
   exchanging,
+  onDrawComplete,
 }: {
   item: ProfileCard;
   index: number;
   direction: "in" | "out";
   exchanging: boolean;
+  onDrawComplete?: () => void;
 }) {
   return (
     <div
@@ -452,6 +454,15 @@ function FlyingDocument({
         } as CSSProperties
       }
       aria-hidden="true"
+      onAnimationEnd={(event) => {
+        if (
+          direction === "in" &&
+          event.target === event.currentTarget &&
+          event.animationName === "cinematic-paper-draw"
+        ) {
+          onDrawComplete?.();
+        }
+      }}
     >
       <div className="cinematic-hero__card-swipe">
         <div className="cinematic-hero__card-body">
@@ -570,23 +581,23 @@ export function IdentityFlip({
     setVideoFailed(false);
   }, [videoUrl]);
 
+  const finishWalletMotion = useCallback(() => {
+    setWalletMotion("rest");
+    setOutgoingTab(null);
+  }, []);
+
   useEffect(() => {
     if (walletMotion !== "drawing" && walletMotion !== "exchanging") return;
-    const timer = window.setTimeout(
-      () => {
-        setWalletMotion("rest");
-        setOutgoingTab(null);
-      },
-      reduceMotion
-        ? walletMotion === "exchanging"
-          ? 1510
-          : 1360
-        : walletMotion === "exchanging"
-          ? 1780
-          : 1550,
-    );
+    if (reduceMotion) {
+      finishWalletMotion();
+      return;
+    }
+
+    // The incoming sheet ends the exchange. This is only a backup if the
+    // browser drops the animationend event while the tab is backgrounded.
+    const timer = window.setTimeout(finishWalletMotion, 1450);
     return () => window.clearTimeout(timer);
-  }, [walletMotion, activeTab, reduceMotion]);
+  }, [walletMotion, reduceMotion, finishWalletMotion]);
 
   useEffect(() => {
     if (phase !== "hero" || videoFailed) return;
@@ -630,7 +641,7 @@ export function IdentityFlip({
   const requestCard = useCallback(
     (nextIndex: number) => {
       if (walletMotion !== "rest" || nextIndex === activeTab) return;
-      if (content?.wallet.animationPreset === "minimal") {
+      if (reduceMotion) {
         setActiveTab(nextIndex);
         setOutgoingTab(null);
         return;
@@ -647,7 +658,7 @@ export function IdentityFlip({
       setWalletMotion("exchanging");
       setActiveTab(nextIndex);
     },
-    [activeTab, walletMotion, content?.wallet.animationPreset],
+    [activeTab, walletMotion, reduceMotion],
   );
 
   const navigateCards = useCallback(
@@ -1035,7 +1046,7 @@ export function IdentityFlip({
                           item={profileTabs[activeTab]}
                           index={activeTab}
                           totalCards={totalCards}
-                          minimal={reduceMotion || false}
+                          minimal={reduceMotion || walletMotion !== "rest"}
                           offset={0}
                           compact={compactDeck}
                           shuffleStage="rest"
@@ -1065,6 +1076,7 @@ export function IdentityFlip({
                         index={activeTab}
                         direction="in"
                         exchanging={walletMotion === "exchanging"}
+                        onDrawComplete={finishWalletMotion}
                       />
                     </div>
                   )}
