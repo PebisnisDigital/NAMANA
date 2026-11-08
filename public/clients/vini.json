@@ -4,13 +4,13 @@
     "schemaVersion": 1,
     "template": "ORIGINAL",
     "identity": {
-      "displayName": "TEH VINI",
+      "displayName": "TEH VINa",
       "profession": "AI ENTHUSIAST",
       "bio": "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat.",
       "portraitAssetId": null
     },
     "wallet": {
-      "color": "#382c28",
+      "color": "#5c1700",
       "materialPreset": "original",
       "animationPreset": "normal"
     },
@@ -25,7 +25,7 @@
     "theme": {
       "accent": "#c9a66b",
       "fontPreset": "original",
-      "headingScale": 1
+      "headingScale": 0.85
     },
     "cards": [
       {
