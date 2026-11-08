@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { IdentityFlip } from "../components/IdentityFlip";
+import { useEffect, useRef, useState, type AnimationEvent, type CSSProperties, type PointerEvent } from "react";
+import { EnterKeycap, IdentityFlip } from "../components/IdentityFlip";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import { demoCategories, demoThemes, type DemoTheme } from "../themes/catalog";
 import "../theme-demos.css";
@@ -57,16 +56,10 @@ function DemoOriginalNav() {
   );
 }
 
-function getCardMotion(theme: DemoTheme) {
-  if ([5, 9, 12].includes(theme.id)) return { opacity: 0, rotateX: -35, y: 24, scale: 0.91 };
-  if ([6, 10, 16].includes(theme.id)) return { opacity: 0, y: -60, scale: 0.68, rotate: -8 };
-  if ([3, 7, 11, 14].includes(theme.id)) return { opacity: 0, x: 45, rotate: 5, scale: 0.94 };
-  return { opacity: 0, y: 34, scale: 0.98 };
-}
-
 function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument }) {
-  const reducedMotion = Boolean(useReducedMotion());
   const [activeIndex, setActiveIndex] = useState(0);
+  const [dropping, setDropping] = useState(false);
+  const [dropSequence, setDropSequence] = useState(0);
   const [videoFailed, setVideoFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const pointerX = useRef<number | null>(null);
@@ -76,11 +69,20 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   const videoSrc = assetUrls[site.content.background.desktopVideoAssetId || ""] || "/videos/hero.mp4";
   const posterSrc = assetUrls[site.content.background.posterAssetId || ""] || "/videos/hero-poster.jpg";
   const customImage = current?.imageAssetId ? assetUrls[current.imageAssetId] : undefined;
+  const nextCard = cards.length ? cards[(activeIndex + 1) % cards.length] : undefined;
+  const enterImage = assetUrls[site.content.theme.enterKeyAssetId || ""] || "/images/enter-key-square-tight.webp";
 
   useEffect(() => {
     setActiveIndex(0);
+    setDropping(false);
     setVideoFailed(false);
   }, [theme.id]);
+
+  useEffect(() => {
+    if (!dropping) return;
+    const timeout = window.setTimeout(() => setDropping(false), 2700);
+    return () => window.clearTimeout(timeout);
+  }, [dropping, dropSequence]);
 
   useEffect(() => {
     if (videoFailed) return;
@@ -102,7 +104,15 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   }, [videoFailed, videoSrc]);
 
   const selectCard = (delta: number) => {
-    if (cards.length) setActiveIndex((currentIndex) => (currentIndex + delta + cards.length) % cards.length);
+    if (!cards.length || dropping) return;
+    setActiveIndex((currentIndex) => (currentIndex + delta + cards.length) % cards.length);
+    setDropSequence((sequence) => sequence + 1);
+    setDropping(true);
+  };
+  const finishDrop = (event: AnimationEvent<HTMLElement>) => {
+    if (event.target === event.currentTarget && event.animationName === "cinematic-enter-card-drop-bounce") {
+      setDropping(false);
+    }
   };
   const onPointerDown = (event: PointerEvent) => { pointerX.current = event.clientX; };
   const onPointerUp = (event: PointerEvent) => {
@@ -121,7 +131,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   } as CSSProperties;
 
   return (
-    <div className={`theme-demo theme-demo--${theme.id}`} style={pageVars}>
+    <div className={`theme-demo theme-demo--${theme.id}${dropping ? " theme-demo--motion-opt-in" : ""}`} style={pageVars}>
       <header className="theme-demo__header">
         <a className="theme-demo__brand" href="/gaya" aria-label="NAMANA.PRO, buka galeri gaya">NAMANA.PRO</a>
         <nav className="theme-demo__switcher" aria-label="Pindah gaya demo">
@@ -133,12 +143,20 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
 
       <main className="theme-demo__stage">
         <section className="theme-demo__identity" aria-label="Identitas Teh Vini">
-          <p className="theme-demo__salutation">{site.content.identity.introLabel || "Hello, kenalain saya"}</p>
-          <h1 className="theme-demo__name">{site.content.identity.displayName}</h1>
-          <p className="theme-demo__profession">{site.content.identity.profession}</p>
-          <button type="button" className="theme-demo__enter" onClick={() => selectCard(1)} disabled={!current}>
-            <span>Enter</span><span className="theme-demo__enter-arrow" aria-hidden="true">›</span>
-          </button>
+          <div className="theme-demo__identity-copy">
+            <p className="theme-demo__salutation">{site.content.identity.introLabel || "Hello, kenalain saya"}</p>
+            <h1 className="theme-demo__name">{site.content.identity.displayName}</h1>
+            <p className="theme-demo__profession">{site.content.identity.profession}</p>
+          </div>
+          <EnterKeycap
+            pressed={dropping}
+            inactive={dropping || !nextCard}
+            firstActivation={false}
+            nextCard={nextCard?.title || "berikutnya"}
+            onEnter={() => selectCard(1)}
+            imageSrc={enterImage}
+            editMode={false}
+          />
         </section>
 
         <div className="theme-demo__visual" aria-label="Video Teh Vini berjalan">
@@ -169,14 +187,10 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
                 <span aria-label={`Kartu ${activeIndex + 1} dari ${cards.length}`}>{String(activeIndex + 1).padStart(2, "0")} / {String(cards.length).padStart(2, "0")}</span>
               </div>
               <div className="theme-demo__story-content" onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { pointerX.current = null; }}>
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.article
-                    className="theme-demo__story-card"
-                    key={current.id}
-                    initial={reducedMotion ? false : getCardMotion(theme)}
-                    animate={{ opacity: 1, x: 0, y: 0, rotate: 0, rotateX: 0, scale: 1 }}
-                    exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.97 }}
-                    transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 270, damping: 28 }}
+                <article
+                    className={`theme-demo__story-card${dropping ? " theme-demo__story-card--dropping" : ""}`}
+                    key={`${current.id}-${dropSequence}`}
+                    onAnimationEnd={finishDrop}
                   >
                     <div className="theme-demo__story-heading">
                       <div className="theme-demo__story-monogram" aria-hidden="true">
@@ -189,12 +203,12 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
                     </div>
                     <p className="theme-demo__story-description">{current.description}</p>
                     {current.link && <a className="theme-demo__story-link" href={current.link} target="_blank" rel="noopener noreferrer">{current.linkLabel || `Buka ${current.title}`}</a>}
-                  </motion.article>
-                </AnimatePresence>
+                  </article>
+                {dropping && <span className="theme-demo__impact-shadow" aria-hidden="true" />}
               </div>
               <div className="theme-demo__story-actions">
-                <button type="button" onClick={() => selectCard(-1)} aria-label="Kartu sebelumnya">‹ <span>Sebelumnya</span></button>
-                <button type="button" onClick={() => selectCard(1)} aria-label="Kartu berikutnya"><span>Selanjutnya</span> ›</button>
+                <button type="button" onClick={() => selectCard(-1)} disabled={dropping} aria-label="Kartu sebelumnya">‹ <span>Sebelumnya</span></button>
+                <button type="button" onClick={() => selectCard(1)} disabled={dropping} aria-label="Kartu berikutnya"><span>Selanjutnya</span> ›</button>
               </div>
             </>
           ) : (

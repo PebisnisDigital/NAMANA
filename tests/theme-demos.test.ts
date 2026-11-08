@@ -32,3 +32,17 @@ test("the demo source is the published Vini profile with shared cinematic media"
   assert.equal(assets[site.content.background.desktopVideoAssetId!], "/videos/hero.mp4");
   assert.ok(site.content.cards.some((card) => card.visible));
 });
+
+test("every demo reuses the Original Enter key and physical card drop", () => {
+  const demo = readFileSync(new URL("../src/pages/ThemeDemos.tsx", import.meta.url), "utf8");
+  const original = readFileSync(new URL("../src/components/IdentityFlip.tsx", import.meta.url), "utf8");
+  const originalStyles = readFileSync(new URL("../src/identity-flip.css", import.meta.url), "utf8");
+  const demoStyles = readFileSync(new URL("../src/theme-demos.css", import.meta.url), "utf8");
+
+  assert.match(demo, /<EnterKeycap\s/);
+  assert.match(demo, /theme-demo__story-card--dropping/);
+  assert.match(original, /export function EnterKeycap/);
+  assert.match(originalStyles, /@keyframes cinematic-enter-card-drop-bounce/);
+  assert.match(demoStyles, /animation:cinematic-enter-card-drop-bounce 2\.35s linear both/);
+  assert.match(demo, /onAnimationEnd=\{finishDrop\}/);
+});

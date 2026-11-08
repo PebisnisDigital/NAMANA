@@ -575,7 +575,7 @@ function FlyingDocument({
 }
 
 /** A physical Enter key is the single trigger for the card cascade. */
-function EnterKeycap({
+export function EnterKeycap({
   pressed,
   inactive,
   firstActivation,
