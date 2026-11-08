@@ -378,10 +378,6 @@ function SwipeProfileCard({
         )}
         {active && (
           <div className="cinematic-hero__card-body">
-            <div className="cinematic-hero__document-meta">
-              <span>FILE / {String(index + 1).padStart(3, "0")}</span>
-              <span>{item.owner || "ARSIP TEH VINI"}</span>
-            </div>
             <h2 className="cinematic-hero__document-title">{item.label}</h2>
             <div className="cinematic-hero__story" key={item.label}>
               <span className="cinematic-hero__story-icon" aria-hidden="true">
@@ -468,10 +464,6 @@ function FlyingDocument({
     >
       <div className="cinematic-hero__card-swipe">
         <div className="cinematic-hero__card-body">
-          <div className="cinematic-hero__document-meta">
-            <span>FILE / {String(index + 1).padStart(3, "0")}</span>
-            <span>{item.owner || "ARSIP TEH VINI"}</span>
-          </div>
           <h2 className="cinematic-hero__document-title">{item.label}</h2>
           <div className="cinematic-hero__story">
             <span className="cinematic-hero__story-icon">
@@ -966,9 +958,6 @@ export function IdentityFlip({
                     {content ? content.identity.profession : "AI ENTHUSIAST"}
                   </span>
                 </h1>
-                {content && (
-                  <p className="namana-profile-bio">{content.identity.bio}</p>
-                )}
                 {content?.identity.portraitAssetId &&
                   assetUrls[content.identity.portraitAssetId] && (
                     <img
