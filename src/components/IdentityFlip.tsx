@@ -595,7 +595,7 @@ export function IdentityFlip({
 
     // The incoming sheet ends the exchange. This is only a backup if the
     // browser drops the animationend event while the tab is backgrounded.
-    const timer = window.setTimeout(finishWalletMotion, 1450);
+    const timer = window.setTimeout(finishWalletMotion, 1850);
     return () => window.clearTimeout(timer);
   }, [walletMotion, reduceMotion, finishWalletMotion]);
 
