@@ -23,7 +23,7 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="app-shell">
       <header className="app-nav">
         <a className="wordmark" href="/">
-          NAMINA<span>.PRO</span>
+          NAMINA
         </a>
         <nav aria-label="Navigasi aplikasi">
           <a href="/vini">Demo ORIGINAL</a>

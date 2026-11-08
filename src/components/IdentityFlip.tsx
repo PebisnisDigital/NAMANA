@@ -720,6 +720,8 @@ export function IdentityFlip({
   onEditText,
   textMode = false,
   introStartedAt,
+  onIntroSound,
+  introMotionOptIn = false,
 }: {
   content?: SiteContent;
   assetUrls?: AssetUrls;
@@ -730,6 +732,8 @@ export function IdentityFlip({
   onEditText?: (field: EditableField, value: string) => void;
   textMode?: boolean;
   introStartedAt?: number;
+  onIntroSound?: () => void;
+  introMotionOptIn?: boolean;
 }) {
   const profileTabs: ProfileCard[] = content
     ? content.cards
@@ -837,6 +841,8 @@ export function IdentityFlip({
   // The logo is a five-second intro, not a fake measure of video download bytes.
   useEffect(() => {
     if (!textMode || phase !== "welcome") return;
+    setIntroElapsed(false);
+    setIntroTimedOut(false);
     const elapsed = introStartedAt ? Date.now() - introStartedAt : 0;
     const introTimer = window.setTimeout(() => setIntroElapsed(true), Math.max(0, 5000 - elapsed));
     const fallbackTimer = window.setTimeout(() => setIntroTimedOut(true), Math.max(0, 12000 - elapsed));
@@ -1064,8 +1070,8 @@ export function IdentityFlip({
           {textMode ? (
             <div className="cinematic-welcome__solo">
               <h1 className="cinematic-welcome__solo-heading">
-                <NaminaLiquidLoader startedAt={introStartedAt} />
-                <span className="cinematic-welcome__sr-only">NAMINA.PRO</span>
+                <NaminaLiquidLoader startedAt={introStartedAt} onSoundRequest={onIntroSound} motionOptIn={introMotionOptIn} />
+                <span className="cinematic-welcome__sr-only">NAMINA</span>
               </h1>
               <span className="cinematic-welcome__sr-only" role="status">
                 Menyiapkan video profil.
@@ -1076,7 +1082,7 @@ export function IdentityFlip({
               <div className="cinematic-welcome__beam cinematic-welcome__beam--left" aria-hidden="true" />
               <div className="cinematic-welcome__beam cinematic-welcome__beam--right" aria-hidden="true" />
               <div className="cinematic-welcome__nav">
-                <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA.PRO"}</span>
+                <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA"}</span>
                 <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
               </div>
               <div className="cinematic-welcome__content">
@@ -1084,7 +1090,7 @@ export function IdentityFlip({
                 <h1 className="cinematic-welcome__title">
                   <span>WELCOME</span>
                   <small>TO</small>
-                  <strong>NAMINA.PRO</strong>
+                  <strong>NAMINA</strong>
                 </h1>
                 <p>{content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}</p>
                 <button type="button" className="cinematic-welcome__enter" onClick={enterExperience} aria-busy={enterPending && !videoFailed}>
@@ -1192,7 +1198,7 @@ export function IdentityFlip({
 
           {!textMode && (
             <header className="cinematic-hero__nav">
-              <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMINA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+              <EditableText as="span" className="cinematic-brand" value={content?.identity.brandLabel || "NAMINA"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
             </header>
           )}
 
@@ -1210,7 +1216,7 @@ export function IdentityFlip({
               />
               <div className="cinematic-hero__identity" data-edit="identity">
                 {textMode && (
-                  <EditableText as="span" className="cinematic-brand namana-text-brand" value={content?.identity.brandLabel || "NAMINA.PRO"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
+                  <EditableText as="span" className="cinematic-brand namana-text-brand" value={content?.identity.brandLabel || "NAMINA"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 )}
                 <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || (textMode ? "Hallo, Kenalin Saya adalah..." : "Hello, kenalain saya")} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 <h1 ref={heroHeading} tabIndex={-1}>

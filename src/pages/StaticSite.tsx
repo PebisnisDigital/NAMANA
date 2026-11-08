@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { slugSchema } from "../domain/content";
 import { IdentityFlip } from "../components/IdentityFlip";
 import { NaminaLiquidLoader } from "../components/NaminaLogo";
+import { createNaminaIntroSound } from "../components/naminaIntroSound";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import { Shell } from "./shared";
 
@@ -13,7 +14,30 @@ type SiteState =
 
 export function StaticSite({ slug }: { slug: string }) {
   const [state, setState] = useState<SiteState>({ status: "loading" });
-  const introStart = useRef(Date.now());
+  const [introStart, setIntroStart] = useState(() => Date.now());
+  const [introMotionOptIn, setIntroMotionOptIn] = useState(false);
+  const introSound = useRef<ReturnType<typeof createNaminaIntroSound> | null>(null);
+
+  useEffect(() => {
+    if (slug !== "vini") return;
+    const sound = createNaminaIntroSound();
+    introSound.current = sound;
+    void sound.play(); // Browsers without prior interaction may block this attempt.
+    return () => {
+      introSound.current = null;
+      sound.dispose();
+    };
+  }, [slug]);
+
+  const activateIntroSound = useCallback(() => {
+    const sound = introSound.current;
+    if (!sound) return;
+    if (!sound.hasPlayed()) {
+      setIntroStart(Date.now());
+      setIntroMotionOptIn(true);
+    }
+    void sound.play();
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -49,15 +73,15 @@ export function StaticSite({ slug }: { slug: string }) {
   }, [state]);
 
   if (state.status === "ready") {
-    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} introStartedAt={slug === "vini" ? introStart.current : undefined} />;
+    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} introStartedAt={slug === "vini" ? introStart : undefined} onIntroSound={slug === "vini" ? activateIntroSound : undefined} introMotionOptIn={introMotionOptIn} />;
   }
 
   if (slug === "vini" && state.status === "loading") {
     return (
       <main className="namina-initial-loader" aria-label="Menyiapkan profil NAMINA">
         <h1 className="namina-initial-loader__heading">
-          <NaminaLiquidLoader startedAt={introStart.current} />
-          <span className="cinematic-welcome__sr-only">NAMINA.PRO</span>
+          <NaminaLiquidLoader startedAt={introStart} onSoundRequest={activateIntroSound} motionOptIn={introMotionOptIn} />
+          <span className="cinematic-welcome__sr-only">NAMINA</span>
         </h1>
         <span className="cinematic-welcome__sr-only" role="status">Menyiapkan video profil.</span>
       </main>

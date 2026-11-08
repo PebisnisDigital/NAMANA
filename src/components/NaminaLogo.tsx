@@ -7,7 +7,7 @@ type NaminaLogoProps = {
 /** The owner's red N mark, rebuilt as a scalable shape for the welcome screen. */
 export function NaminaLogo({ variant }: NaminaLogoProps) {
   return (
-    <span className={`namina-logo namina-logo--${variant}`} role="img" aria-label="NAMINA.PRO">
+    <span className={`namina-logo namina-logo--${variant}`} role="img" aria-label="NAMINA">
       <svg
         className="namina-logo__symbol"
         viewBox="0 0 212 212"
@@ -21,23 +21,35 @@ export function NaminaLogo({ variant }: NaminaLogoProps) {
         />
       </svg>
       <span className="namina-logo__name" aria-hidden="true">
-        NAMINA<span className="namina-logo__pro">.PRO</span>
+        NAMINA
       </span>
     </span>
   );
 }
 
-export function NaminaLiquidLoader({ startedAt }: { startedAt?: number }) {
+export function NaminaLiquidLoader({ startedAt, onSoundRequest, motionOptIn = false }: { startedAt?: number; onSoundRequest?: () => void; motionOptIn?: boolean }) {
   const elapsedMs = startedAt ? Math.min(Math.max(Date.now() - startedAt, 0), 5000) : 0;
 
-  return (
-    <span className="namina-liquid-loader" aria-hidden="true">
+  const mark = (
+    <span className={`namina-liquid-loader${motionOptIn ? " namina-liquid-loader--opt-in" : ""}`} aria-hidden="true">
       <span className="namina-liquid-loader__base">
         <NaminaLogo variant="hero" />
       </span>
-      <span className="namina-liquid-loader__fill" style={{ animationDelay: `-${elapsedMs}ms` }}>
+      <span key={startedAt} className="namina-liquid-loader__fill" style={{ animationDelay: `-${elapsedMs}ms` }}>
         <NaminaLogo variant="hero" />
       </span>
     </span>
   );
+
+  return onSoundRequest ? (
+    <button
+      className="namina-liquid-loader__sound-trigger"
+      type="button"
+      onClick={onSoundRequest}
+      aria-label="Putar intro NAMINA dengan suara"
+      title="Ketuk logo untuk mengaktifkan suara"
+    >
+      {mark}
+    </button>
+  ) : mark;
 }

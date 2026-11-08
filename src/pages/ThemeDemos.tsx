@@ -183,7 +183,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   return (
     <div className={`theme-demo theme-demo--${theme.id}${dropping ? " theme-demo--motion-opt-in" : ""}`} style={pageVars}>
       <header className="theme-demo__header">
-        <a className="theme-demo__brand" href="/gaya" aria-label="NAMINA.PRO, buka galeri gaya">NAMINA.PRO</a>
+        <a className="theme-demo__brand" href="/gaya" aria-label="NAMINA, buka galeri gaya">NAMINA</a>
         <nav className="theme-demo__switcher" aria-label="Pindah gaya demo">
           <a href={`/gaya${prevId}`} aria-label={`Gaya sebelumnya, ${demoThemes[prevId - 1].name}`}><span aria-hidden="true">‹</span><span className="theme-demo__switcher-text"> Sebelumnya</span></a>
           <a href="/gaya" className="theme-demo__switcher-all">{String(theme.id).padStart(2, "0")} / 16 <span className="theme-demo__switcher-text"> gaya</span></a>
@@ -310,7 +310,7 @@ export function ThemeGallery() {
   return (
     <div className="demo-gallery">
       <header className="demo-gallery__header">
-        <a href="/" className="demo-gallery__brand">NAMINA.PRO</a>
+        <a href="/" className="demo-gallery__brand">NAMINA</a>
         <a className="demo-gallery__home" href="/vini">Lihat Original</a>
       </header>
       <main className="demo-gallery__main">
@@ -344,7 +344,7 @@ export function ThemeGallery() {
           ))}
         </div>
       </main>
-      <footer className="demo-gallery__footer">NAMINA.PRO | Galeri 16 gaya</footer>
+      <footer className="demo-gallery__footer">NAMINA | Galeri 16 gaya</footer>
     </div>
   );
 }

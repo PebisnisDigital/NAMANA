@@ -45,7 +45,7 @@ export function Landing() {
         </section>
       </main>
       <footer className="app-footer">
-        <span>NAMINA.PRO</span>
+        <span>NAMINA</span>
         <a href="/privacy">Privasi</a>
         <a href="/terms">Ketentuan</a>
       </footer>
