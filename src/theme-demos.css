@@ -110,6 +110,13 @@
   min-height:112px;
   margin:-6px 0 -18px;
 }
+.theme-demo button.cinematic-hero__enter-key,
+.theme-demo button.cinematic-hero__enter-key:hover:not(:disabled),
+.theme-demo button.cinematic-hero__enter-key:active:not(:disabled),
+.theme-demo button.cinematic-hero__enter-key:disabled {
+  background: transparent;
+  border: 0;
+}
 
 .theme-demo__visual { grid-area: visual; position: relative; align-self: stretch; min-height: min(72vh, 720px); min-width: 0; z-index: 1; }
 .theme-demo__video-frame { position: absolute; inset: 0; overflow: hidden; border-radius: var(--demo-radius); background: #121212; border: 1px solid var(--demo-border); }

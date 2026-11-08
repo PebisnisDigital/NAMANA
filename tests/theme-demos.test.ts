@@ -53,5 +53,7 @@ test("every demo reuses the Original Enter key and physical card drop", () => {
   assert.match(original, /export function EnterKeycap/);
   assert.match(originalStyles, /@keyframes cinematic-enter-card-drop-bounce/);
   assert.match(demoStyles, /animation:cinematic-enter-card-drop-bounce 2\.35s linear both/);
+  assert.match(demoStyles, /\.theme-demo button\.cinematic-hero__enter-key:hover:not\(:disabled\)/);
+  assert.match(demoStyles, /\.theme-demo button\.cinematic-hero__enter-key:disabled\s*\{\s*background:\s*transparent;/);
   assert.match(demo, /onAnimationEnd=\{finishDrop\}/);
 });
