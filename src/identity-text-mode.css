@@ -196,40 +196,6 @@
   text-underline-offset: 4px;
 }
 
-.namana-text-story__navigation {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 12px;
-  color: #e0cba9;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .08em;
-}
-
-.namana-text-story__navigation > span { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.namana-text-story__navigation > span span { color: #9f8766; }
-.namana-text-story__navigation button {
-  min-width: 96px;
-  min-height: 44px;
-  padding: 8px 0;
-  border: 0;
-  background: transparent;
-  color: var(--namana-text-cream);
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: rgba(225, 183, 117, .58);
-  text-underline-offset: 6px;
-  transition: color .2s ease, text-decoration-color .2s ease;
-}
-
-.namana-text-story__navigation button:hover { color: var(--namana-text-gold); text-decoration-color: currentColor; }
-.namana-text-story__navigation button:active { transform: translateY(2px); }
-.namana-text-story__navigation button:focus-visible { outline: 2px solid #ffe0ac; outline-offset: 3px; }
-
 @keyframes namana-text-icon-arrive {
   0% { opacity: 0; transform: translate3d(-12px, 15px, 0) rotate(-23deg) scale(.65); }
   68% { opacity: 1; transform: translate3d(0, -5px, 0) rotate(7deg) scale(1.08); }
@@ -326,7 +292,6 @@
   .namana-text-story__value { font-size: clamp(27px, 7.2vw, 35px); }
   .namana-text-story__description { margin: 5px 0 0 52px; font-size: 12px; line-height: 1.45; }
   .namana-text-story__external { margin-left: 52px; }
-  .namana-text-story__navigation { margin-top: 5px; }
   .namana-text-story__invite { padding-top: 8px; }
 }
 

@@ -620,8 +620,6 @@ function TextProfileStory({
   editMode,
   reduceMotion,
   onEditText,
-  onPrevious,
-  onNext,
 }: {
   items: ProfileCard[];
   page: number;
@@ -629,10 +627,7 @@ function TextProfileStory({
   editMode: boolean;
   reduceMotion: boolean;
   onEditText?: (field: EditableField, value: string) => void;
-  onPrevious: () => void;
-  onNext: () => void;
 }) {
-  const totalPages = Math.ceil(items.length / pageSize);
   const visibleItems = items.slice(page * pageSize, (page + 1) * pageSize);
 
   return (
@@ -707,13 +702,6 @@ function TextProfileStory({
                 </motion.article>
               ))}
             </div>
-            <nav className="namana-text-story__navigation" aria-label="Pindah cerita">
-              <button type="button" onClick={onPrevious} aria-label="Cerita sebelumnya">Sebelumnya</button>
-              <span aria-label={`Cerita ${page + 1} dari ${totalPages}`}>
-                {String(page + 1).padStart(2, "0")} <span aria-hidden="true">/</span> {String(totalPages).padStart(2, "0")}
-              </span>
-              <button type="button" onClick={onNext} aria-label="Cerita berikutnya">Berikutnya</button>
-            </nav>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1209,8 +1197,6 @@ export function IdentityFlip({
                   editMode={editMode}
                   reduceMotion={reduceMotion}
                   onEditText={onEditText}
-                  onPrevious={() => activeTab < 0 ? triggerEnter() : navigateCards(-1)}
-                  onNext={() => activeTab < 0 ? triggerEnter() : navigateCards(1)}
                 />
               ) : (
               <div
