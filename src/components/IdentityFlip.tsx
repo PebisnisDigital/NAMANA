@@ -1208,9 +1208,6 @@ export function IdentityFlip({
                 textMode={textMode}
               />
               <div className="cinematic-hero__identity" data-edit="identity">
-                {textMode && (
-                  <EditableText as="span" className="cinematic-brand namana-text-brand" value={content?.identity.brandLabel || "NAMINA"} field="identity.brandLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
-                )}
                 <EditableText as="span" className="cinematic-kicker" value={content?.identity.introLabel || (textMode ? "Hallo, Kenalin Saya adalah..." : "Hello, kenalain saya")} field="identity.introLabel" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
                 <h1 ref={heroHeading} tabIndex={-1}>
                   <EditableText as="span" className="cinematic-hero__stamp cinematic-hero__stamp--name" value={content?.identity.displayName || "TEH VINI"} field="identity.displayName" selection="identity" editMode={editMode && !!content} onEditText={onEditText} />
