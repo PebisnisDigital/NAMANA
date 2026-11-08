@@ -26,3 +26,16 @@ export function NaminaLogo({ variant }: NaminaLogoProps) {
     </span>
   );
 }
+
+export function NaminaLiquidLoader() {
+  return (
+    <span className="namina-liquid-loader" aria-hidden="true">
+      <span className="namina-liquid-loader__base">
+        <NaminaLogo variant="hero" />
+      </span>
+      <span className="namina-liquid-loader__fill">
+        <NaminaLogo variant="hero" />
+      </span>
+    </span>
+  );
+}

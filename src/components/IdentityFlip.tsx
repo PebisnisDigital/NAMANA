@@ -17,7 +17,7 @@ import "../identity-flip.css";
 import "../identity-text-mode.css";
 import type { AssetUrls, Selection, SiteContent } from "../domain/content";
 import { originalProfileTabs, type ProfileCard, type ProfileIcon } from "../static/originalProfileTabs";
-import { NaminaLogo } from "./NaminaLogo";
+import { NaminaLiquidLoader } from "./NaminaLogo";
 
 type Phase = "welcome" | "hero";
 type ShuffleStage = "rest" | "fan" | "close" | "tuck";
@@ -753,6 +753,8 @@ export function IdentityFlip({
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [enterPending, setEnterPending] = useState(false);
+  const [introElapsed, setIntroElapsed] = useState(false);
+  const [introTimedOut, setIntroTimedOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const heroStage = useRef<HTMLElement>(null);
@@ -829,6 +831,23 @@ export function IdentityFlip({
       setEnterPending(false);
     }
   }, [textMode, enterPending, videoReady]);
+
+  // The logo is a five-second intro, not a fake measure of video download bytes.
+  useEffect(() => {
+    if (!textMode || phase !== "welcome") return;
+    const introTimer = window.setTimeout(() => setIntroElapsed(true), 5000);
+    const fallbackTimer = window.setTimeout(() => setIntroTimedOut(true), 12000);
+    return () => {
+      window.clearTimeout(introTimer);
+      window.clearTimeout(fallbackTimer);
+    };
+  }, [textMode, phase]);
+
+  useEffect(() => {
+    if (textMode && phase === "welcome" && introElapsed && (videoReady || videoFailed || introTimedOut)) {
+      setPhase("hero");
+    }
+  }, [textMode, phase, introElapsed, videoReady, videoFailed, introTimedOut]);
 
   const finishWalletMotion = useCallback(() => {
     setWalletMotion("rest");
@@ -1039,54 +1058,43 @@ export function IdentityFlip({
           className="cinematic-welcome"
           aria-label="Selamat datang di NAMINA"
         >
-          <div
-            className="cinematic-welcome__beam cinematic-welcome__beam--left"
-            aria-hidden="true"
-          />
-          <div
-            className="cinematic-welcome__beam cinematic-welcome__beam--right"
-            aria-hidden="true"
-          />
-
-          <div className="cinematic-welcome__nav">
-            {textMode ? <NaminaLogo variant="compact" /> : <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA.PRO"}</span>}
-            <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
-          </div>
-
-          <div className="cinematic-welcome__content">
-            <span className="cinematic-kicker">
-              <i aria-hidden="true" /> SEBUAH CERITA DIMULAI
-            </span>
-            <h1 className="cinematic-welcome__title">
-              <span>WELCOME</span>
-              <small>TO</small>
-              {textMode ? <NaminaLogo variant="hero" /> : <strong>NAMINA.PRO</strong>}
-            </h1>
-            <p>
-              {textMode ? "Di balik setiap karya, ada cerita yang ingin kubagikan." : content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}
-            </p>
-            <button
-              type="button"
-              className="cinematic-welcome__enter"
-              onClick={enterExperience}
-              aria-busy={enterPending && !videoFailed}
-            >
-              <span>{videoFailed ? "COBA LAGI" : enterPending ? "MENYIAPKAN VIDEO..." : "LIHAT PROFIL"}</span>
-              <span
-                className="cinematic-welcome__enter-arrow"
-                aria-hidden="true"
-              >
-                ↗
+          {textMode ? (
+            <div className="cinematic-welcome__solo">
+              <h1 className="cinematic-welcome__solo-heading">
+                <NaminaLiquidLoader />
+                <span className="cinematic-welcome__sr-only">NAMINA.PRO</span>
+              </h1>
+              <span className="cinematic-welcome__sr-only" role="status">
+                Menyiapkan video profil.
               </span>
-            </button>
-          </div>
-
-          <div className="cinematic-welcome__footer">
-            <span>{content?.identity.displayName || "TEH VINI"}</span>
-            <span>
-              {content?.identity.profession || (content ? "" : "AI ENTHUSIAST")}
-            </span>
-          </div>
+            </div>
+          ) : (
+            <>
+              <div className="cinematic-welcome__beam cinematic-welcome__beam--left" aria-hidden="true" />
+              <div className="cinematic-welcome__beam cinematic-welcome__beam--right" aria-hidden="true" />
+              <div className="cinematic-welcome__nav">
+                <span className="cinematic-brand">{content?.identity.brandLabel || "NAMINA.PRO"}</span>
+                <span className="cinematic-welcome__edition">PROFIL PERSONAL</span>
+              </div>
+              <div className="cinematic-welcome__content">
+                <span className="cinematic-kicker"><i aria-hidden="true" /> SEBUAH CERITA DIMULAI</span>
+                <h1 className="cinematic-welcome__title">
+                  <span>WELCOME</span>
+                  <small>TO</small>
+                  <strong>NAMINA.PRO</strong>
+                </h1>
+                <p>{content ? content.identity.bio : "Satu kartu, satu cerita. Geser untuk mengenal Teh Vini lebih dekat."}</p>
+                <button type="button" className="cinematic-welcome__enter" onClick={enterExperience} aria-busy={enterPending && !videoFailed}>
+                  <span>{videoFailed ? "COBA LAGI" : enterPending ? "MENYIAPKAN VIDEO..." : "LIHAT PROFIL"}</span>
+                  <span className="cinematic-welcome__enter-arrow" aria-hidden="true">↗</span>
+                </button>
+              </div>
+              <div className="cinematic-welcome__footer">
+                <span>{content?.identity.displayName || "TEH VINI"}</span>
+                <span>{content?.identity.profession || (content ? "" : "AI ENTHUSIAST")}</span>
+              </div>
+            </>
+          )}
         </section>
       )}
 
