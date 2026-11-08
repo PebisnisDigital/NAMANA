@@ -17,7 +17,7 @@ import "../identity-flip.css";
 import "../identity-text-mode.css";
 import type { AssetUrls, Selection, SiteContent } from "../domain/content";
 import { originalProfileTabs, type ProfileCard, type ProfileIcon } from "../static/originalProfileTabs";
-import { NaminaLiquidLoader } from "./NaminaLogo";
+import { NaminaIntroStage } from "./NaminaLogo";
 
 type Phase = "welcome" | "hero";
 type ShuffleStage = "rest" | "fan" | "close" | "tuck";
@@ -721,7 +721,6 @@ export function IdentityFlip({
   textMode = false,
   introStartedAt,
   onIntroSound,
-  introMotionOptIn = false,
 }: {
   content?: SiteContent;
   assetUrls?: AssetUrls;
@@ -733,7 +732,6 @@ export function IdentityFlip({
   textMode?: boolean;
   introStartedAt?: number;
   onIntroSound?: () => void;
-  introMotionOptIn?: boolean;
 }) {
   const profileTabs: ProfileCard[] = content
     ? content.cards
@@ -840,10 +838,10 @@ export function IdentityFlip({
 
   // The logo is a five-second intro, not a fake measure of video download bytes.
   useEffect(() => {
-    if (!textMode || phase !== "welcome") return;
+    if (!textMode || phase !== "welcome" || !introStartedAt) return;
     setIntroElapsed(false);
     setIntroTimedOut(false);
-    const elapsed = introStartedAt ? Date.now() - introStartedAt : 0;
+    const elapsed = Date.now() - introStartedAt;
     const introTimer = window.setTimeout(() => setIntroElapsed(true), Math.max(0, 5000 - elapsed));
     const fallbackTimer = window.setTimeout(() => setIntroTimedOut(true), Math.max(0, 12000 - elapsed));
     return () => {
@@ -853,10 +851,10 @@ export function IdentityFlip({
   }, [textMode, phase, introStartedAt]);
 
   useEffect(() => {
-    if (textMode && phase === "welcome" && introElapsed && (videoReady || videoFailed || introTimedOut)) {
+    if (textMode && phase === "welcome" && introStartedAt && introElapsed && (videoReady || videoFailed || introTimedOut)) {
       setPhase("hero");
     }
-  }, [textMode, phase, introElapsed, videoReady, videoFailed, introTimedOut]);
+  }, [textMode, phase, introStartedAt, introElapsed, videoReady, videoFailed, introTimedOut]);
 
   const finishWalletMotion = useCallback(() => {
     setWalletMotion("rest");
@@ -1069,12 +1067,9 @@ export function IdentityFlip({
         >
           {textMode ? (
             <div className="cinematic-welcome__solo">
-              <h1 className="cinematic-welcome__solo-heading">
-                <NaminaLiquidLoader startedAt={introStartedAt} onSoundRequest={onIntroSound} motionOptIn={introMotionOptIn} />
-                <span className="cinematic-welcome__sr-only">NAMINA</span>
-              </h1>
+              <NaminaIntroStage startedAt={introStartedAt} onSoundRequest={onIntroSound} />
               <span className="cinematic-welcome__sr-only" role="status">
-                Menyiapkan video profil.
+                {introStartedAt ? "Menyiapkan video profil." : "Ketuk logo NAMINA untuk memulai intro bersuara."}
               </span>
             </div>
           ) : (

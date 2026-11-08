@@ -16,7 +16,7 @@ export function createNaminaIntroSound() {
   const playSoundMark = (audio: AudioContext) => {
     const origin = audio.currentTime + 0.04;
     const master = audio.createGain();
-    master.gain.value = 0.23;
+    master.gain.value = 0.31;
     master.connect(audio.destination);
 
     const note = (time: number, frequency: number, duration: number, strength: number) => {
