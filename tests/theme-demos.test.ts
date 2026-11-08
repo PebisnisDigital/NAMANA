@@ -29,7 +29,7 @@ test("the demo source is the published Vini profile with shared cinematic media"
   const assets = resolveMedia(site);
   assert.equal(site.slug, "vini");
   assert.ok(site.content.identity.displayName.toLowerCase().includes("vin"));
-  assert.equal(assets[site.content.background.desktopVideoAssetId!], "/videos/hero.mp4");
+  assert.equal(assets[site.content.background.desktopVideoAssetId!], site.media.desktopVideo);
   assert.ok(site.content.cards.some((card) => card.visible));
 });
 
