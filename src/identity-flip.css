@@ -2346,7 +2346,8 @@
 }
 
 /* The mechanical ENTER key restores the filmed person as the hero.
-   A key press sends a few cards falling from the key towards the reading area. */
+   Each press drops exactly one file, which hits the floor and settles after
+   three progressively smaller rebounds. */
 .cinematic-hero--enter .cinematic-hero__video { opacity: 1; filter: none; }
 .cinematic-hero--enter .cinematic-hero__shade {
   background:
@@ -2440,52 +2441,83 @@
   left: 0;
   width: min(100%, 550px);
   height: 341px;
+  transform-origin: center bottom;
 }
 .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in {
-  animation: cinematic-enter-card-fall 1.65s cubic-bezier(.18,.75,.25,1) both;
-  animation-delay: .13s;
+  animation: cinematic-enter-card-drop-bounce 2.35s linear both;
+  animation-delay: 0s;
 }
-.cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: .2s; }
+.cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: 0s; }
 .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--out {
-  animation: cinematic-enter-card-clear 1s cubic-bezier(.42,.08,.65,.85) both;
+  animation: cinematic-enter-card-clear .35s ease-in both;
 }
-@keyframes cinematic-enter-card-fall {
-  0% { transform: translate3d(-95px,-265px,-360px) rotateX(55deg) rotateY(-42deg) rotateZ(-38deg) scale(.14); opacity: 0; }
-  17% { transform: translate3d(-65px,-212px,30px) rotateX(-28deg) rotateY(-22deg) rotateZ(-24deg) scale(.47); opacity: 1; }
-  45% { transform: translate3d(60px,-110px,175px) rotateX(-14deg) rotateY(18deg) rotateZ(23deg) scale(.90); opacity: 1; }
-  67% { transform: translate3d(-11px,38px,90px) rotateX(7deg) rotateY(-7deg) rotateZ(-10deg) scale(1.045); opacity: 1; }
-  84% { transform: translate3d(6px,-16px,24px) rotateX(-3deg) rotateY(4deg) rotateZ(4deg) scale(.99); }
-  100% { transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); opacity: 1; }
+@keyframes cinematic-enter-card-drop-bounce {
+  0% {
+    opacity: 0;
+    transform: translate3d(-125px,-420px,-250px) rotateX(42deg) rotateY(-18deg) rotateZ(-19deg) scale(.3);
+    animation-timing-function: cubic-bezier(.35,.05,.82,.65);
+  }
+  10% { opacity: 1; transform: translate3d(-85px,-363px,-130px) rotateX(25deg) rotateY(-9deg) rotateZ(-13deg) scale(.49); }
+  37% {
+    opacity: 1;
+    transform: translate3d(-23px,-167px,18px) rotateX(10deg) rotateY(3deg) rotateZ(-4deg) scale(.94);
+    animation-timing-function: cubic-bezier(.38,.03,.82,.78);
+  }
+  52% {
+    transform: translate3d(0,0,0) rotateX(2deg) rotateZ(1deg) scale(1.045,.935);
+    animation-timing-function: cubic-bezier(.12,.68,.23,1);
+  }
+  64% {
+    transform: translate3d(0,-96px,12px) rotateX(-6deg) rotateZ(-2.5deg) scale(.99,1.015);
+    animation-timing-function: cubic-bezier(.42,0,1,1);
+  }
+  75% {
+    transform: translate3d(0,0,0) rotateX(1deg) rotateZ(.7deg) scale(1.025,.97);
+    animation-timing-function: cubic-bezier(.15,.68,.3,1);
+  }
+  83% {
+    transform: translate3d(0,-39px,6px) rotateX(-2.8deg) rotateZ(-1deg) scale(.997,1.006);
+    animation-timing-function: cubic-bezier(.42,0,1,1);
+  }
+  91% {
+    transform: translate3d(0,0,0) rotateX(.5deg) scale(1.01,.985);
+    animation-timing-function: cubic-bezier(.12,.68,.3,1);
+  }
+  96% {
+    transform: translate3d(0,-12px,2px) rotateX(-.8deg) scale(.999,1.003);
+    animation-timing-function: cubic-bezier(.45,0,1,1);
+  }
+  100% { opacity: 1; transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); }
 }
 @keyframes cinematic-enter-card-clear {
   0% { transform: translate3d(0,0,0) rotateZ(0) scale(1); opacity: 1; }
-  38% { transform: translate3d(38px,-38px,80px) rotateZ(8deg) scale(.93); opacity: .95; }
-  100% { transform: translate3d(190px,300px,-200px) rotateX(44deg) rotateZ(38deg) scale(.45); opacity: 0; }
+  100% { transform: translate3d(0,6px,-30px) scale(.98); opacity: 0; }
 }
 
-.cinematic-hero__falling-trail {
+.cinematic-hero__card-viewport--enter .cinematic-hero__impact-shadow {
   position: absolute;
-  z-index: 4;
-  top: -170px;
-  left: -65px;
-  width: 88px;
-  height: 55px;
-  border: 2px solid color-mix(in srgb, var(--trail-accent) 75%, white 25%);
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--trail-accent) 24%, #f7f0e3 76%);
-  box-shadow: 0 11px 22px rgba(0,0,0,.4), inset 0 0 0 5px rgba(255,255,255,.3);
-  opacity: 0;
+  z-index: 2;
+  top: 351px;
+  left: 1%;
+  width: min(98%, 540px);
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.93) 0%, rgba(0,0,0,.52) 40%, transparent 72%);
+  filter: blur(9px);
   pointer-events: none;
-  animation: cinematic-enter-trail-fall 1.1s cubic-bezier(.2,.7,.45,1) both;
+  transform-origin: center;
+  animation: cinematic-enter-impact-shadow 2.35s linear both;
 }
-.cinematic-hero__falling-trail--1 { --trail-x: 140px; --trail-y: 230px; --trail-rotate: -42deg; animation-delay: 0s; }
-.cinematic-hero__falling-trail--2 { --trail-x: 230px; --trail-y: 285px; --trail-rotate: 28deg; animation-delay: .11s; }
-.cinematic-hero__falling-trail--3 { --trail-x: 370px; --trail-y: 190px; --trail-rotate: -22deg; animation-delay: .2s; }
-@keyframes cinematic-enter-trail-fall {
-  0% { opacity: 0; transform: translate3d(-45px,-55px,-140px) rotateZ(-65deg) rotateX(65deg) scale(.6); }
-  18% { opacity: .8; }
-  70% { opacity: .9; }
-  100% { opacity: 0; transform: translate3d(var(--trail-x),var(--trail-y),30px) rotateZ(var(--trail-rotate)) rotateX(-24deg) scale(.84); }
+@keyframes cinematic-enter-impact-shadow {
+  0%, 20% { opacity: 0; transform: scale(.2); }
+  46% { opacity: .18; transform: scale(.68); }
+  52% { opacity: .9; transform: scale(1.08); }
+  64% { opacity: .22; transform: scale(.68); }
+  75% { opacity: .75; transform: scale(1.04); }
+  83% { opacity: .32; transform: scale(.84); }
+  91% { opacity: .65; transform: scale(1); }
+  96% { opacity: .48; transform: scale(.92); }
+  100% { opacity: .55; transform: scale(1); }
 }
 
 @media (max-width: 1100px) and (min-width: 601px) {
@@ -2520,21 +2552,36 @@
   .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { top: 5px; height: 299px; }
   .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer { --flight-origin-x: -30px; --flight-origin-y: -150px; }
   .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet { top: 5px; left: 0; height: 299px; }
-  .cinematic-hero__falling-trail { top: -112px; left: 9px; width: 48px; height: 30px; border-width: 1px; }
-  .cinematic-hero__falling-trail--1 { --trail-x: 68px; --trail-y: 145px; }
-  .cinematic-hero__falling-trail--2 { --trail-x: 140px; --trail-y: 188px; }
-  .cinematic-hero__falling-trail--3 { --trail-x: 220px; --trail-y: 113px; }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__impact-shadow { top: 300px; height: 17px; filter: blur(7px); }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in { animation-name: cinematic-enter-card-drop-bounce-mobile; }
+}
+@keyframes cinematic-enter-card-drop-bounce-mobile {
+  0% { opacity: 0; transform: translate3d(-32px,-245px,-150px) rotateX(35deg) rotateZ(-13deg) scale(.32); animation-timing-function: cubic-bezier(.35,.05,.82,.65); }
+  10% { opacity: 1; transform: translate3d(-25px,-222px,-70px) rotateX(20deg) rotateZ(-8deg) scale(.54); }
+  37% { opacity: 1; transform: translate3d(-8px,-110px,12px) rotateX(8deg) rotateZ(-3deg) scale(.94); animation-timing-function: cubic-bezier(.38,.03,.82,.78); }
+  52% { transform: translate3d(0,0,0) rotateX(2deg) scale(1.035,.94); animation-timing-function: cubic-bezier(.12,.68,.23,1); }
+  64% { transform: translate3d(0,-65px,8px) rotateX(-5deg) scale(.99,1.012); animation-timing-function: cubic-bezier(.42,0,1,1); }
+  75% { transform: translate3d(0,0,0) scale(1.02,.972); animation-timing-function: cubic-bezier(.15,.68,.3,1); }
+  83% { transform: translate3d(0,-26px,5px) rotateX(-2deg) scale(.997,1.004); animation-timing-function: cubic-bezier(.42,0,1,1); }
+  91% { transform: translate3d(0,0,0) scale(1.01,.986); animation-timing-function: cubic-bezier(.12,.68,.3,1); }
+  96% { transform: translate3d(0,-9px,2px) scale(.999,1.002); animation-timing-function: cubic-bezier(.45,0,1,1); }
+  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .cinematic-hero__enter-key { transition: none; }
-  .cinematic-hero__falling-trail { animation: none; }
-  .cinematic-page--motion-opt-in .cinematic-hero__falling-trail { animation: cinematic-enter-trail-fall 1.1s cubic-bezier(.2,.7,.45,1) both !important; }
+  .cinematic-hero__impact-shadow { animation: none; }
+  .cinematic-page--motion-opt-in .cinematic-hero__impact-shadow { animation: cinematic-enter-impact-shadow 2.35s linear both !important; }
   .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in {
-    animation: cinematic-enter-card-fall 1.65s cubic-bezier(.18,.75,.25,1) both !important;
-    animation-delay: .13s !important;
+    animation: cinematic-enter-card-drop-bounce 2.35s linear both !important;
+    animation-delay: 0s !important;
   }
-  .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: .2s !important; }
+  .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: 0s !important; }
   .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--out {
-    animation: cinematic-enter-card-clear 1s cubic-bezier(.42,.08,.65,.85) both !important;
+    animation: cinematic-enter-card-clear .35s ease-in both !important;
+  }
+}
+@media (max-width: 600px) and (prefers-reduced-motion: reduce) {
+  .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in {
+    animation-name: cinematic-enter-card-drop-bounce-mobile !important;
   }
 }

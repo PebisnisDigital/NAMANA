@@ -460,7 +460,7 @@ function FlyingDocument({
           direction === "in" &&
           event.target === event.currentTarget &&
           (event.animationName === "cinematic-paper-draw" ||
-            event.animationName === "cinematic-enter-card-fall")
+            event.animationName === "cinematic-enter-card-drop-bounce")
         ) {
           onDrawComplete?.();
         }
@@ -632,7 +632,7 @@ export function IdentityFlip({
 
     // The incoming sheet ends the exchange. This is only a backup if the
     // browser drops the animationend event while the tab is backgrounded.
-    const timer = window.setTimeout(finishWalletMotion, 2300);
+    const timer = window.setTimeout(finishWalletMotion, 2900);
     return () => window.clearTimeout(timer);
   }, [walletMotion, reduceMotion, finishWalletMotion]);
 
@@ -1049,13 +1049,7 @@ export function IdentityFlip({
                       className="cinematic-hero__flight-layer"
                       aria-hidden="true"
                     >
-                      {[0, 1, 2].map((trail) => (
-                        <div
-                          key={trail}
-                          className={`cinematic-hero__falling-trail cinematic-hero__falling-trail--${trail + 1}`}
-                          style={{ "--trail-accent": profileTabs[(activeTab + trail) % totalCards]?.color || documentAccents[(activeTab + trail) % documentAccents.length] } as CSSProperties}
-                        />
-                      ))}
+                      <span className="cinematic-hero__impact-shadow" />
                       {outgoingTab !== null && (
                         <FlyingDocument
                           item={profileTabs[outgoingTab]}
@@ -1080,7 +1074,7 @@ export function IdentityFlip({
                   aria-live="polite"
                 >
                   {walletMotion === "exchanging"
-                    ? "Kartu baru sedang berjatuhan dan menggantikan kartu sebelumnya."
+                    ? "Satu kartu baru jatuh, memantul di lantai, lalu menggantikan kartu sebelumnya."
                     : activeTab < 0
                       ? "Belum ada dokumen. Tekan ENTER untuk menampilkan kartu pertama."
                       : `Dokumen ${profileTabs[activeTab].label}, ${activeTab + 1} dari ${totalCards}`}
