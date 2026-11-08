@@ -2211,7 +2211,7 @@
 .cinematic-hero__dancer:focus-visible .cinematic-hero__dancer-instruction { color: #fff3e0; transform: translateY(-3px); }
 .cinematic-hero__dancer:focus-visible { outline: 3px solid #f2ca8f; outline-offset: -3px; border-radius: 24px; }
 .cinematic-hero__dancer:active:not(:disabled) { transform: scale(.985); }
-.cinematic-hero__dancer:disabled { cursor: default; }
+.cinematic-hero__dancer:disabled { cursor: default; opacity: 1; }
 
 .cinematic-hero__dancer--throwing .cinematic-hero__dancer-body {
   animation: cinematic-stickman-throw .92s cubic-bezier(.22,.7,.25,1) both;
