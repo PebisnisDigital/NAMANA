@@ -204,28 +204,6 @@
   justify-content: space-between;
   padding: 32px clamp(22px,5vw,80px);
 }
-.cinematic-hero__pause-video {
-  position: absolute;
-  z-index: 5;
-  right: clamp(14px, 2.5vw, 30px);
-  bottom: clamp(14px, 2.5vw, 30px);
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 1px solid rgba(228, 200, 162, .55);
-  border-radius: 50%;
-  background: rgba(8, 8, 9, .65);
-  color: #f4eee7;
-  cursor: pointer;
-  opacity: .55;
-  transition: opacity .2s ease, border-color .2s ease;
-}
-.cinematic-hero__pause-video:hover,
-.cinematic-hero__pause-video:focus-visible { opacity: 1; border-color: #f5c382; }
-.cinematic-hero__pause-video:active { background: rgba(36, 29, 22, .9); }
-.cinematic-hero__pause-video span { font-size: 17px; line-height: 1; }
 .cinematic-credits {
   padding: 14px 22px;
   background: #080809;
@@ -2550,11 +2528,12 @@
     gap: clamp(8px, 1.4svh, 14px);
   }
   .cinematic-hero--enter .cinematic-hero__video {
-    width: 118%;
-    right: -18%;
+    width: 100%;
+    right: 0;
     height: 55svh;
     opacity: 1;
-    object-position: 35% 17%;
+    /* Keep the walking person centered in the full-width mobile stage. */
+    object-position: 46% 17%;
   }
   .cinematic-hero--enter .cinematic-hero__shade {
     background: linear-gradient(0deg, #080809 0%, rgba(8,8,9,.98) 27%, rgba(8,8,9,.79) 40%, rgba(0,0,0,.04) 67%, rgba(0,0,0,.43) 100%);
@@ -2652,13 +2631,6 @@
     margin-top: 4px;
     font-size: clamp(11px, 2.9vw, 13px);
     line-height: 1.37;
-  }
-  .cinematic-hero--enter .cinematic-hero__pause-video {
-    top: max(12px, env(safe-area-inset-top));
-    right: 12px;
-    bottom: auto;
-    width: 40px;
-    height: 40px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -550,7 +550,6 @@ export function IdentityFlip({
     : originalProfileTabs;
   const totalCards = profileTabs.length;
   const [phase, setPhase] = useState<Phase>(startOpen ? "hero" : "welcome");
-  const [videoPaused, setVideoPaused] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
@@ -640,7 +639,7 @@ export function IdentityFlip({
     video.playsInline = true;
 
     const resumeVideo = () => {
-      if (document.visibilityState !== "visible" || videoPaused) return;
+      if (document.visibilityState !== "visible") return;
       void video.play().catch(() => {
         // Browser-level autoplay restrictions cannot be overridden by the page.
       });
@@ -657,7 +656,6 @@ export function IdentityFlip({
     };
   }, [
     phase,
-    videoPaused,
     videoFailed,
     videoUrl,
   ]);
@@ -883,7 +881,7 @@ export function IdentityFlip({
                 ref={videoRef}
                 className="cinematic-hero__video"
                 data-edit="background"
-                autoPlay={!videoPaused}
+                autoPlay
                 muted
                 loop
                 playsInline
@@ -1071,25 +1069,6 @@ export function IdentityFlip({
               </div>
             </div>
           </div>
-          {videoUrl && !videoFailed && (
-            <button
-              type="button"
-              className="cinematic-hero__pause-video"
-              aria-label={videoPaused ? "Lanjutkan video latar" : "Jeda video latar"}
-              aria-pressed={videoPaused}
-              onClick={() => {
-                if (!videoRef.current) return;
-                if (videoPaused) {
-                  void videoRef.current.play().then(() => setVideoPaused(false)).catch(() => {});
-                } else {
-                  videoRef.current.pause();
-                  setVideoPaused(true);
-                }
-              }}
-            >
-              <span aria-hidden="true">{videoPaused ? "▶" : "Ⅱ"}</span>
-            </button>
-          )}
         </section>
       )}
       {phase === "hero" && (
