@@ -83,7 +83,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
   }, [theme.id]);
 
   useEffect(() => {
-    if (reducedMotion || videoFailed) return;
+    if (videoFailed) return;
     const video = videoRef.current;
     if (!video) return;
     video.defaultMuted = true;
@@ -99,7 +99,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
       window.removeEventListener("pageshow", resume);
       document.removeEventListener("visibilitychange", resume);
     };
-  }, [reducedMotion, videoFailed, videoSrc]);
+  }, [videoFailed, videoSrc]);
 
   const selectCard = (delta: number) => {
     if (cards.length) setActiveIndex((currentIndex) => (currentIndex + delta + cards.length) % cards.length);
@@ -144,7 +144,7 @@ function DemoExperience({ theme, site }: { theme: DemoTheme; site: SiteDocument 
         <div className="theme-demo__visual" aria-label="Video Teh Vini berjalan">
           <div className="theme-demo__video-frame">
             <img className="theme-demo__poster" src={posterSrc} alt="Teh Vini berdiri di panggung berlatar gelap" width={960} height={540} fetchPriority="high" />
-            {!reducedMotion && !videoFailed && (
+            {!videoFailed && (
               <video
                 key={videoSrc}
                 ref={videoRef}
