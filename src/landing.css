@@ -128,6 +128,31 @@
 .namina-landing__showcase-action span { font-size: 18px; line-height: 1; }
 .namina-landing__stage-note { color: #beb8ae; font-size: 12px; line-height: 1.6; margin-top: 15px !important; }
 
+.namina-landing__problem {
+  background: #200e10;
+  padding: clamp(74px, 8vw, 138px) max(clamp(24px, 4.6vw, 84px), calc((100vw - 1432px)/2));
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: clamp(54px, 9vw, 170px);
+}
+.namina-landing__problem .namina-landing__index { color: #ffa5aa; }
+.namina-landing__problem h2 {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: clamp(56px, 5.9vw, 112px);
+  font-weight: 400;
+  line-height: .9;
+  letter-spacing: -.02em;
+  margin: 24px 0 27px;
+}
+.namina-landing__problem h2 span { color: #fa727b; }
+.namina-landing__problem-copy > p { max-width: 545px; color: #e3d3d0; font-size: 15px; line-height: 1.8; }
+.namina-landing__problem-list { align-self: end; }
+.namina-landing__problem-row { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 20px; padding: 21px 0; border-top: 1px solid #614044; }
+.namina-landing__problem-row > span { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 26px; color: #fa727b; line-height: 1.1; }
+.namina-landing__problem-row h3 { font-size: 19px; line-height: 1.2; }
+.namina-landing__problem-row p { color: #d6c6c2; font-size: 13px; line-height: 1.65; margin-top: 7px; }
+.namina-landing__problem-answer { padding: 25px 0 0; border-top: 1px solid #614044; color: #fff5ef; font-weight: 800; line-height: 1.6; font-size: 15px; }
+
 .namina-landing__story { background: #f3eee5; color: #141414; padding: clamp(70px, 8vw, 142px) max(clamp(24px, 4.6vw, 84px), calc((100vw - 1432px)/2)); display: grid; grid-template-columns: minmax(0, 1.03fr) minmax(0, .97fr); gap: clamp(60px, 8vw, 156px); }
 .namina-landing__index { font-size: 11px; letter-spacing: .17em; font-weight: 800; color: #bc1c27; }
 .namina-landing__section-heading h2,
@@ -141,21 +166,38 @@
 .namina-landing__story-number { color: #bb262f; font-family: 'Bebas Neue', Impact, sans-serif; font-size: 23px; line-height: 1; }
 .namina-landing__story-row h3 { font-size: clamp(19px, 1.55vw, 25px); letter-spacing: -.04em; line-height: 1.2; }
 .namina-landing__story-row p { color: #524b46; font-size: 13px; margin-top: 8px; line-height: 1.6; }
+.namina-landing__story-row .namina-landing__story-effect { color: #642328; padding-top: 5px; }
+.namina-landing__story-effect strong { color: #a51420; }
 .namina-landing__story-demo { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding-top: 17px; font-weight: 800; font-size: 13px; color: #a51420; }
 .namina-landing__story-demo:hover { color: #5e0e13; }
 .namina-landing__story-demo span { font-size: 20px; }
 
-.namina-landing__process { max-width: 1600px; margin: auto; padding: clamp(75px, 8vw, 140px) clamp(24px, 4.6vw, 84px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: clamp(65px, 9vw, 170px); }
+.namina-landing__impact { max-width: 1600px; margin: auto; padding: clamp(80px, 9vw, 145px) clamp(24px, 4.6vw, 84px); }
+.namina-landing__impact-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .65fr); align-items: end; column-gap: 90px; }
+.namina-landing__impact-heading .namina-landing__index { grid-column: 1 / -1; color: #fb626c; }
+.namina-landing__impact h2 { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(84px, 10vw, 180px); line-height: .85; letter-spacing: -.02em; font-weight: 400; margin: 25px 0 55px; }
+.namina-landing__impact h2 span { color: #ee3b47; }
+.namina-landing__impact-heading > p { margin-bottom: 60px; max-width: 440px; font-size: 15px; line-height: 1.8; color: #d1c9c0; }
+.namina-landing__impact-row { display: grid; grid-template-columns: minmax(170px, .48fr) minmax(0, 1fr); gap: clamp(24px, 6vw, 105px); border-top: 1px solid #4c403d; padding: clamp(32px, 4vw, 64px) 0; }
+.namina-landing__impact-row:last-child { border-bottom: 1px solid #4c403d; }
+.namina-landing__impact-row-label { display: flex; gap: 25px; align-items: baseline; }
+.namina-landing__impact-row-label span { font-family: 'Bebas Neue', Impact, sans-serif; color: #fc5a65; font-size: 28px; }
+.namina-landing__impact-row-label h3 { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(39px, 4.2vw, 74px); font-weight: 400; line-height: 1; }
+.namina-landing__impact-row h4 { font-size: clamp(22px, 2vw, 32px); font-weight: 800; line-height: 1.25; letter-spacing: -.03em; margin: 0 0 14px; }
+.namina-landing__impact-row p { font-size: 14px; line-height: 1.8; color: #cfc7bd; max-width: 680px; }
+.namina-landing__impact-row .namina-landing__impact-takeaway { color: #ff858d; font-weight: 800; margin-top: 18px; }
+
+.namina-landing__process { background: #f3eee5; color: #141414; padding: clamp(75px, 8vw, 140px) max(clamp(24px, 4.6vw, 84px), calc((100vw - 1432px)/2)); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: clamp(65px, 9vw, 170px); }
 .namina-landing__process-intro { align-self: start; }
 .namina-landing__process h2 { font-size: clamp(56px, 5.2vw, 93px); }
-.namina-landing__process h2 span { color: var(--nl-red); }
-.namina-landing__process-intro > p { max-width: 455px; font-size: 15px; color: #d2cdc4; line-height: 1.7; margin-bottom: 27px; }
+.namina-landing__process h2 span { color: #ad151a; }
+.namina-landing__process-intro > p { max-width: 455px; font-size: 15px; color: #49443f; line-height: 1.7; margin-bottom: 27px; }
 .namina-landing__steps { list-style: none; padding: 0; margin: 0; }
-.namina-landing__steps li { display: grid; grid-template-columns: 44px 1fr; gap: 22px; padding: 23px 0 28px; border-top: 1px solid #393532; }
-.namina-landing__steps li:last-child { border-bottom: 1px solid #393532; }
-.namina-landing__steps li > span { font-family: 'Bebas Neue', Impact, sans-serif; color: #ef444e; font-size: 25px; }
+.namina-landing__steps li { display: grid; grid-template-columns: 44px 1fr; gap: 22px; padding: 23px 0 28px; border-top: 1px solid #c6bdb2; }
+.namina-landing__steps li:last-child { border-bottom: 1px solid #c6bdb2; }
+.namina-landing__steps li > span { font-family: 'Bebas Neue', Impact, sans-serif; color: #b11c24; font-size: 25px; }
 .namina-landing__steps h3 { font-size: 20px; font-weight: 800; line-height: 1.3; }
-.namina-landing__steps p { color: #bcb5ad; font-size: 13px; line-height: 1.65; margin-top: 8px; }
+.namina-landing__steps p { color: #524b46; font-size: 13px; line-height: 1.65; margin-top: 8px; }
 
 .namina-landing__closing { background: #aa111a; text-align: center; padding: clamp(78px, 9vw, 142px) 24px; }
 .namina-landing__closing-label { display: block; color: #ffd2d4; font-size: 11px; font-weight: 800; letter-spacing: .17em; }
@@ -176,6 +218,7 @@
   .namina-landing__hero { gap: 30px; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
   .namina-landing__hero h1 { font-size: clamp(72px, 8vw, 105px); }
   .namina-landing__story { gap: 65px; }
+  .namina-landing__problem { gap: 65px; }
   .namina-landing__process { gap: 75px; }
 }
 
@@ -189,15 +232,23 @@
   .namina-landing__hero-stage { max-width: 760px; }
   .namina-landing__showcase { aspect-ratio: 1.47; }
   .namina-landing__showcase-content strong { font-size: clamp(42px, 8vw, 80px); }
-  .namina-landing__story, .namina-landing__process { grid-template-columns: 1fr; gap: 46px; }
+  .namina-landing__problem, .namina-landing__story, .namina-landing__process { grid-template-columns: 1fr; gap: 46px; }
+  .namina-landing__problem { padding-inline: 24px; }
+  .namina-landing__problem-list { max-width: 720px; }
   .namina-landing__story { padding-inline: 24px; }
+  .namina-landing__impact-heading { grid-template-columns: 1fr; }
+  .namina-landing__impact h2 { margin-bottom: 25px; }
+  .namina-landing__impact-heading > p { margin-bottom: 40px; }
+  .namina-landing__impact-row { grid-template-columns: minmax(160px, .4fr) minmax(0, 1fr); gap: 35px; }
+  .namina-landing__impact-row-label { gap: 16px; }
+  .namina-landing__impact-row-label h3 { font-size: 52px; }
   .namina-landing__footer { flex-wrap: wrap; gap: 14px 20px; }
 }
 
 @media (max-width: 520px) {
   .namina-landing__header { gap: 16px; }
   .namina-landing__header nav { width: 100%; justify-content: space-between; gap: 8px; font-size: 11px; }
-  .namina-landing__header nav a { padding: 6px 0 10px; }
+  .namina-landing__header nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 0; }
   .namina-landing__hero { padding: 44px 20px 66px; gap: 38px; }
   .namina-landing__eyebrow { font-size: 9px; letter-spacing: .095em; margin-bottom: 22px !important; }
   .namina-landing__eyebrow span { width: 16px; }
@@ -215,10 +266,20 @@
   .namina-landing__showcase-caption { font-size: 8px; }
   .namina-landing__showcase-action { right: 12px; bottom: 12px; }
   .namina-landing__stage-note { font-size: 11px; }
+  .namina-landing__problem { padding: 72px 20px 78px; }
+  .namina-landing__problem h2 { font-size: clamp(56px, 13.5vw, 83px); }
+  .namina-landing__problem-copy > p { font-size: 14px; }
+  .namina-landing__problem-row { gap: 12px; }
   .namina-landing__story { padding: 72px 20px 78px; }
   .namina-landing__section-heading h2, .namina-landing__process h2 { font-size: clamp(53px, 13vw, 78px); }
   .namina-landing__section-heading > p { font-size: 14px; }
   .namina-landing__story-row { padding: 21px 0; }
+  .namina-landing__impact { padding: 80px 20px 90px; }
+  .namina-landing__impact h2 { font-size: clamp(76px, 22vw, 120px); }
+  .namina-landing__impact-heading > p { font-size: 14px; }
+  .namina-landing__impact-row { grid-template-columns: 1fr; gap: 15px; padding: 32px 0; }
+  .namina-landing__impact-row-label h3 { font-size: 48px; }
+  .namina-landing__impact-row h4 { font-size: 22px; }
   .namina-landing__process { padding: 75px 20px 85px; }
   .namina-landing__closing { padding: 88px 18px; }
   .namina-landing__closing h2 { font-size: clamp(53px, 13.4vw, 85px); }

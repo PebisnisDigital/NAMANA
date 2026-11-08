@@ -7,10 +7,59 @@ const registrationMessage =
   "Halo Teh Vini, saya ingin mendaftar jasa pembuatan website personal sinematik NAMINA.PRO. Mohon dibantu proses pendaftarannya.";
 const registrationUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(registrationMessage)}`;
 
+const scatteredStory = [
+  { place: "Di bio", situation: "Perkenalan sering cuma muat beberapa kalimat." },
+  { place: "Di chat", situation: "Pengalaman dan layanan perlu dijelaskan lagi." },
+  { place: "Di galeri", situation: "Karya bercampur dengan unggahan lain." },
+];
+
 const storyParts = [
-  { title: "Siapa kamu", detail: "Nama, profil, dan cerita singkat yang ingin kamu kenalkan." },
-  { title: "Apa yang kamu kerjakan", detail: "Profesi, pengalaman, dan keahlian dalam kartu cerita." },
-  { title: "Apa yang kamu buat", detail: "Karya, pencapaian, dan tautan yang ingin ditunjukkan." },
+  {
+    title: "Kesan pertama yang punya karakter",
+    detail: "Pembuka sinematik memperkenalkan sosokmu melalui tampilan dan cerita yang kamu pilih.",
+    effect: "Orang mendapat gambaran tentangmu sebelum memulai obrolan.",
+  },
+  {
+    title: "Keahlian mudah dipahami",
+    detail: "Kartu interaktif memisahkan profil, pengalaman, kemampuan, dan cerita penting.",
+    effect: "Calon klien atau perekrut bisa langsung menuju informasi yang dicari.",
+  },
+  {
+    title: "Karya punya tempat sendiri",
+    detail: "Portofolio dan pencapaian yang kamu miliki bisa ditampilkan bersama tautan pendukung.",
+    effect: "Percakapan bisnis dan karier punya bahan yang lebih konkret.",
+  },
+  {
+    title: "Satu link, banyak tempat berbagi",
+    detail: "Tautan NAMINA bisa dibagikan lewat status WA, bio media sosial, proposal, atau kartu nama.",
+    effect: "Orang menemukan profil yang sama tanpa perlu mengumpulkan tautan terpisah.",
+  },
+  {
+    title: "Jalur kontak lebih jelas",
+    detail: "Tombol dan tautan kontak dapat mengarahkan pengunjung ke WhatsApp atau kanalmu.",
+    effect: "Setelah mengenalmu, pengunjung tahu cara memulai percakapan.",
+  },
+];
+
+const impactParts = [
+  {
+    name: "Bisnis",
+    title: "Calon klien datang dengan konteks.",
+    description: "Perkenalkan layanan, pengalaman, dan hasil kerjamu dalam satu alur. Orang bisa melihat apa yang kamu tawarkan sebelum bertanya lewat WhatsApp.",
+    takeaway: "Membantu percakapan penjualan lebih terarah.",
+  },
+  {
+    name: "Karier",
+    title: "Portofolio siap dikirim kapan saja.",
+    description: "Saat melamar, berjejaring, atau menawarkan kolaborasi, bagikan satu halaman yang memuat keahlian, pengalaman, dan karya yang relevan.",
+    takeaway: "Memudahkan orang menilai kemampuanmu.",
+  },
+  {
+    name: "Omzet",
+    title: "Lebih jelas jalan menuju order.",
+    description: "Pengunjung yang tertarik bisa bergerak dari mengenal profil, melihat bukti kerja, lalu menghubungimu. Ini membuka peluang prospek, bukan menjamin penjualan.",
+    takeaway: "Mendukung proses menuju transaksi dan tindak lanjut.",
+  },
 ];
 
 const orderSteps = [
@@ -42,7 +91,8 @@ export function Landing() {
         </a>
         <nav aria-label="Navigasi NAMINA">
           <a href="#contoh">Contoh</a>
-          <a href="#layanan">Layanan</a>
+          <a href="#layanan">Benefit</a>
+          <a href="#dampak">Dampak</a>
           <a href="#cara-pesan">Cara pesan</a>
         </nav>
         <WhatsAppLink label="Pesan via WA" className="namina-landing__header-cta" />
@@ -54,7 +104,7 @@ export function Landing() {
             <p className="namina-landing__eyebrow"><span aria-hidden="true" /> JASA WEBSITE PERSONAL SINEMATIK</p>
             <h1 id="namina-hero-title">KENALAN<br /><span>LEBIH</span><br />BERKESAN.</h1>
             <p className="namina-landing__hero-lead">
-              Ceritamu pantas lebih dari sekadar biodata. Kami buatkan website personal dengan nuansa film dan kartu cerita interaktif.
+              Saat orang tertarik dengan namamu, beri mereka tempat untuk mengenal kemampuan, karya, dan caramu bekerja. Kami buatkan website personal sinematiknya.
             </p>
             <p className="namina-landing__hero-service">Kamu kirim bahan. Tim NAMINA yang mengerjakan.</p>
             <div className="namina-landing__hero-actions">
@@ -82,20 +132,61 @@ export function Landing() {
           </div>
         </section>
 
+        <section className="namina-landing__problem" aria-labelledby="namina-problem-title">
+          <div className="namina-landing__problem-copy">
+            <span className="namina-landing__index">KENAPA PERLU HALAMAN PERSONAL?</span>
+            <h2 id="namina-problem-title">ORANG INGIN<br />KENAL KAMU.<br /><span>HARUS MULAI DARI MANA?</span></h2>
+            <p>Orang bisa datang dari rekomendasi, status WA, atau media sosial. Kalau informasimu tersebar, mereka harus merangkai ceritanya sendiri.</p>
+          </div>
+          <div className="namina-landing__problem-list">
+            {scatteredStory.map((item, index) => (
+              <div className="namina-landing__problem-row" key={item.place}>
+                <span>0{index + 1}</span>
+                <div><h3>{item.place}</h3><p>{item.situation}</p></div>
+              </div>
+            ))}
+            <p className="namina-landing__problem-answer">NAMINA memberi ceritamu satu alamat yang bisa langsung dibuka.</p>
+          </div>
+        </section>
+
         <section className="namina-landing__story" id="layanan" aria-labelledby="namina-story-title">
           <div className="namina-landing__section-heading">
-            <span className="namina-landing__index">TENTANG LAYANANNYA</span>
-            <h2 id="namina-story-title">SATU LINK.<br /><span>BANYAK SISI KAMU.</span></h2>
-            <p>Setiap orang punya kisah yang berbeda. NAMINA menatanya jadi halaman personal yang bisa dibuka, dijelajahi, dan dibagikan.</p>
+            <span className="namina-landing__index">BENEFIT WEBSITE NAMINA</span>
+            <h2 id="namina-story-title">YANG DILIHAT.<br /><span>YANG DIRASAKAN.</span></h2>
+            <p>Fitur yang bagus punya tugas: membantu pengunjung mengenalmu, memahami nilaimu, lalu tahu cara menghubungimu.</p>
           </div>
           <div className="namina-landing__story-list">
             {storyParts.map((part, index) => (
               <article className="namina-landing__story-row" key={part.title}>
                 <span className="namina-landing__story-number">0{index + 1}</span>
-                <div><h3>{part.title}</h3><p>{part.detail}</p></div>
+                <div>
+                  <h3>{part.title}</h3>
+                  <p>{part.detail}</p>
+                  <p className="namina-landing__story-effect"><strong>Efeknya:</strong> {part.effect}</p>
+                </div>
               </article>
             ))}
             <a className="namina-landing__story-demo" href="/vini">Jelajahi contoh Teh Vini <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section className="namina-landing__impact" id="dampak" aria-labelledby="namina-impact-title">
+          <div className="namina-landing__impact-heading">
+            <span className="namina-landing__index">EFEKNYA BUAT KAMU</span>
+            <h2 id="namina-impact-title">BISNIS.<br /><span>KARIER.</span><br />OMZET.</h2>
+            <p>Website NAMINA membantu orang mengenal nilai yang kamu tawarkan. Dampaknya bergantung pada cara kamu membagikan link, kualitas penawaran, dan tindak lanjutnya.</p>
+          </div>
+          <div className="namina-landing__impact-list">
+            {impactParts.map((impact, index) => (
+              <article className="namina-landing__impact-row" key={impact.name}>
+                <div className="namina-landing__impact-row-label"><span>0{index + 1}</span><h3>{impact.name}</h3></div>
+                <div>
+                  <h4>{impact.title}</h4>
+                  <p>{impact.description}</p>
+                  <p className="namina-landing__impact-takeaway">{impact.takeaway}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
