@@ -2345,9 +2345,8 @@
   }
 }
 
-/* The mechanical ENTER key restores the filmed person as the hero.
-   Each press drops exactly one file, which hits the floor and settles after
-   three progressively smaller rebounds. */
+/* Each ENTER press releases a small card directly above the reading area.
+   It grows as it drops vertically, then retains the three floor rebounds. */
 .cinematic-hero--enter .cinematic-hero__video { opacity: 1; filter: none; }
 .cinematic-hero--enter .cinematic-hero__shade {
   background:
@@ -2430,18 +2429,21 @@
   height: 341px;
 }
 .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer {
-  --flight-origin-x: -120px;
-  --flight-origin-y: -195px;
-  --flight-middle-x: -38px;
-  --flight-apex-y: -150px;
-  --flight-landing-x: 16px;
+  --drop-from-x: 40px;
+  --drop-mid-x: 18px;
+  --drop-from-y: -500px;
+  --drop-early-y: -462px;
+  --drop-mid-y: -295px;
+  --drop-bounce-high: -96px;
+  --drop-bounce-mid: -39px;
+  --drop-bounce-low: -12px;
 }
 .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet {
   top: 16px;
   left: 0;
   width: min(100%, 550px);
   height: 341px;
-  transform-origin: center bottom;
+  transform-origin: left bottom;
 }
 .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in {
   animation: cinematic-enter-card-drop-bounce 2.35s linear both;
@@ -2454,40 +2456,40 @@
 @keyframes cinematic-enter-card-drop-bounce {
   0% {
     opacity: 0;
-    transform: translate3d(-125px,-420px,-250px) rotateX(42deg) rotateY(-18deg) rotateZ(-19deg) scale(.3);
+    transform: translate3d(var(--drop-from-x),var(--drop-from-y),0) scale(.2);
     animation-timing-function: cubic-bezier(.35,.05,.82,.65);
   }
-  10% { opacity: 1; transform: translate3d(-85px,-363px,-130px) rotateX(25deg) rotateY(-9deg) rotateZ(-13deg) scale(.49); }
+  10% { opacity: 1; transform: translate3d(var(--drop-from-x),var(--drop-early-y),0) scale(.3); }
   37% {
     opacity: 1;
-    transform: translate3d(-23px,-167px,18px) rotateX(10deg) rotateY(3deg) rotateZ(-4deg) scale(.94);
+    transform: translate3d(var(--drop-mid-x),var(--drop-mid-y),0) scale(.7);
     animation-timing-function: cubic-bezier(.38,.03,.82,.78);
   }
   52% {
-    transform: translate3d(0,0,0) rotateX(2deg) rotateZ(1deg) scale(1.045,.935);
+    transform: translate3d(0,0,0) scale(1.045,.935);
     animation-timing-function: cubic-bezier(.12,.68,.23,1);
   }
   64% {
-    transform: translate3d(0,-96px,12px) rotateX(-6deg) rotateZ(-2.5deg) scale(.99,1.015);
+    transform: translate3d(0,var(--drop-bounce-high),0) scale(.99,1.015);
     animation-timing-function: cubic-bezier(.42,0,1,1);
   }
   75% {
-    transform: translate3d(0,0,0) rotateX(1deg) rotateZ(.7deg) scale(1.025,.97);
+    transform: translate3d(0,0,0) scale(1.025,.97);
     animation-timing-function: cubic-bezier(.15,.68,.3,1);
   }
   83% {
-    transform: translate3d(0,-39px,6px) rotateX(-2.8deg) rotateZ(-1deg) scale(.997,1.006);
+    transform: translate3d(0,var(--drop-bounce-mid),0) scale(.997,1.006);
     animation-timing-function: cubic-bezier(.42,0,1,1);
   }
   91% {
-    transform: translate3d(0,0,0) rotateX(.5deg) scale(1.01,.985);
+    transform: translate3d(0,0,0) scale(1.01,.985);
     animation-timing-function: cubic-bezier(.12,.68,.3,1);
   }
   96% {
-    transform: translate3d(0,-12px,2px) rotateX(-.8deg) scale(.999,1.003);
+    transform: translate3d(0,var(--drop-bounce-low),0) scale(.999,1.003);
     animation-timing-function: cubic-bezier(.45,0,1,1);
   }
-  100% { opacity: 1; transform: translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1); }
+  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
 }
 @keyframes cinematic-enter-card-clear {
   0% { transform: translate3d(0,0,0) rotateZ(0) scale(1); opacity: 1; }
@@ -2525,6 +2527,7 @@
   .cinematic-hero__enter-key { flex-basis: clamp(118px,13.4vw,160px); width: clamp(118px,13.4vw,160px); }
   .cinematic-hero--enter .cinematic-hero__details { width: min(100%, 59vw); }
   .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { width: 100%; }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer { --drop-from-x: 12px; --drop-mid-x: 6px; }
 }
 @media (max-width: 600px) {
   .cinematic-hero--enter { overflow: hidden; }
@@ -2550,22 +2553,18 @@
   .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw { height: 314px; }
   .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card-track { height: 310px; }
   .cinematic-hero__card-viewport--enter.cinematic-hero__card-viewport--wallet-draw .cinematic-hero__card { top: 5px; height: 299px; }
-  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer { --flight-origin-x: -30px; --flight-origin-y: -150px; }
+  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-layer {
+    --drop-from-x: 5px;
+    --drop-mid-x: 2px;
+    --drop-from-y: -420px;
+    --drop-early-y: -385px;
+    --drop-mid-y: -235px;
+    --drop-bounce-high: -65px;
+    --drop-bounce-mid: -26px;
+    --drop-bounce-low: -9px;
+  }
   .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet { top: 5px; left: 0; height: 299px; }
   .cinematic-hero__card-viewport--enter .cinematic-hero__impact-shadow { top: 300px; height: 17px; filter: blur(7px); }
-  .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in { animation-name: cinematic-enter-card-drop-bounce-mobile; }
-}
-@keyframes cinematic-enter-card-drop-bounce-mobile {
-  0% { opacity: 0; transform: translate3d(-32px,-245px,-150px) rotateX(35deg) rotateZ(-13deg) scale(.32); animation-timing-function: cubic-bezier(.35,.05,.82,.65); }
-  10% { opacity: 1; transform: translate3d(-25px,-222px,-70px) rotateX(20deg) rotateZ(-8deg) scale(.54); }
-  37% { opacity: 1; transform: translate3d(-8px,-110px,12px) rotateX(8deg) rotateZ(-3deg) scale(.94); animation-timing-function: cubic-bezier(.38,.03,.82,.78); }
-  52% { transform: translate3d(0,0,0) rotateX(2deg) scale(1.035,.94); animation-timing-function: cubic-bezier(.12,.68,.23,1); }
-  64% { transform: translate3d(0,-65px,8px) rotateX(-5deg) scale(.99,1.012); animation-timing-function: cubic-bezier(.42,0,1,1); }
-  75% { transform: translate3d(0,0,0) scale(1.02,.972); animation-timing-function: cubic-bezier(.15,.68,.3,1); }
-  83% { transform: translate3d(0,-26px,5px) rotateX(-2deg) scale(.997,1.004); animation-timing-function: cubic-bezier(.42,0,1,1); }
-  91% { transform: translate3d(0,0,0) scale(1.01,.986); animation-timing-function: cubic-bezier(.12,.68,.3,1); }
-  96% { transform: translate3d(0,-9px,2px) scale(.999,1.002); animation-timing-function: cubic-bezier(.45,0,1,1); }
-  100% { opacity: 1; transform: translate3d(0,0,0) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .cinematic-hero__enter-key { transition: none; }
@@ -2578,10 +2577,5 @@
   .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in.cinematic-hero__flight-sheet--exchange { animation-delay: 0s !important; }
   .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--out {
     animation: cinematic-enter-card-clear .35s ease-in both !important;
-  }
-}
-@media (max-width: 600px) and (prefers-reduced-motion: reduce) {
-  .cinematic-page--motion-opt-in .cinematic-hero__card-viewport--enter .cinematic-hero__flight-sheet--in {
-    animation-name: cinematic-enter-card-drop-bounce-mobile !important;
   }
 }
