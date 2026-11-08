@@ -2120,6 +2120,13 @@
   text-align: center;
   -webkit-tap-highlight-color: transparent;
 }
+.cinematic-page button.cinematic-hero__dancer,
+.cinematic-page button.cinematic-hero__dancer:hover:not(:disabled),
+.cinematic-page button.cinematic-hero__dancer:active:not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+  color: #f6e9d1;
+}
 .cinematic-hero__dancer-stage {
   position: relative;
   display: flex;
