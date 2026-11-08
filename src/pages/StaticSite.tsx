@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { slugSchema } from "../domain/content";
 import { IdentityFlip } from "../components/IdentityFlip";
+import { NaminaLiquidLoader } from "../components/NaminaLogo";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import { Shell } from "./shared";
 
@@ -12,6 +13,7 @@ type SiteState =
 
 export function StaticSite({ slug }: { slug: string }) {
   const [state, setState] = useState<SiteState>({ status: "loading" });
+  const introStart = useRef(Date.now());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -47,7 +49,19 @@ export function StaticSite({ slug }: { slug: string }) {
   }, [state]);
 
   if (state.status === "ready") {
-    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} />;
+    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} introStartedAt={slug === "vini" ? introStart.current : undefined} />;
+  }
+
+  if (slug === "vini" && state.status === "loading") {
+    return (
+      <main className="namina-initial-loader" aria-label="Menyiapkan profil NAMINA">
+        <h1 className="namina-initial-loader__heading">
+          <NaminaLiquidLoader startedAt={introStart.current} />
+          <span className="cinematic-welcome__sr-only">NAMINA.PRO</span>
+        </h1>
+        <span className="cinematic-welcome__sr-only" role="status">Menyiapkan video profil.</span>
+      </main>
+    );
   }
 
   return (

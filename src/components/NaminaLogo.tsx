@@ -27,13 +27,15 @@ export function NaminaLogo({ variant }: NaminaLogoProps) {
   );
 }
 
-export function NaminaLiquidLoader() {
+export function NaminaLiquidLoader({ startedAt }: { startedAt?: number }) {
+  const elapsedMs = startedAt ? Math.min(Math.max(Date.now() - startedAt, 0), 5000) : 0;
+
   return (
     <span className="namina-liquid-loader" aria-hidden="true">
       <span className="namina-liquid-loader__base">
         <NaminaLogo variant="hero" />
       </span>
-      <span className="namina-liquid-loader__fill">
+      <span className="namina-liquid-loader__fill" style={{ animationDelay: `-${elapsedMs}ms` }}>
         <NaminaLogo variant="hero" />
       </span>
     </span>

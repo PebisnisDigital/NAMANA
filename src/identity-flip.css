@@ -59,6 +59,17 @@
 .cinematic-page--text-mode .cinematic-welcome::after {
   display: none;
 }
+.namina-initial-loader {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 24px;
+  background: #08080c;
+}
+.namina-initial-loader__heading {
+  margin: 0;
+  line-height: 1;
+}
 .cinematic-welcome__solo {
   display: grid;
   flex: 1;

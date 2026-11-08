@@ -719,6 +719,7 @@ export function IdentityFlip({
   selectedCardId,
   onEditText,
   textMode = false,
+  introStartedAt,
 }: {
   content?: SiteContent;
   assetUrls?: AssetUrls;
@@ -728,6 +729,7 @@ export function IdentityFlip({
   selectedCardId?: string;
   onEditText?: (field: EditableField, value: string) => void;
   textMode?: boolean;
+  introStartedAt?: number;
 }) {
   const profileTabs: ProfileCard[] = content
     ? content.cards
@@ -753,8 +755,8 @@ export function IdentityFlip({
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [enterPending, setEnterPending] = useState(false);
-  const [introElapsed, setIntroElapsed] = useState(false);
-  const [introTimedOut, setIntroTimedOut] = useState(false);
+  const [introElapsed, setIntroElapsed] = useState(() => Boolean(introStartedAt && Date.now() - introStartedAt >= 5000));
+  const [introTimedOut, setIntroTimedOut] = useState(() => Boolean(introStartedAt && Date.now() - introStartedAt >= 12000));
   const videoRef = useRef<HTMLVideoElement>(null);
   const heroHeading = useRef<HTMLHeadingElement>(null);
   const heroStage = useRef<HTMLElement>(null);
@@ -835,13 +837,14 @@ export function IdentityFlip({
   // The logo is a five-second intro, not a fake measure of video download bytes.
   useEffect(() => {
     if (!textMode || phase !== "welcome") return;
-    const introTimer = window.setTimeout(() => setIntroElapsed(true), 5000);
-    const fallbackTimer = window.setTimeout(() => setIntroTimedOut(true), 12000);
+    const elapsed = introStartedAt ? Date.now() - introStartedAt : 0;
+    const introTimer = window.setTimeout(() => setIntroElapsed(true), Math.max(0, 5000 - elapsed));
+    const fallbackTimer = window.setTimeout(() => setIntroTimedOut(true), Math.max(0, 12000 - elapsed));
     return () => {
       window.clearTimeout(introTimer);
       window.clearTimeout(fallbackTimer);
     };
-  }, [textMode, phase]);
+  }, [textMode, phase, introStartedAt]);
 
   useEffect(() => {
     if (textMode && phase === "welcome" && introElapsed && (videoReady || videoFailed || introTimedOut)) {
@@ -1061,7 +1064,7 @@ export function IdentityFlip({
           {textMode ? (
             <div className="cinematic-welcome__solo">
               <h1 className="cinematic-welcome__solo-heading">
-                <NaminaLiquidLoader />
+                <NaminaLiquidLoader startedAt={introStartedAt} />
                 <span className="cinematic-welcome__sr-only">NAMINA.PRO</span>
               </h1>
               <span className="cinematic-welcome__sr-only" role="status">
