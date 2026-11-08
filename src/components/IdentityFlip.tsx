@@ -786,6 +786,9 @@ export function IdentityFlip({
           ""
       ]
     : "/videos/hero.mp4";
+  const videoPosterUrl = content?.background.posterAssetId
+    ? assetUrls[content.background.posterAssetId]
+    : undefined;
 
   useEffect(() => {
     if (!editMode || !content) return;
@@ -822,6 +825,13 @@ export function IdentityFlip({
   // The video-matched poster covers any Dropbox startup delay.
   useEffect(() => {
     if (!textMode || !videoUrl || startOpen) return;
+    const posterPreload = videoPosterUrl ? document.createElement("link") : null;
+    if (posterPreload && videoPosterUrl) {
+      posterPreload.rel = "preload";
+      posterPreload.as = "image";
+      posterPreload.href = videoPosterUrl;
+      document.head.appendChild(posterPreload);
+    }
     const preloader = document.createElement("video");
     preloader.preload = "auto";
     preloader.muted = true;
@@ -829,10 +839,11 @@ export function IdentityFlip({
     preloader.src = videoUrl;
     preloader.load();
     return () => {
+      posterPreload?.remove();
       preloader.removeAttribute("src");
       preloader.load();
     };
-  }, [textMode, videoUrl, startOpen]);
+  }, [textMode, videoUrl, startOpen, videoPosterUrl]);
 
   const finishWalletMotion = useCallback(() => {
     setWalletMotion("rest");
