@@ -204,15 +204,39 @@
   justify-content: space-between;
   padding: 32px clamp(22px,5vw,80px);
 }
-.cinematic-hero__icon-credit {
-  color: rgba(233, 203, 162, .8);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .02em;
+.cinematic-hero__pause-video {
+  position: absolute;
+  z-index: 5;
+  right: clamp(14px, 2.5vw, 30px);
+  bottom: clamp(14px, 2.5vw, 30px);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(228, 200, 162, .55);
+  border-radius: 50%;
+  background: rgba(8, 8, 9, .65);
+  color: #f4eee7;
+  cursor: pointer;
+  opacity: .55;
+  transition: opacity .2s ease, border-color .2s ease;
 }
-.cinematic-hero__icon-credit a { color: inherit; text-underline-offset: 2px; }
-.cinematic-hero__icon-credit a:hover,
-.cinematic-hero__icon-credit a:focus-visible { color: #fff4de; }
+.cinematic-hero__pause-video:hover,
+.cinematic-hero__pause-video:focus-visible { opacity: 1; border-color: #f5c382; }
+.cinematic-hero__pause-video:active { background: rgba(36, 29, 22, .9); }
+.cinematic-hero__pause-video span { font-size: 17px; line-height: 1; }
+.cinematic-credits {
+  padding: 14px 22px;
+  background: #080809;
+  color: #c7b79f;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+.cinematic-credits a { color: inherit; text-underline-offset: 3px; }
+.cinematic-credits a:hover,
+.cinematic-credits a:focus-visible { color: #fff4de; }
 .cinematic-hero__content {
   display: flex;
   width: min(100%,1600px);
@@ -1303,7 +1327,6 @@
   .cinematic-hero__story-icon svg { width: 27px; height: 27px; }
   .cinematic-hero__flaticon { width: 41px; height: 41px; }
   .cinematic-hero__story-brand { width: 13px; height: 13px; right: -3px; bottom: -3px; border-width: 2px; }
-  .cinematic-hero__icon-credit { font-size: 8px; max-width: 150px; text-align: right; }
   .cinematic-hero__story-value { font-size: clamp(16px,4.25vw,21px); }
   .cinematic-hero__card--name .cinematic-hero__story-value { font-size: clamp(19px,5vw,24px); }
   .cinematic-hero__story-copy { font-size: clamp(11px,2.9vw,13px); line-height: 1.42; }
