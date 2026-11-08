@@ -236,7 +236,7 @@
   100% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0) scale(1); }
 }
 
-@media (max-width: 1100px) and (min-width: 701px) {
+@media (max-width: 1100px) and (min-width: 901px) {
   .cinematic-page--text-mode .cinematic-hero__content { padding-right: 5vw; }
   .cinematic-page--text-mode .cinematic-hero__headline-row,
   .cinematic-page--text-mode .cinematic-hero--enter .cinematic-hero__details { width: min(100%, 50vw); }
@@ -245,7 +245,7 @@
   .namana-text-story__description { margin-left: 54px; }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .cinematic-page--text-mode .cinematic-hero--enter {
     height: auto;
     min-height: 100svh;

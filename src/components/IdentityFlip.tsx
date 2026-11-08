@@ -787,7 +787,7 @@ export function IdentityFlip({
   const [compactDeck, setCompactDeck] = useState(
     () =>
       typeof window !== "undefined" &&
-      window.matchMedia(textMode ? "(max-width: 700px)" : "(max-width: 600px)").matches,
+      window.matchMedia(textMode ? "(max-width: 900px)" : "(max-width: 600px)").matches,
   );
   const storyPageSize = compactDeck ? 1 : 3;
   const totalStoryPages = Math.ceil(totalCards / storyPageSize);
@@ -814,7 +814,7 @@ export function IdentityFlip({
   }, [selectedCardId, editMode, content, activeTab, textMode, storyPageSize]);
 
   useEffect(() => {
-    const media = window.matchMedia(textMode ? "(max-width: 700px)" : "(max-width: 600px)");
+    const media = window.matchMedia(textMode ? "(max-width: 900px)" : "(max-width: 600px)");
     const onChange = () => setCompactDeck(media.matches);
     onChange();
     media.addEventListener("change", onChange);
@@ -962,7 +962,7 @@ export function IdentityFlip({
       if (Math.abs(primaryDelta) < 1 || walletMotion !== "rest" || totalCards === 0) return;
 
       // Scrolling also browses the cards; touch devices keep native scrolling.
-      if (!window.matchMedia("(max-width: 600px)").matches) event.preventDefault();
+      if (!compactDeck) event.preventDefault();
       const now = Date.now();
       if (now - lastWheelEventAt.current > 220) wheelDelta.current = 0;
       lastWheelEventAt.current = now;
@@ -989,7 +989,7 @@ export function IdentityFlip({
 
     stage.addEventListener("wheel", handleWheel, { passive: false });
     return () => stage.removeEventListener("wheel", handleWheel);
-  }, [phase, editMode, navigateCards, triggerEnter, activeTab, walletMotion, totalCards]);
+  }, [phase, editMode, navigateCards, triggerEnter, activeTab, walletMotion, totalCards, compactDeck]);
 
   return (
     <main
@@ -1304,7 +1304,11 @@ export function IdentityFlip({
                   role="status"
                   aria-live="polite"
                 >
-                  {walletMotion === "exchanging"
+                  {textMode
+                    ? activeTab < 0
+                      ? "Tekan ENTER untuk membaca cerita pertama."
+                      : `Cerita ${activeTab + 1} dari ${totalStoryPages}: ${profileTabs.slice(activeTab * storyPageSize, (activeTab + 1) * storyPageSize).map((item) => item.label).join(", ")}.`
+                    : walletMotion === "exchanging"
                     ? "Satu kartu baru jatuh, memantul di lantai, lalu menggantikan kartu sebelumnya."
                     : activeTab < 0
                       ? "Belum ada dokumen. Tekan ENTER untuk menampilkan kartu pertama."
