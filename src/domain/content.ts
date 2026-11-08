@@ -21,6 +21,8 @@ export const reservedSlugs = new Set([
   "privacy",
   "terms",
   "support",
+  "gaya",
+  "templates",
 ]);
 export const slugSchema = z
   .string()
@@ -28,7 +30,7 @@ export const slugSchema = z
     /^[a-z0-9](?:[a-z0-9-]{1,46}[a-z0-9])$/,
     "Gunakan 3–48 huruf kecil, angka, atau tanda hubung.",
   )
-  .refine((s) => !reservedSlugs.has(s), "Nama ini dipakai sistem.");
+  .refine((s) => !reservedSlugs.has(s) && !/^gaya(?:[1-9]|1[0-6])$/.test(s), "Nama ini dipakai sistem.");
 export function safeLink(value: string) {
   if (!value) return true;
   try {
