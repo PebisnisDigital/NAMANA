@@ -14,10 +14,12 @@
 }
 
 .cinematic-page--text-mode .cinematic-hero__video {
-  right: auto;
-  left: 0;
-  width: 76%;
-  object-position: 48% center;
+  /* Fill the complete cinematic stage on every desktop aspect ratio. */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .cinematic-page--text-mode .cinematic-hero__shade {
