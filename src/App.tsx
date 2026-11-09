@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Landing, Legal } from "./pages/Landing";
 import { StaticStudio } from "./pages/StaticStudio";
+import { ClientForm } from "./pages/ClientForm";
 import { StaticSite } from "./pages/StaticSite";
 import { ThemeDemo, ThemeGallery } from "./pages/ThemeDemos";
 import { getDemoTheme } from "./themes/catalog";
@@ -16,6 +17,7 @@ function App() {
   const demoTheme = getDemoTheme(path.slice(1));
   let page;
   if (path === "/") page = <Landing />;
+  else if (path === "/formulir") page = <ClientForm />;
   else if (path === "/studio") page = <StaticStudio />;
   else if (path === "/gaya" || path === "/templates") page = <ThemeGallery />;
   else if (demoTheme) page = <ThemeDemo theme={demoTheme} />;

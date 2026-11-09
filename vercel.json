@@ -4,6 +4,7 @@
   "outputDirectory": "dist",
   "functions": {
     "api/studio.ts": { "maxDuration": 20 },
+    "api/formulir.ts": { "maxDuration": 20 },
     "api/operations.ts": { "maxDuration": 30 },
     "api/site.ts": { "includeFiles": "dist/index.html" }
   },

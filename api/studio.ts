@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createHmac, randomBytes, timingSafeEqual, createHash } from "node:crypto";
 import { z } from "zod";
 import { contentSchema, slugSchema } from "../src/domain/content.js";
+import { briefStore } from "./_brief-store.js";
 
 type ApiRequest = IncomingMessage & { body?: unknown };
 const SESSION_TTL = 12 * 60 * 60 * 1000;
@@ -152,6 +153,38 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     }
     if (!authenticated(req)) {
       send(res, 401, { error: "Sesi admin tidak aktif. Silakan masuk kembali." });
+      return;
+    }
+
+    if (action === "briefList" && req.method === "GET") {
+      send(res, 200, await briefStore("list"));
+      return;
+    }
+    if (action === "briefDetail" && req.method === "GET") {
+      const id = z.uuid().parse(parsedUrl.searchParams.get("id"));
+      send(res, 200, await briefStore("detail", { id }));
+      return;
+    }
+    if (action === "briefUpdate" && req.method === "POST") {
+      const body = z.object({
+        id: z.uuid(),
+        status: z.enum(["pending", "in_progress", "completed"]),
+        websiteSlug: z.union([slugSchema, z.literal("")]),
+      }).strict().parse(await readBody(req));
+      if (body.status === "completed") {
+        if (!body.websiteSlug) {
+          send(res, 400, { error: "Isi slug website sebelum menandai selesai." });
+          return;
+        }
+        const { branch } = githubConfig();
+        const site = await github(`public/clients/${body.websiteSlug}.json?ref=${encodeURIComponent(branch)}`);
+        if (site.status === 404) {
+          send(res, 409, { error: "Website belum dipublikasikan. Terbitkan dahulu sebelum menandai selesai." });
+          return;
+        }
+        if (!site.ok) throw new Error("GitHub belum dapat memverifikasi website.");
+      }
+      send(res, 200, await briefStore("update", body));
       return;
     }
 

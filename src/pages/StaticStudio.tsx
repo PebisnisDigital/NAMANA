@@ -3,6 +3,8 @@ import { IdentityFlip } from "../components/IdentityFlip";
 import { newCard, slugSchema, type Selection } from "../domain/content";
 import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import { CanvasTools, type CanvasMediaTarget, type CardCommand } from "./CanvasTools";
+import { BriefInbox } from "./BriefInbox";
+import type { BriefRecord } from "../domain/brief";
 import "../studio-static.css";
 
 type Session = { authenticated: boolean; configured: boolean };
@@ -170,6 +172,51 @@ export function StaticStudio() {
     setNewSlug("");
     setError("");
     setMessage("Klien baru siap diedit. Klik Publikasikan setelah datanya lengkap.");
+  };
+
+  const prepareFromBrief = (brief: BriefRecord, chosenSlug: string): boolean => {
+    const preferred = chosenSlug || brief.website_slug || brief.requested_slug || brief.details.fullName
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48);
+    const parsed = slugSchema.safeParse(preferred);
+    if (!parsed.success) {
+      setError("Nama halaman belum valid. Perbaiki slug formulir sebelum menyiapkan draft.");
+      return false;
+    }
+    if (slugs.includes(preferred)) {
+      setError(`Halaman /${preferred} sudah ada. Buka dari pilihan klien untuk merevisinya.`);
+      return false;
+    }
+    const next = blankSite(preferred);
+    next.content.identity.displayName = brief.details.displayName || brief.details.fullName;
+    next.content.identity.profession = brief.details.profession;
+    next.content.identity.bio = brief.details.bio || `${brief.details.fullName}, ${brief.details.profession}.`;
+    const chapters: Array<[string, string]> = [
+      ["Tentang saya", brief.details.bio],
+      ["Pendidikan", brief.details.education],
+      ["Keahlian", brief.details.skills],
+      ["Pengalaman", brief.details.experience],
+      ["Produk & jasa", [brief.details.products, brief.details.services].filter(Boolean).join("\n")],
+      ["Portofolio", brief.details.portfolio],
+      ["Sertifikasi", brief.details.certificates],
+      ["Pencapaian", brief.details.achievements],
+      ["Hubungi saya", [brief.details.whatsapp, brief.details.email].filter(Boolean).join("\n")],
+    ];
+    const cards = chapters.filter(([, value]) => value.trim()).map(([title, value]) => ({
+      ...newCard(),
+      title,
+      subtitle: "",
+      description: value.slice(0, 1200),
+    }));
+    if (cards.length) next.content.cards = cards;
+    setDocument(next);
+    setActiveSlug(preferred);
+    setSha(null);
+    setSelectedCard(next.content.cards[0]?.id || "");
+    setCanvasSelection(null);
+    setMessage(`Draft /${preferred} dibuat dari formulir. Periksa semua data, atur kartu, dan unggah video sebelum publikasi.`);
+    setError("");
+    return true;
   };
 
   const login = async (event: React.FormEvent) => {
@@ -340,6 +387,7 @@ export function StaticStudio() {
           <button type="button" onClick={logout}>Keluar</button>
         </div>
       </header>
+      <BriefInbox onPrepare={prepareFromBrief} />
       <div className="studio-workspace">
         <aside className="studio-sidebar" aria-label="Editor klien">
           <section className="studio-group">

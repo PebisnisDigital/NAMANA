@@ -253,6 +253,12 @@ export function Legal({ terms }: { terms: boolean }) {
         ) : (
           <>
             <p>
+              Biodata yang dikirim melalui /formulir, termasuk kontak dan data
+              pribadi opsional, disimpan di database privat Supabase untuk
+              diproses tim admin. Data formulir tidak langsung tampil di
+              website publik.
+            </p>
+            <p>
               Data halaman yang dipublikasikan tersimpan sebagai berkas di
               repositori GitHub NAMINA. Tautan media dapat merujuk ke layanan
               pihak ketiga, misalnya Dropbox. Halaman klien dapat diakses umum.

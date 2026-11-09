@@ -23,6 +23,7 @@ export const reservedSlugs = new Set([
   "support",
   "gaya",
   "templates",
+  "formulir",
 ]);
 export const slugSchema = z
   .string()
