@@ -14,15 +14,10 @@
 }
 
 .cinematic-page--text-mode .cinematic-hero__video {
-  /* Keep the walking figure full-height and extend the moving studio floor
-     into the text wing without cropping the head or footwear. */
   right: auto;
   left: 0;
   width: 76%;
-  height: 100%;
-  object-fit: cover;
   object-position: 48% center;
-  -webkit-box-reflect: right 0px;
 }
 
 .cinematic-page--text-mode .cinematic-hero__shade {
