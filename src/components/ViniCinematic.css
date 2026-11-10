@@ -514,6 +514,10 @@
   animation: vini-identity-right var(--gallery-duration, 18s) linear infinite;
   will-change: transform;
 }
+.vini-cinema__gallery-viewport:hover .vini-cinema__gallery-track,
+.vini-cinema__gallery-viewport:focus-within .vini-cinema__gallery-track {
+  animation-play-state: paused;
+}
 .vini-cinema__gallery-slide {
   flex: 0 0 calc(100% / var(--gallery-slots));
   width: calc(100% / var(--gallery-slots));
