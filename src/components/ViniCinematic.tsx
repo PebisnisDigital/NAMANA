@@ -101,6 +101,7 @@ export function ViniCinematic({
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  const [motionOptIn, setMotionOptIn] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
@@ -244,7 +245,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion ? " vini-cinema--reduce-motion" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
+    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion && !motionOptIn ? " vini-cinema--reduce-motion" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
@@ -311,7 +312,7 @@ export function ViniCinematic({
             <section className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${activeMenu}, bergerak otomatis`} aria-roledescription="carousel" key={activeMenu}>
               <div
                 className="vini-cinema__gallery-track"
-                style={{ width: `${activeGallery.length * 200 / galleryColumns}%`, "--gallery-slots": activeGallery.length * 2, "--gallery-duration": `${activeGallery.length * 4.5}s` } as CSSProperties}
+                style={{ width: `${activeGallery.length * 200 / galleryColumns}%`, "--gallery-slots": activeGallery.length * 2, "--gallery-duration": `${activeGallery.length * 3}s` } as CSSProperties}
               >
                 {[...activeGallery, ...activeGallery].map((card, index) => (
                   <div className="vini-cinema__gallery-slide" key={`${card.id}-${index}`} aria-hidden={index >= activeGallery.length}>
@@ -337,6 +338,11 @@ export function ViniCinematic({
             </section>
           ) : (
             <p className="vini-cinema__empty">Belum ada data {activeMenu.toLowerCase()}.</p>
+          )}
+          {reducedMotion && !motionOptIn && (activeFacts.length > 0 || (activeGallery?.length ?? 0) > 0) && (
+            <button className="vini-cinema__restore-loop" type="button" onClick={() => setMotionOptIn(true)}>
+              Putar slide otomatis
+            </button>
           )}
         </div>
       </div>

@@ -45,6 +45,10 @@ for (const width of [320, 390, 430]) {
     expect(layout.navHeights).toHaveLength(5);
     expect(Math.min(...layout.navHeights)).toBeGreaterThanOrEqual(44);
 
+    const identityTrack = screen.locator(".vini-cinema__highlight-track");
+    await expect(identityTrack).toHaveCSS("animation-name", "vini-identity-right");
+    await expect(identityTrack).toHaveCSS("animation-play-state", "running");
+
     await screen.locator(".vini-cinema__nav").getByRole("button", { name: "Karya" }).click();
     await expect(screen.locator(".vini-cinema__section-title")).toContainText("Karya");
     const after = await page.evaluate(() => ({
@@ -57,5 +61,20 @@ for (const width of [320, 390, 430]) {
     expect(after.videoTop).toBeCloseTo(layout.videoTop, 0);
     expect(after.contentTop).toBeCloseTo(layout.contentTop, 0);
     expect(after.documentWidth).toBeLessThanOrEqual(width + 1);
+
+    await screen.locator(".vini-cinema__nav").getByRole("button", { name: "Produk" }).click();
+    const productTrack = screen.locator(".vini-cinema__gallery-track");
+    await expect(productTrack).toHaveCSS("animation-name", "vini-identity-right");
+    await expect(productTrack).toHaveCSS("animation-play-state", "running");
+    const beforeMotion = await productTrack.evaluate((element) => getComputedStyle(element).transform);
+    await page.waitForTimeout(450);
+    const afterMotion = await productTrack.evaluate((element) => getComputedStyle(element).transform);
+    expect(afterMotion).not.toBe(beforeMotion);
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(productTrack).toHaveCSS("animation-name", "none");
+    await screen.getByRole("button", { name: "Putar slide otomatis" }).click();
+    await expect(productTrack).toHaveCSS("animation-name", "vini-identity-right");
+    await expect(productTrack).toHaveCSS("animation-play-state", "running");
   });
 }

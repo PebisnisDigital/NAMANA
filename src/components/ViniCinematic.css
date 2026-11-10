@@ -512,8 +512,9 @@
   animation: vini-identity-right var(--gallery-duration, 18s) linear infinite;
   will-change: transform;
 }
-.vini-cinema__gallery-viewport:hover .vini-cinema__gallery-track,
-.vini-cinema__gallery-viewport:focus-within .vini-cinema__gallery-track {
+/* Pointer hover can stick after a tap; pause only while pressing or keyboard-focusing a card. */
+.vini-cinema__gallery-viewport:has(.vini-cinema__visual-card:active) .vini-cinema__gallery-track,
+.vini-cinema__gallery-viewport:has(.vini-cinema__visual-card:focus-visible) .vini-cinema__gallery-track {
   animation-play-state: paused;
 }
 .vini-cinema__gallery-slide {
@@ -544,6 +545,19 @@
 .vini-cinema__visual-card img.vini-cinema__artwork,
 .vini-cinema__modal img.vini-cinema__artwork { object-fit: cover; }
 .vini-cinema__empty { color: #ded0c9; margin: 10px 0 0; min-height: 94px; }
+.vini-cinema__restore-loop {
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 9px 14px;
+  border: 1px solid #f34b53;
+  border-radius: 9px;
+  background: #251519;
+  color: #fff5ed;
+  font-size: 12px;
+  font-weight: 700;
+}
+.vini-cinema__restore-loop:hover { background: #442027; }
 .vini-cinema__detail-link {
   display: inline-flex;
   align-items: center;
@@ -1047,7 +1061,6 @@
   .vini-cinema__contact-top { padding-inline: 10px; }
   .vini-cinema__brand .namina-logo--compact .namina-logo__name { font-size: 25px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .vini-cinema__gallery-track,
-  .vini-cinema__highlight-track { animation: none; transform: none; }
-}
+/* The device's motion preference starts the slider paused, with a deliberate opt-in. */
+.vini-cinema--reduce-motion .vini-cinema__gallery-track,
+.vini-cinema--reduce-motion .vini-cinema__highlight-track { animation: none; transform: none; }
