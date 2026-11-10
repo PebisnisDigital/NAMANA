@@ -3,12 +3,326 @@
   "content": {
     "schemaVersion": 1,
     "template": "ORIGINAL",
+    "original": {
+      "contactUrl": "https://wa.me/62881022445869?text=Halo%20Teh%20Vini%2C%20saya%20melihat%20profil%20NAMINA%20dan%20ingin%20menghubungi%20Teteh.",
+      "nama": {
+        "intro": "Halo, perkenalkan nama saya adalah...",
+        "subtitle": "",
+        "description": "Ibu rumah tangga yang jatuh cinta pada AI, digital marketing, dan karya-karya kreatif.",
+        "items": [
+          {
+            "id": "00000000-0000-4000-9001-000000000001",
+            "label": "Nama",
+            "value": "Vini Junia N",
+            "icon": 8121295
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000002",
+            "label": "Tanggal Lahir",
+            "value": "8 Juni 1996",
+            "icon": 8121312
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000003",
+            "label": "Domisili",
+            "value": "Garut",
+            "icon": 8121270
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000004",
+            "label": "Jenis Kelamin",
+            "value": "Perempuan",
+            "icon": 8121295
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000005",
+            "label": "Agama",
+            "value": "Islam",
+            "icon": 8121302
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000006",
+            "label": "Status",
+            "value": "Kawin",
+            "icon": 8121302
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000007",
+            "label": "Hobi",
+            "value": "Jalan & Jajan",
+            "icon": 8121279
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000008",
+            "label": "Olahraga",
+            "value": "Badminton",
+            "icon": 8121297
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000009",
+            "label": "Pendidikan",
+            "value": "TK Kartika",
+            "icon": 8121313
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000010",
+            "label": "Pendidikan",
+            "value": "SDN Kartika",
+            "icon": 8121313
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000011",
+            "label": "Pendidikan",
+            "value": "Pondok Pesantren Darul Arqam Muhammadiyah Garut",
+            "icon": 8121313
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000012",
+            "label": "Pendidikan",
+            "value": "Unpad, Jurusan Keperawatan",
+            "icon": 8121313
+          }
+        ]
+      },
+      "karir": {
+        "intro": "Pengalaman mengenai...",
+        "subtitle": "PERJALANAN & PENGALAMAN",
+        "description": "Peran dan perjalanan karir yang aku tekuni.",
+        "items": [
+          {
+            "id": "00000000-0000-4000-9001-000000000101",
+            "label": "Karir",
+            "value": "Founder Cuanify.id",
+            "icon": 8121304
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000102",
+            "label": "Karir",
+            "value": "Founder Pebisnis.digital",
+            "icon": 8121309
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000103",
+            "label": "Karir",
+            "value": "Founder Komunitas BADAI",
+            "icon": 8121299
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000104",
+            "label": "Karir",
+            "value": "Founder PESONAFLIX",
+            "icon": 8121272
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000105",
+            "label": "Karir",
+            "value": "Founder NAMINA.PRO",
+            "icon": 8121304
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000106",
+            "label": "Karir",
+            "value": "Internet Marketing",
+            "icon": 8121309
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000107",
+            "label": "Karir",
+            "value": "Affiliate Marketer",
+            "icon": 8121299
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000108",
+            "label": "Karir",
+            "value": "Reseller",
+            "icon": 8121272
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000109",
+            "label": "Karir",
+            "value": "Mentor",
+            "icon": 8121304
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000110",
+            "label": "Karir",
+            "value": "Digital Creator",
+            "icon": 8121309
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000111",
+            "label": "Karir",
+            "value": "AI Enthusiast",
+            "icon": 8121299
+          }
+        ]
+      },
+      "skill": {
+        "intro": "Aku selalu belajar mengembangkan...",
+        "subtitle": "KEAHLIAN & KEMAMPUAN",
+        "description": "Bidang yang aku pelajari dan kembangkan.",
+        "items": [
+          {
+            "id": "00000000-0000-4000-9001-000000000201",
+            "label": "Skill",
+            "value": "Digital Marketing",
+            "icon": 8121272
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000202",
+            "label": "Skill",
+            "value": "Sales",
+            "icon": 8121262
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000203",
+            "label": "Skill",
+            "value": "Lead",
+            "icon": 8121290
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000204",
+            "label": "Skill",
+            "value": "Copywriting",
+            "icon": 8121279
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000205",
+            "label": "Skill",
+            "value": "Digital Creation",
+            "icon": 8121272
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000206",
+            "label": "Skill",
+            "value": "AI Enthusiast",
+            "icon": 8121262
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000207",
+            "label": "Skill",
+            "value": "WhatsApp Marketing",
+            "icon": 8121290
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000208",
+            "label": "Skill",
+            "value": "AI Automation",
+            "icon": 8121279
+          }
+        ]
+      },
+      "karya": {
+        "intro": "Dan inilah...",
+        "subtitle": "YANG SUDAH DIBAGIKAN",
+        "description": "Kumpulan website yang aku kerjakan. Sentuh kartu untuk melihat detailnya.",
+        "items": [
+          {
+            "id": "00000000-0000-4000-9001-000000000301",
+            "title": "Website BADAI",
+            "description": "Website BADAI, bagian dari karya digital Teh Vini untuk komunitas BADAI.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ec4151",
+            "motif": "storm"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000302",
+            "title": "Website PESONAFLIX",
+            "description": "Website PESONAFLIX, platform portofolio personal bergaya sinematik Netflix.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ff4a4a",
+            "motif": "cinema"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000303",
+            "title": "Website NAMINA.PRO",
+            "description": "Website NAMINA.PRO, proyek web profil personal dengan video dan interaksi sinematik.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ed3441",
+            "motif": "monogram"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000304",
+            "title": "Web Asanirwanaselaras.com",
+            "description": "Website Asa Nirwana Selaras untuk layanan transportasi dan rental kendaraan.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ffb354",
+            "motif": "road"
+          }
+        ]
+      },
+      "produk": {
+        "intro": "Ambil berkah dan manfaat dari...",
+        "subtitle": "KREASI & BISNIS",
+        "description": "Produk dan proyek yang aku bangun. Sentuh kartu untuk melihat detailnya.",
+        "items": [
+          {
+            "id": "00000000-0000-4000-9001-000000000401",
+            "title": "MUSICUAN",
+            "description": "MUSICUAN merupakan salah satu produk dalam portofolio Teh Vini.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#bb73ff",
+            "motif": "music"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000402",
+            "title": "BADAI",
+            "description": "BADAI merupakan komunitas dan produk yang dibangun Teh Vini.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#f65766",
+            "motif": "community"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000403",
+            "title": "PESONAFLIX",
+            "description": "PESONAFLIX menyediakan jasa pembuatan website personal dengan nuansa Netflix.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ff5454",
+            "motif": "cinema"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000404",
+            "title": "NAMINA.PRO",
+            "description": "NAMINA.PRO menawarkan website profil personal bergaya sinematik yang interaktif.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ff5665",
+            "motif": "monogram"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000405",
+            "title": "Karyawan AI",
+            "description": "Karyawan AI merupakan salah satu produk berbasis AI dalam portofolio Teh Vini.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#77ccff",
+            "motif": "bot"
+          },
+          {
+            "id": "00000000-0000-4000-9001-000000000406",
+            "title": "CUANIMASI",
+            "description": "CUANIMASI merupakan salah satu produk kreatif Teh Vini.",
+            "link": "",
+            "imageAssetId": null,
+            "color": "#ffb96b",
+            "motif": "animation"
+          }
+        ]
+      }
+    },
     "identity": {
       "displayName": "TEH VINI",
       "profession": "AI ENTHUSIAST",
-      "introLabel": "Hallo, Kenalin Saya adalah...",
       "bio": "Di balik setiap karya, ada cerita yang ingin kubagikan.",
-      "portraitAssetId": null
+      "portraitAssetId": null,
+      "introLabel": "Hallo, Kenalin Saya adalah..."
     },
     "wallet": {
       "color": "#5c1700",
@@ -20,13 +334,14 @@
       "mobileVideoAssetId": null,
       "posterAssetId": null,
       "overlayOpacity": 0.85,
-      "focalX": 50,
+      "focalX": 31,
       "focalY": 50
     },
     "theme": {
       "accent": "#c9a66b",
       "fontPreset": "original",
-      "headingScale": 0.85
+      "headingScale": 0.85,
+      "enterKeyAssetId": null
     },
     "cards": [
       {
