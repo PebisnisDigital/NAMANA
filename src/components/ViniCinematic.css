@@ -453,8 +453,8 @@
   .vini-cinema__highlights { margin-top: 16px; }
 }
 
-/* Two identical variable-length sequences make a seamless rightward marquee.
-   Exactly three facts fit the viewport. Constant velocity, no pauses. */
+/* Three identical sequences allow a seamless, draggable leftward carousel.
+   The number of visible facts adapts to the viewport. */
 .vini-cinema__highlights {
   overflow-x: auto;
   overflow-y: hidden;

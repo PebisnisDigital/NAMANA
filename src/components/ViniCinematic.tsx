@@ -181,7 +181,7 @@ export function ViniCinematic({
       if (!dragRef.current && now >= resumeAtRef.current && document.visibilityState === "visible") {
         const sequenceWidth = viewport.scrollWidth / 3;
         if (sequenceWidth > 0) {
-          let next = viewport.scrollLeft - speed * delta;
+          let next = viewport.scrollLeft + speed * delta;
           while (next < sequenceWidth * .5) next += sequenceWidth;
           while (next > sequenceWidth * 1.5) next -= sequenceWidth;
           viewport.scrollLeft = next;
@@ -387,7 +387,7 @@ export function ViniCinematic({
           ) : (
             <p className="vini-cinema__empty">Belum ada {activeMenu.toLowerCase()} yang ditampilkan.</p>
           ) : activeFacts.length ? (
-            <section ref={sliderRef} tabIndex={0} className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan, dapat digeser`} aria-roledescription="carousel" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
+            <section ref={sliderRef} tabIndex={0} className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kiri, dapat digeser`} aria-roledescription="carousel" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
               <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 300 / visibleFactColumns}%`, "--slot-count": activeFacts.length * 3 } as CSSProperties}>
                 {[...activeFacts, ...activeFacts, ...activeFacts].map((item, index) => (
                   <div key={`${item.label}-${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index < activeFacts.length || index >= activeFacts.length * 2}>

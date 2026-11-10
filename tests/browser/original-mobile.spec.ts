@@ -51,7 +51,7 @@ for (const width of [320, 390, 430]) {
     const identityBefore = await identityViewport.evaluate((element) => element.scrollLeft);
     await page.waitForTimeout(900);
     const identityAfter = await identityViewport.evaluate((element) => element.scrollLeft);
-    expect(identityAfter).toBeLessThan(identityBefore - 20);
+    expect(identityAfter).toBeGreaterThan(identityBefore + 20);
 
     await screen.locator(".vini-cinema__nav").getByRole("button", { name: "Karya" }).click();
     await expect(screen.locator(".vini-cinema__section-title")).toContainText("Karya");
@@ -72,7 +72,7 @@ for (const width of [320, 390, 430]) {
     const productBefore = await productViewport.evaluate((element) => element.scrollLeft);
     await page.waitForTimeout(900);
     const productAfter = await productViewport.evaluate((element) => element.scrollLeft);
-    expect(productAfter).toBeLessThan(productBefore - 20);
+    expect(productAfter).toBeGreaterThan(productBefore + 20);
 
     const bounds = await productViewport.boundingBox();
     expect(bounds).not.toBeNull();
@@ -87,7 +87,7 @@ for (const width of [320, 390, 430]) {
     expect(afterDrag).toBeGreaterThan(productAfter + 50);
     await page.waitForTimeout(1500);
     const afterResume = await productViewport.evaluate((element) => element.scrollLeft);
-    expect(afterResume).toBeLessThan(afterDrag - 10);
+    expect(afterResume).toBeGreaterThan(afterDrag + 10);
   });
 }
 
@@ -102,5 +102,5 @@ test("NAMINA Original desktop sliders auto-run without playback controls", async
   const before = await viewport.evaluate((element) => element.scrollLeft);
   await page.waitForTimeout(1000);
   const after = await viewport.evaluate((element) => element.scrollLeft);
-  expect(after).toBeLessThan(before - 20);
+  expect(after).toBeGreaterThan(before + 20);
 });
