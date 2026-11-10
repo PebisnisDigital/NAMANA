@@ -109,8 +109,11 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
       <h3>Video latar</h3>
       <TextField label="Video desktop (URL HTTPS)" value={site.media.desktopVideo} placeholder="https://.../video.mp4" onChange={(value) => change((next) => { next.media.desktopVideo = value; })} />
       <TextField label="Video mobile (opsional)" value={site.media.mobileVideo} placeholder="Kosong = video desktop" onChange={(value) => change((next) => { next.media.mobileVideo = value; })} />
-      <label className="studio-original__field"><span>Posisi video kiri-kanan: {site.content.background.focalX}%</span>
+      <label className="studio-original__field"><span>Posisi video desktop kiri-kanan: {site.content.background.focalX}%</span>
         <input type="range" min={0} max={100} value={site.content.background.focalX} onChange={(event) => change((next) => { next.content.background.focalX = Number(event.target.value); })} />
+      </label>
+      <label className="studio-original__field"><span>Posisi model di HP: {site.content.background.mobileFocalX ?? site.content.background.focalX}%</span>
+        <input type="range" min={0} max={100} value={site.content.background.mobileFocalX ?? site.content.background.focalX} onChange={(event) => change((next) => { next.content.background.mobileFocalX = Number(event.target.value); })} />
       </label>
     </section>
     </>}
