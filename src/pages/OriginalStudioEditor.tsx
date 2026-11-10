@@ -1,5 +1,8 @@
 import { useState } from "react";
+import type { OriginalStyle } from "../domain/content";
 import type { SiteDocument } from "../static/sites";
+import { originalStyleDefaults } from "../static/originalStyle";
+import { OriginalStyleEditor } from "./OriginalStyleEditor";
 
 type SectionKey = "nama" | "karir" | "skill";
 type GalleryKey = "karya" | "produk";
@@ -34,9 +37,13 @@ function TextField({ label, value, onChange, placeholder, multiline = false, max
 }
 
 export function OriginalStudioEditor({ site, change, onUpload, uploading, previews }: EditProps) {
-  const [activeTab, setActiveTab] = useState<"dasar" | SectionKey | GalleryKey>("dasar");
+  const [activeTab, setActiveTab] = useState<"dasar" | "tampilan" | SectionKey | GalleryKey>("dasar");
   const [selectedGallery, setSelectedGallery] = useState<string | null>(null);
   const original = site.content.original!;
+  const style = { ...originalStyleDefaults, ...original.style };
+  const updateStyle = <K extends keyof OriginalStyle>(field: K, value: OriginalStyle[K]) => {
+    change((next) => { next.content.original!.style = { ...originalStyleDefaults, ...next.content.original!.style, [field]: value }; });
+  };
   const updateSection = (section: SectionKey | GalleryKey, field: "intro" | "subtitle" | "description", value: string) => {
     change((next) => { next.content.original![section][field] = value; });
   };
@@ -81,7 +88,7 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
 
   return <div className="studio-original">
     <nav className="studio-original__tabs" aria-label="Pilih menu untuk diedit">
-      {([ ["dasar", "Dasar"], ["nama", "Nama"], ["karir", "Karir"], ["skill", "Skill"], ["karya", "Karya"], ["produk", "Produk"] ] as const).map(([key, label]) =>
+      {([ ["dasar", "Dasar"], ["nama", "Nama"], ["karir", "Karir"], ["skill", "Skill"], ["karya", "Karya"], ["produk", "Produk"], ["tampilan", "Tampilan"] ] as const).map(([key, label]) =>
         <button type="button" key={key} className={activeTab === key ? "is-active" : ""}
           aria-pressed={activeTab === key}
           onClick={() => { setActiveTab(key); setSelectedGallery(null); }}>{label}</button>)}
@@ -107,6 +114,8 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
       </label>
     </section>
     </>}
+
+    {activeTab === "tampilan" && <OriginalStyleEditor value={style} update={updateStyle} reset={() => change((next) => { delete next.content.original!.style; })} />}
 
     {(["nama", "karir", "skill"] as const).filter((section) => section === activeTab).map((section) => <section className="studio-group studio-original__chapter" key={section}>
       <div className="studio-original__heading"><h2>Menu {section === "nama" ? "Nama" : section === "karir" ? "Karir" : "Skill"}</h2><span>{original[section].items.length} data</span></div>

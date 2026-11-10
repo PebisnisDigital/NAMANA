@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { blankSite, normalizeSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed } from "../src/static/sites.ts";
+import { originalStyleDefaults } from "../src/static/originalStyle.ts";
 
 test("demo ORIGINAL is /vini and preserves the existing card collection", () => {
   const site = normalizeSite(viniSeed);
@@ -81,5 +82,36 @@ test("visual Studio settings, custom button graphics and per-card labels survive
   assert.equal(published.content.cards[0].linkLabel, "Chat saya");
   assert.equal(published.content.identity.brandLabel, "KARYA.ID");
   client.media.enterKey = "/media/pemilik-karya/../../error.webp";
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, false);
+});
+
+test("Original design controls persist per client without changing the shared master", () => {
+  const client = blankSite("warna-klien");
+  const custom = {
+    ...originalStyleDefaults,
+    backgroundColor: "#151923",
+    accentColor: "#e6b65a",
+    fontFamily: "georgia" as const,
+    titleScale: 1.15,
+    factColumns: 4,
+    galleryColumns: 3,
+    cardGap: 20,
+    buttonVariant: "outline" as const,
+    shadow: "strong" as const,
+    borderWidth: 2,
+  };
+  client.content.original!.style = custom;
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, true);
+  const published = normalizeSite(client);
+  assert.deepEqual(published.content.original!.style, custom);
+  assert.equal(blankSite("warna-lain").content.original?.style, undefined);
+  assert.equal(viniSeed.content.original?.style, undefined);
+
+  // All styling input goes through a bounded schema before publishing.
+  client.content.original!.style = { ...custom, factColumns: 10 };
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, false);
+  client.content.original!.style = { ...custom, titleScale: 3 };
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, false);
+  client.content.original!.style = { ...custom, borderColor: "#12345g" };
   assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, false);
 });

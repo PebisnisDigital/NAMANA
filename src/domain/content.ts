@@ -105,8 +105,30 @@ const originalGallerySectionSchema = z.object({
   description: text(400),
   items: z.array(originalGalleryItemSchema).max(20),
 }).strict();
+export const originalStyleSchema = z.object({
+  backgroundColor: color,
+  textColor: color,
+  accentColor: color,
+  buttonColor: color,
+  buttonTextColor: color,
+  borderColor: color,
+  fontFamily: z.enum(["montserrat", "space", "georgia", "system"]),
+  titleScale: z.number().min(0.8).max(1.2),
+  bodyScale: z.number().min(0.85).max(1.2),
+  contentMargin: z.number().int().min(40).max(150),
+  topSpacing: z.number().int().min(0).max(90),
+  factColumns: z.number().int().min(2).max(4),
+  galleryColumns: z.number().int().min(1).max(3),
+  cardGap: z.number().int().min(0).max(28),
+  buttonRadius: z.number().int().min(0).max(32),
+  borderWidth: z.number().int().min(0).max(3),
+  buttonVariant: z.enum(["solid", "outline"]),
+  shadow: z.enum(["none", "soft", "strong"]),
+}).strict();
+export type OriginalStyle = z.infer<typeof originalStyleSchema>;
 export const originalProfileSchema = z.object({
   contactUrl: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan URL WhatsApp HTTPS yang valid."),
+  style: originalStyleSchema.optional(),
   nama: originalFactSectionSchema,
   karir: originalFactSectionSchema,
   skill: originalFactSectionSchema,

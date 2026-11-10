@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { AssetUrls, OriginalProfile, SiteContent } from "../domain/content";
 import { blankOriginal } from "../static/originalSeed";
+import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
 import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
 import "./ViniCinematic.css";
 
@@ -81,6 +82,7 @@ export function ViniCinematic({
 }) {
   const emptyOriginal = useMemo(() => blankOriginal(content.identity.displayName), [content.identity.displayName]);
   const original = content.original ?? fallbackOriginal ?? emptyOriginal;
+  const customStyle = original.style;
   const [pageSize, setPageSize] = useState(getPageSize);
   const [activeMenu, setActiveMenu] = useState<MenuKey>("Nama");
   const [selectedCard, setSelectedCard] = useState<VisualCard | null>(null);
@@ -97,6 +99,25 @@ export function ViniCinematic({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const activeSection = original[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"];
+  const factColumns = pageSize === 1 && customStyle ? 1 : (customStyle?.factColumns ?? 3);
+  const galleryColumns = pageSize === 1 ? 1 : (customStyle?.galleryColumns ?? 2);
+  const styleVariables = customStyle ? {
+    "--namina-bg": customStyle.backgroundColor,
+    "--namina-ink": customStyle.textColor,
+    "--namina-accent": customStyle.accentColor,
+    "--namina-button-bg": customStyle.buttonColor,
+    "--namina-button-ink": customStyle.buttonTextColor,
+    "--namina-line": customStyle.borderColor,
+    "--namina-font": originalFontFamilies[customStyle.fontFamily],
+    "--namina-title-scale": customStyle.titleScale,
+    "--namina-body-scale": customStyle.bodyScale,
+    "--namina-content-margin": `${customStyle.contentMargin}px`,
+    "--namina-top-spacing": `${customStyle.topSpacing}px`,
+    "--namina-card-gap": `${customStyle.cardGap}px`,
+    "--namina-button-radius": `${customStyle.buttonRadius}px`,
+    "--namina-border-width": `${customStyle.borderWidth}px`,
+    "--namina-shadow": originalShadowValues[customStyle.shadow],
+  } as CSSProperties : undefined;
   const activeFacts: TickerFact[] = activeMenu === "Nama" || activeMenu === "Karir" || activeMenu === "Skill"
     ? (activeSection as OriginalProfile["nama"]).items : [];
   const activeGallery: VisualCard[] | null = activeMenu === "Karya" || activeMenu === "Produk"
@@ -211,7 +232,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion ? " vini-cinema--reduce-motion" : ""}${activeGallery ? " vini-cinema--gallery" : ""}`}>
+    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion ? " vini-cinema--reduce-motion" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
@@ -277,7 +298,7 @@ export function ViniCinematic({
             <section className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${activeMenu}, bergerak otomatis`} aria-roledescription="carousel" key={activeMenu}>
               <div
                 className="vini-cinema__gallery-track"
-                style={{ width: `${activeGallery.length * 200 / pageSize}%`, "--gallery-slots": activeGallery.length * 2, "--gallery-duration": `${activeGallery.length * 4.5}s` } as CSSProperties}
+                style={{ width: `${activeGallery.length * 200 / galleryColumns}%`, "--gallery-slots": activeGallery.length * 2, "--gallery-duration": `${activeGallery.length * 4.5}s` } as CSSProperties}
               >
                 {[...activeGallery, ...activeGallery].map((card, index) => (
                   <div className="vini-cinema__gallery-slide" key={`${card.id}-${index}`} aria-hidden={index >= activeGallery.length}>
@@ -292,7 +313,7 @@ export function ViniCinematic({
             <p className="vini-cinema__empty">Belum ada {activeMenu.toLowerCase()} yang ditampilkan.</p>
           ) : activeFacts.length ? (
             <section className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan tanpa jeda`} aria-roledescription="carousel">
-              <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 200 / 3}%`, "--slot-count": activeFacts.length * 2, "--marquee-duration": `${activeFacts.length * 1.6}s` } as CSSProperties}>
+              <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 200 / factColumns}%`, "--slot-count": activeFacts.length * 2, "--marquee-duration": `${activeFacts.length * 1.6}s` } as CSSProperties}>
                 {[...activeFacts, ...activeFacts].map((item, index) => (
                   <div key={`${item.label}-${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= activeFacts.length}>
                     <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />

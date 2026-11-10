@@ -31,6 +31,20 @@ test("Studio Original edits five menus, uploads a gallery image, links it, and p
   await page.locator(".studio-original__tabs").getByRole("button", { name: "Skill" }).click();
   await expect(page.getByRole("heading", { name: "Menu Skill" })).toBeVisible();
 
+  await page.locator(".studio-original__tabs").getByRole("button", { name: "Tampilan" }).click();
+  await expect(page.getByRole("heading", { name: "Tampilan website" })).toBeVisible();
+  await page.getByLabel("Background").fill("#16202b");
+  await page.locator(".studio-style__group > summary").filter({ hasText: "Font" }).click();
+  await page.getByLabel("Jenis font").selectOption("georgia");
+  await page.locator(".studio-style__group > summary").filter({ hasText: "Layout" }).click();
+  await page.getByLabel("Kolom gambar (desktop)").selectOption("3");
+  await page.locator(".studio-style__group > summary").filter({ hasText: "Tombol & efek" }).click();
+  await page.getByLabel("Gaya tombol").selectOption("outline");
+  await page.getByLabel("Shadow").selectOption("strong");
+  await expect(page.locator(".studio-preview .vini-cinema")).toHaveClass(/vini-cinema--styled/);
+  await expect(page.locator(".studio-preview .vini-cinema")).toHaveCSS("font-family", "Georgia, \"Times New Roman\", serif");
+  await expect(page.locator(".studio-preview .vini-cinema")).toHaveCSS("background-color", "rgb(22, 32, 43)");
+
   await page.locator(".studio-original__tabs").getByRole("button", { name: "Karya" }).click();
   const karya = page.locator(".studio-original__chapter");
   await karya.getByRole("button", { name: "Tambah karya" }).click();
@@ -54,6 +68,10 @@ test("Studio Original edits five menus, uploads a gallery image, links it, and p
   await expect.poll(() => published.length).toBe(1);
   const result = published[0];
   expect(result.content.identity.displayName).toBe("KLIEN ORIGINAL");
+  expect(result.content.original!.style).toMatchObject({
+    backgroundColor: "#16202b", fontFamily: "georgia", galleryColumns: 3,
+    buttonVariant: "outline", shadow: "strong",
+  });
   const galleryItem = result.content.original!.karya.items.find((card) => card.title === "Karya Klien Baru");
   expect(galleryItem?.link).toBe("https://contoh.com/karya");
   expect(galleryItem?.imageAssetId).toBe(galleryItem?.id);
