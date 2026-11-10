@@ -160,6 +160,7 @@
   max-width: 570px;
   margin: 20px 0 0;
 }
+.vini-cinema__description-sentence { display: block; }
 .vini-cinema__bio { display: block; font-size: 12px; color: #c7b9b9; line-height: 1.6; margin-top: 5px; }
 
 .vini-cinema__story {
