@@ -288,12 +288,19 @@ export function ViniCinematic({
           </div>
 
           {activeGallery ? (
-            <section className="vini-cinema__gallery-grid" aria-label={`Kartu ${activeMenu}`} key={activeMenu}>
-              {activeGallery.map((card) => (
-                <button key={card.id} type="button" className="vini-cinema__visual-card" onClick={() => setSelectedCard(card)} aria-label={`Lihat detail ${card.title}`}>
-                  <CardArtwork card={card} />
-                </button>
-              ))}
+            <section className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${activeMenu}, bergerak otomatis`} aria-roledescription="carousel" key={activeMenu}>
+              <div
+                className="vini-cinema__gallery-track"
+                style={{ width: `${activeGallery.length * 200 / pageSize}%`, "--gallery-slots": activeGallery.length * 2, "--gallery-duration": `${activeGallery.length * 4.5}s` } as CSSProperties}
+              >
+                {[...activeGallery, ...activeGallery].map((card, index) => (
+                  <div className="vini-cinema__gallery-slide" key={`${card.id}-${index}`} aria-hidden={index >= activeGallery.length}>
+                    <button type="button" className="vini-cinema__visual-card" onClick={() => setSelectedCard(card)} tabIndex={index >= activeGallery.length ? -1 : 0} aria-label={`Lihat detail ${card.title}`}>
+                      <CardArtwork card={card} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </section>
           ) : (
             <>
