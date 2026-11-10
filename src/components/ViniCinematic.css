@@ -501,6 +501,7 @@
 /* Karya and Produk: cinematic 19:6 picture cards with clickable detail popup. */
 .vini-cinema__section-title { text-transform: uppercase; }
 .vini-cinema__gallery-grid {
+  order: 2;
   width: min(100%, 790px);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
