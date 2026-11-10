@@ -322,7 +322,7 @@ export function ViniCinematic({
             preload="auto"
             onPlaying={() => setVideoReady(true)}
             onError={handleVideoError}
-            style={{ objectPosition: `${content.background.focalX}% ${content.background.focalY}%` }}
+            style={{ objectPosition: `${pageSize === 1 ? (content.background.mobileFocalX ?? content.background.focalX) : content.background.focalX}% ${content.background.focalY}%` }}
           />
         )}
         <div className="vini-cinema__scrim" />
