@@ -65,6 +65,7 @@ export function StaticStudio() {
   const [uploading, setUploading] = useState(false);
   const [localMediaPreviews, setLocalMediaPreviews] = useState<Record<string, string>>({});
   const [isPreview, setIsPreview] = useState(false);
+  const [showBriefs, setShowBriefs] = useState(false);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -201,6 +202,7 @@ export function StaticStudio() {
     next.content.original!.karir.items = textList(brief.details.experience).map((value) => ({ id: crypto.randomUUID(), label: "Karir", value, icon: 8121304 }));
     next.content.original!.skill.items = textList(brief.details.skills).map((value) => ({ id: crypto.randomUUID(), label: "Skill", value, icon: 8121272 }));
     setDocument(next);
+    setShowBriefs(false);
     setActiveSlug(suggested);
     setSha(null);
     setIsPreview(false);
@@ -277,36 +279,38 @@ export function StaticStudio() {
   return <main className="studio-root">
     <header className="studio-header">
       <a className="studio-wordmark" href="/">NAMINA</a>
-      <strong>Studio / Original</strong>
+      <strong>Studio <span className="studio-header__separator">/</span> Original</strong>
       <div className="studio-header__actions">
+        <button type="button" aria-pressed={showBriefs} onClick={() => setShowBriefs((value) => !value)}>{showBriefs ? "Kembali edit" : "Formulir klien"}</button>
         {document && <a href={`/${document.slug}`} target="_blank" rel="noreferrer">Buka website</a>}
         <button type="button" onClick={() => void logout()}>Keluar</button>
       </div>
     </header>
-    <BriefInbox onPrepare={prepareFromBrief} />
-    <div className="studio-workspace">
+    {showBriefs ? <div className="studio-brief-view"><BriefInbox onPrepare={prepareFromBrief} /></div> : <div className={`studio-workspace${isPreview ? " studio-workspace--preview" : ""}`}>
       <aside className="studio-sidebar" aria-label="Editor klien">
-        <section className="studio-group">
-          <h1>Kelola website</h1>
+        <section className="studio-client">
+          <h1>Editor website <span>Original</span></h1>
           <label htmlFor="site-picker">Pilih klien</label>
           <select id="site-picker" value={slugs.includes(activeSlug) ? activeSlug : ""} onChange={(event) => void openSite(event.target.value)}>
             {!slugs.includes(activeSlug) && <option value="">Klien baru (draft)</option>}
             {slugs.map((slug) => <option key={slug} value={slug}>/{slug}</option>)}
           </select>
-          <div className="studio-inline">
-            <label htmlFor="new-client-slug">Slug baru</label>
-            <input id="new-client-slug" placeholder="nama-klien" value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
-            <button type="button" onClick={createSite}>Buat</button>
-          </div>
+          <details className="studio-client__new" key={activeSlug}><summary>+ Buat website klien baru</summary>
+            <div className="studio-inline">
+              <label htmlFor="new-client-slug">Alamat halaman</label>
+              <input id="new-client-slug" placeholder="nama-klien" value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
+              <button type="button" onClick={createSite}>Buat</button>
+            </div>
+          </details>
         </section>
-        {document && <OriginalStudioEditor site={document} change={change} uploading={uploading} onUpload={(id, file) => void uploadGallery(id, file)} previews={localMediaPreviews} />}
+        {document && <OriginalStudioEditor key={document.slug} site={document} change={change} uploading={uploading} onUpload={(id, file) => void uploadGallery(id, file)} previews={localMediaPreviews} />}
       </aside>
       <section className="studio-main" aria-label="Pratinjau website">
         <div className="studio-main__toolbar">
           <div><strong>{document ? `/${document.slug}` : "Belum ada website"}</strong>
-            <span>{isPreview ? "Tampilan pengunjung" : "Edit data di panel kiri, hasil langsung tampil di sini"}</span>
+            <span>{isPreview ? "Pratinjau lebar" : "Pratinjau langsung"}</span>
           </div>
-          <button type="button" aria-pressed={isPreview} onClick={() => setIsPreview((value) => !value)}>{isPreview ? "Kembali edit" : "Coba preview"}</button>
+          <button type="button" aria-pressed={isPreview} onClick={() => setIsPreview((value) => !value)}>{isPreview ? "Kembali edit" : "Perbesar preview"}</button>
           <button type="button" className="studio-publish" disabled={!document || working || uploading} onClick={() => void publish()}>
             {working ? "Memproses…" : "Publikasikan"}
           </button>
@@ -319,6 +323,6 @@ export function StaticStudio() {
             : <p>Pilih klien atau buat website baru.</p>}
         </div>
       </section>
-    </div>
+    </div>}
   </main>;
 }

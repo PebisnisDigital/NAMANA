@@ -19,15 +19,22 @@ test("Studio Original edits five menus, uploads a gallery image, links it, and p
   });
 
   await page.goto("/studio");
-  await expect(page.getByText("Template standar NAMINA")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Identitas dan video" })).toBeVisible();
   await expect(page.locator(".vini-cinema__intro h1")).toContainText("TEH VINI");
   await page.getByLabel("Nama di judul").fill("KLIEN ORIGINAL");
   await expect(page.locator(".vini-cinema__intro h1")).toContainText("KLIEN ORIGINAL");
 
-  const karya = page.locator("details").filter({ has: page.locator("summary", { hasText: "Menu Karya" }) });
-  await karya.locator("summary").click();
+  await page.getByRole("button", { name: "Perbesar preview" }).click();
+  await expect(page.locator(".studio-sidebar")).toBeHidden();
+  await page.getByRole("button", { name: "Kembali edit" }).click();
+  await expect(page.locator(".studio-sidebar")).toBeVisible();
+  await page.locator(".studio-original__tabs").getByRole("button", { name: "Skill" }).click();
+  await expect(page.getByRole("heading", { name: "Menu Skill" })).toBeVisible();
+
+  await page.locator(".studio-original__tabs").getByRole("button", { name: "Karya" }).click();
+  const karya = page.locator(".studio-original__chapter");
   await karya.getByRole("button", { name: "Tambah karya" }).click();
-  const newCard = karya.locator(".studio-original__item").last();
+  const newCard = karya.locator(".studio-original__gallery-edit");
   await newCard.getByLabel("Judul").fill("Karya Klien Baru");
   await newCard.getByLabel("Detail popup").fill("Landing page karya spesial klien.");
   await newCard.getByLabel("URL tombol pada popup").fill("https://contoh.com/karya");
@@ -62,7 +69,8 @@ test("a new client receives the Original layout without Vini's personal data", a
     return route.fulfill({ status: 404, json: { error: "Not found" } });
   });
   await page.goto("/studio");
-  await expect(page.getByText("Template standar NAMINA")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Identitas dan video" })).toBeVisible();
+  await page.getByText("+ Buat website klien baru").click();
   await page.getByLabel("Slug baru").fill("klien-baru");
   await page.getByRole("button", { name: "Buat", exact: true }).click();
   await expect(page.locator(".studio-preview .vini-cinema__intro h1")).toContainText("Nama klien");

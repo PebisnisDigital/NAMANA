@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { SiteDocument } from "../static/sites";
 
 type SectionKey = "nama" | "karir" | "skill";
@@ -33,6 +34,8 @@ function TextField({ label, value, onChange, placeholder, multiline = false, max
 }
 
 export function OriginalStudioEditor({ site, change, onUpload, uploading, previews }: EditProps) {
+  const [activeTab, setActiveTab] = useState<"dasar" | SectionKey | GalleryKey>("dasar");
+  const [selectedGallery, setSelectedGallery] = useState<string | null>(null);
   const original = site.content.original!;
   const updateSection = (section: SectionKey | GalleryKey, field: "intro" | "subtitle" | "description", value: string) => {
     change((next) => { next.content.original![section][field] = value; });
@@ -55,12 +58,16 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
       });
     });
   };
-  const addGallery = (section: GalleryKey) => change((next) => {
-    next.content.original![section].items.push({
-      id: crypto.randomUUID(), title: section === "karya" ? "Karya baru" : "Produk baru",
-      description: "", link: "", imageAssetId: null, color: "#ee4851", motif: "cinema",
+  const addGallery = (section: GalleryKey) => {
+    const id = crypto.randomUUID();
+    change((next) => {
+      next.content.original![section].items.push({
+        id, title: section === "karya" ? "Karya baru" : "Produk baru",
+        description: "", link: "", imageAssetId: null, color: "#ee4851", motif: "cinema",
+      });
     });
-  });
+    setSelectedGallery(id);
+  };
   const updateGallery = (section: GalleryKey, id: string, field: "title" | "description" | "link" | "color", value: string) => {
     change((next) => {
       const item = next.content.original![section].items.find((entry) => entry.id === id);
@@ -73,58 +80,73 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
   });
 
   return <div className="studio-original">
+    <nav className="studio-original__tabs" aria-label="Pilih menu untuk diedit">
+      {([ ["dasar", "Dasar"], ["nama", "Nama"], ["karir", "Karir"], ["skill", "Skill"], ["karya", "Karya"], ["produk", "Produk"] ] as const).map(([key, label]) =>
+        <button type="button" key={key} className={activeTab === key ? "is-active" : ""}
+          aria-current={activeTab === key ? "page" : undefined}
+          onClick={() => { setActiveTab(key); setSelectedGallery(null); }}>{label}</button>)}
+    </nav>
+    {activeTab === "dasar" && <>
+    <div className="studio-original__heading"><h2>Identitas dan video</h2><span>Template Original</span></div>
     <section className="studio-group">
-      <h2>Gaya website</h2>
-      <div className="studio-original__preset"><strong>Original</strong><span>Template standar NAMINA</span></div>
-      <p className="studio-hint">Komposisi, posisi judul, animasi loop, dan rasio kartu 19:6 mengikuti contoh /vini.</p>
-    </section>
-    <section className="studio-group">
-      <h2>Identitas klien</h2>
-      <TextField label="Nama di judul" maxLength={60} value={site.content.identity.displayName} onChange={(value) => change((next) => {
+      <div className="studio-original__fields-2"><TextField label="Nama di judul" maxLength={60} value={site.content.identity.displayName} onChange={(value) => change((next) => {
         const previous = next.content.identity.displayName;
         next.content.identity.displayName = value;
         const first = next.content.original!.nama.items.find((item) => item.label === "Nama" && item.value === previous);
         if (first) first.value = value;
       })} />
-      <TextField label="Profesi atau tagline" maxLength={70} value={site.content.identity.profession} onChange={(value) => change((next) => { next.content.identity.profession = value; })} />
+      <TextField label="Profesi atau tagline" maxLength={70} value={site.content.identity.profession} onChange={(value) => change((next) => { next.content.identity.profession = value; })} /></div>
       <TextField label="Link tombol Japri Saya !" value={original.contactUrl} placeholder="https://wa.me/62..." onChange={(value) => change((next) => { next.content.original!.contactUrl = value; })} />
     </section>
     <section className="studio-group">
-      <h2>Video latar</h2>
+      <h3>Video latar</h3>
       <TextField label="Video desktop (URL HTTPS)" value={site.media.desktopVideo} placeholder="https://.../video.mp4" onChange={(value) => change((next) => { next.media.desktopVideo = value; })} />
       <TextField label="Video mobile (opsional)" value={site.media.mobileVideo} placeholder="Kosong = video desktop" onChange={(value) => change((next) => { next.media.mobileVideo = value; })} />
       <label className="studio-original__field"><span>Posisi video kiri-kanan: {site.content.background.focalX}%</span>
         <input type="range" min={0} max={100} value={site.content.background.focalX} onChange={(event) => change((next) => { next.content.background.focalX = Number(event.target.value); })} />
       </label>
     </section>
+    </>}
 
-    {(["nama", "karir", "skill"] as const).map((section) => <details className="studio-group studio-original__chapter" key={section} open={undefined}>
-      <summary>Menu {section === "nama" ? "Nama" : section === "karir" ? "Karir" : "Skill"} <span>{original[section].items.length} data</span></summary>
+    {(["nama", "karir", "skill"] as const).filter((section) => section === activeTab).map((section) => <section className="studio-group studio-original__chapter" key={section}>
+      <div className="studio-original__heading"><h2>Menu {section === "nama" ? "Nama" : section === "karir" ? "Karir" : "Skill"}</h2><span>{original[section].items.length} data</span></div>
+      <div className="studio-original__copy">
       <TextField label="Kalimat pembuka" maxLength={120} value={original[section].intro} onChange={(value) => updateSection(section, "intro", value)} />
       {section !== "nama" && <TextField label="Subjudul merah" maxLength={100} value={original[section].subtitle} onChange={(value) => updateSection(section, "subtitle", value)} />}
       <TextField label="Deskripsi di bawah judul" multiline maxLength={400} value={original[section].description} onChange={(value) => updateSection(section, "description", value)} />
-      <p className="studio-hint">Data bergeser otomatis, tiga kolom. Urutan di bawah mengikuti urutan animasi.</p>
-      {original[section].items.map((item, index) => <div className="studio-original__item" key={item.id}>
-        <div className="studio-original__item-head"><strong>Data {index + 1}</strong><button type="button" onClick={() => change((next) => { next.content.original![section].items = next.content.original![section].items.filter((fact) => fact.id !== item.id); })}>Hapus</button></div>
+      </div>
+      <div className="studio-original__heading studio-original__subheading"><h3>Data slide</h3><span>Urutan animasi</span></div>
+      {original[section].items.length === 0 && <p className="studio-hint">Belum ada data. Tambahkan baris pertama.</p>}
+      {original[section].items.map((item, index) => <div className="studio-original__item studio-original__fact" key={item.id}>
+        <span className="studio-original__row-index">{index + 1}</span>
         <TextField label="Label" maxLength={40} value={item.label} onChange={(value) => updateFact(section, item.id, "label", value)} />
         <TextField label="Isi" maxLength={180} value={item.value} onChange={(value) => updateFact(section, item.id, "value", value)} />
         <label className="studio-original__field"><span>Ikon</span><select value={item.icon} onChange={(event) => updateFact(section, item.id, "icon", Number(event.target.value))}>
           {icons.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
         </select></label>
+        <button type="button" className="studio-original__remove" aria-label={`Hapus data ${index + 1}`} title={`Hapus data ${index + 1}`} onClick={() => change((next) => { next.content.original![section].items = next.content.original![section].items.filter((fact) => fact.id !== item.id); })}>×</button>
       </div>)}
-      <button type="button" className="studio-original__add" disabled={original[section].items.length >= 30} onClick={() => addFact(section)}>Tambah data</button>
-    </details>)}
+      <button type="button" className="studio-original__add" disabled={original[section].items.length >= 30} onClick={() => addFact(section)}>+ Tambah data</button>
+    </section>)}
 
-    {(["karya", "produk"] as const).map((section) => <details className="studio-group studio-original__chapter" key={section}>
-      <summary>Menu {section === "karya" ? "Karya" : "Produk"} <span>{original[section].items.length} gambar</span></summary>
+    {(["karya", "produk"] as const).filter((section) => section === activeTab).map((section) => <section className="studio-group studio-original__chapter" key={section}>
+      <div className="studio-original__heading"><h2>Menu {section === "karya" ? "Karya" : "Produk"}</h2><span>{original[section].items.length} kartu</span></div>
+      <div className="studio-original__copy">
       <TextField label="Kalimat pembuka" maxLength={120} value={original[section].intro} onChange={(value) => updateSection(section, "intro", value)} />
       <TextField label="Subjudul merah" maxLength={100} value={original[section].subtitle} onChange={(value) => updateSection(section, "subtitle", value)} />
       <TextField label="Deskripsi" multiline maxLength={400} value={original[section].description} onChange={(value) => updateSection(section, "description", value)} />
-      <p className="studio-hint">Foto 19:6 bergerak otomatis. Saat diklik muncul detail, dengan tombol menuju URL yang diisi.</p>
-      {original[section].items.map((item, index) => {
+      </div>
+      <div className="studio-original__heading studio-original__subheading"><h3>Galeri {section}</h3><span>Slide otomatis 19:6</span></div>
+      {original[section].items.length === 0 && <p className="studio-hint">Belum ada kartu. Tambahkan kartu pertama.</p>}
+      <div className="studio-original__gallery-list" aria-label={`Daftar ${section}`}>
+        {original[section].items.map((item, index) => <button key={item.id} type="button" aria-pressed={(selectedGallery || original[section].items[0]?.id) === item.id}
+          className={`studio-original__gallery-choice${(selectedGallery || original[section].items[0]?.id) === item.id ? " is-active" : ""}`}
+          onClick={() => setSelectedGallery(item.id)}>{index + 1}. {item.title}</button>)}
+      </div>
+      {original[section].items.filter((item) => item.id === (selectedGallery && original[section].items.some((entry) => entry.id === selectedGallery) ? selectedGallery : original[section].items[0]?.id)).map((item) => {
         const url = site.media.cards[item.id] || "";
-        return <div className="studio-original__item" key={item.id}>
-          <div className="studio-original__item-head"><strong>{section === "karya" ? "Karya" : "Produk"} {index + 1}</strong><button type="button" onClick={() => removeGallery(section, item.id)}>Hapus</button></div>
+        return <div className="studio-original__item studio-original__gallery-edit" key={item.id}>
+          <div className="studio-original__item-head"><strong>Edit {section}: {item.title}</strong><button type="button" onClick={() => { removeGallery(section, item.id); setSelectedGallery(null); }}>Hapus kartu</button></div>
           <TextField label="Judul" maxLength={80} value={item.title} onChange={(value) => updateGallery(section, item.id, "title", value)} />
           <TextField label="Detail popup" multiline maxLength={1200} value={item.description} onChange={(value) => updateGallery(section, item.id, "description", value)} />
           <TextField label="URL tombol pada popup" value={item.link} placeholder="https://contoh.com" onChange={(value) => updateGallery(section, item.id, "link", value)} />
@@ -140,7 +162,7 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
           </label>
         </div>;
       })}
-      <button type="button" className="studio-original__add" disabled={original[section].items.length >= 20} onClick={() => addGallery(section)}>Tambah {section}</button>
-    </details>)}
+      <button type="button" className="studio-original__add" disabled={original[section].items.length >= 20} onClick={() => addGallery(section)}>+ Tambah {section}</button>
+    </section>)}
   </div>;
 }
