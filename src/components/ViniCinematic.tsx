@@ -353,7 +353,6 @@ export function ViniCinematic({
       {showLoader && (
         <section className="vini-cinema__loading" aria-label="Menyiapkan profil NAMINA" role="status">
           <NaminaIntroStage startedAt={introStartedAt} />
-          <span className="vini-cinema__loading-caption">Menyiapkan video profil.</span>
         </section>
       )}
     </main>
