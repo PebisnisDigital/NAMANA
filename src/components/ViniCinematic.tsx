@@ -37,6 +37,7 @@ export function ViniCinematic({
 }) {
   const [pageSize, setPageSize] = useState(getPageSize);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [marqueeKey, setMarqueeKey] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -137,6 +138,13 @@ export function ViniCinematic({
     if (index >= 0) goTo(index);
   }, [slides, goTo]);
 
+  const goToName = useCallback(() => {
+    setSlideIndex(0);
+    setMenuOpen(false);
+    setMarqueeKey((current) => current + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const retryVideo = () => {
     setVideoFailed(false);
     setVideoReady(false);
@@ -180,7 +188,7 @@ export function ViniCinematic({
 
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
-          <button className="vini-cinema__brand" type="button" onClick={() => goTo(0)} aria-label="NAMINA, kembali ke cerita awal">
+          <button className="vini-cinema__brand" type="button" onClick={goToName} aria-label="NAMINA, kembali ke Nama">
             <NaminaLogo variant="compact" />
             <span className="vini-cinema__brand-pro">.PRO</span>
           </button>
@@ -194,18 +202,11 @@ export function ViniCinematic({
             {menuOpen ? "Tutup" : "Menu"}
           </button>
           <nav id="vini-navigation" className={`vini-cinema__nav${menuOpen ? " vini-cinema__nav--open" : ""}`} aria-label="Navigasi cerita">
-            <button type="button" className={currentIndex === 0 ? "is-active" : ""} onClick={() => goTo(0)}>Beranda</button>
+            <button type="button" className="is-active" aria-current="page" onClick={goToName}>Nama</button>
             {(["profil", "keahlian", "karya", "kontak"] as const).map((section) => (
-              slides.some((slide) => slide.section === section) && (
-                <button
-                  key={section}
-                  type="button"
-                  className={current?.section === section && currentIndex !== 0 ? "is-active" : ""}
-                  onClick={() => goToSection(section)}
-                >
-                  {section === "profil" ? "Profil" : section === "keahlian" ? "Keahlian" : section === "karya" ? "Karya" : "Kontak"}
-                </button>
-              )
+              <button key={section} type="button" disabled title="Konten sedang disiapkan">
+                {section === "profil" ? "Profil" : section === "keahlian" ? "Keahlian" : section === "karya" ? "Karya" : "Kontak"}
+              </button>
             ))}
           </nav>
           <a className="vini-cinema__contact-top" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Hubungi Saya</a>
@@ -279,7 +280,7 @@ export function ViniCinematic({
           </div>
 
           <div className="vini-cinema__highlights" aria-label="Enam data identitas Teh Vini" aria-roledescription="carousel">
-            <div className="vini-cinema__highlight-track">
+            <div key={marqueeKey} className="vini-cinema__highlight-track">
               {[...homeFacts, ...homeFacts].map((item, index) => (
                 <div key={`${item.label}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= homeFacts.length}>
                   <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
