@@ -317,10 +317,9 @@
   .vini-cinema__progress > span > span { transition: none; }
 }
 
-/* Reference-inspired desktop composition. Keep NAMINA's content, branding,
-   video, navigation, story loop, CTAs and three existing highlights intact. */
+/* Reference-inspired desktop composition with NAMINA's original dark palette. */
 @media (min-width: 851px) {
-  .vini-cinema { background: #07142d; }
+  .vini-cinema { background: #08080c; }
   .vini-cinema__layout {
     min-height: 100svh;
     max-width: 1920px;
@@ -340,7 +339,7 @@
     box-shadow: inset 0 0 0 1px #e5908c40;
   }
   .vini-cinema__contact-top { padding: 13px 23px; border-radius: 15px; }
-  .vini-cinema__stage { background: #07142d; }
+  .vini-cinema__stage { background: #08080c; }
   .vini-cinema__video {
     width: 63%;
     object-position: 50% 50%;
@@ -348,8 +347,8 @@
   }
   .vini-cinema__scrim {
     background:
-      linear-gradient(90deg, #07142d 0%, #07142dfb 24%, #07142de5 35%, #07142d9e 48%, #07142d18 70%, transparent 95%),
-      linear-gradient(0deg, #07142dda 0%, transparent 27%, transparent 77%, #07142d6b 100%);
+      linear-gradient(90deg, #08080c 0%, #08080cfb 24%, #08080ce5 35%, #08080c9e 48%, #08080c18 70%, transparent 95%),
+      linear-gradient(0deg, #08080cda 0%, transparent 27%, transparent 77%, #08080c6b 100%);
   }
   .vini-cinema__main {
     width: min(55%, 750px);
@@ -394,14 +393,14 @@
     padding: 17px 25px;
     text-align: center;
   }
-  .vini-cinema__story { order: 3; width: 100%; padding-top: clamp(20px, 3vh, 33px); }
+  .vini-cinema__story { display: none; }
   .vini-cinema__story-heading { padding-bottom: 7px; }
   .vini-cinema__story-stage { height: 104px; min-height: 104px; padding-top: 8px; }
   .vini-cinema__entry { padding-top: 5px; }
   .vini-cinema__entry p { font-size: 11px; line-height: 1.35; }
   .vini-cinema__story-controls { padding-top: 0; }
   .vini-cinema__highlights {
-    order: 4;
+    order: 3;
     width: min(100%, 730px);
     margin-top: clamp(22px, 4vh, 46px);
     flex-wrap: nowrap;
@@ -421,6 +420,11 @@
   .vini-cinema__highlight img { width: 40px; height: 40px; }
   .vini-cinema__highlight span { font-size: 11px; }
   .vini-cinema__highlight strong { font-size: clamp(12px, .95vw, 15px); }
+}
+
+/* The identity carousel crossed out in the reference is removed on all sizes. */
+@media (max-width: 850px) {
+  .vini-cinema__story { display: none; }
 }
 
 @media (min-width: 851px) and (max-height: 760px) {
