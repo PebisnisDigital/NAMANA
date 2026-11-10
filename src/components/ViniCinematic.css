@@ -236,6 +236,7 @@
   margin-top: clamp(28px, 4.2vh, 50px);
   max-width: 740px;
 }
+.vini-cinema__highlight-page { display: flex; width: 100%; min-height: 86px; align-items: flex-start; }
 .vini-cinema__highlight { display: flex; align-items: center; gap: 11px; padding: 0 clamp(17px, 2vw, 37px); border-right: 1px solid #ffffff60; }
 .vini-cinema__highlight:first-child { padding-left: 0; }
 .vini-cinema__highlight:last-child { border-right: 0; }
@@ -301,7 +302,9 @@
   .vini-cinema__actions { margin-top: 16px; gap: 8px; }
   .vini-cinema__actions button, .vini-cinema__actions a { font-size: 12px; padding: 12px 18px; }
   .vini-cinema__highlights { width: 100%; gap: 10px; margin-top: 28px; }
-  .vini-cinema__highlight { flex: 1 1 calc(50% - 10px); padding: 0 8px 0 0; border: 0; }
+  .vini-cinema__highlight { flex: 1 1 0; min-width: 0; padding: 0 8px; border-right: 1px solid #ffffff45; }
+  .vini-cinema__highlight:last-child { border-right: 0; }
+  .vini-cinema__highlight-page { min-height: 95px; }
   .vini-cinema__highlight span { font-size: 10px; }
   .vini-cinema__highlight strong { font-size: 11px; }
   .vini-cinema__nav { left: 21px; right: 21px; top: 72px; }
@@ -310,7 +313,7 @@
   .vini-cinema__main { padding-top: clamp(215px, 36svh, 310px); }
   .vini-cinema__intro h1 { font-size: 60px; }
   .vini-cinema__actions button, .vini-cinema__actions a { padding: 11px 13px; }
-  .vini-cinema__highlight { flex-basis: 100%; }
+  .vini-cinema__highlight { flex-basis: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .vini-cinema__actions button, .vini-cinema__actions a { transition: none; }
@@ -326,7 +329,7 @@
     padding: 22px clamp(42px, 5.8vw, 110px) 30px;
   }
   .vini-cinema__header { min-height: 66px; gap: clamp(22px, 3vw, 52px); }
-  .vini-cinema__brand { flex-shrink: 0; }
+  .vini-cinema__brand { flex-shrink: 0; margin-left: clamp(65px, 5.5vw, 110px); }
   .vini-cinema__nav { justify-content: center; gap: clamp(2px, .6vw, 14px); }
   .vini-cinema__nav button {
     padding: 12px clamp(10px, 1.15vw, 20px);
@@ -409,6 +412,7 @@
     flex-wrap: nowrap;
     align-items: flex-start;
   }
+  .vini-cinema__highlight-page { min-height: 90px; }
   .vini-cinema__highlight {
     flex: 1 1 0;
     flex-direction: column;
