@@ -287,7 +287,7 @@
   .vini-cinema__contact-top { display: none; }
   .vini-cinema__main { flex: 1; width: 100%; padding-top: clamp(255px, 38svh, 470px); justify-content: flex-start; }
   .vini-cinema__stage { bottom: auto; height: min(66svh, 620px); }
-  .vini-cinema__video { width: 100%; height: 100%; object-position: center top !important; }
+  .vini-cinema__video { width: 100%; height: 100%; }
   .vini-cinema__scrim {
     background: linear-gradient(0deg, #08080c 0%, #08080cdd 12%, #08080c11 62%, #08080c6b 100%),
       linear-gradient(90deg, #08080c55, transparent 50%, #08080c33);
@@ -799,4 +799,230 @@
 }
 @media (max-width: 380px) {
   .vini-cinema--styled:not(.vini-cinema--gallery) .vini-cinema__intro h1 { font-size: calc(60px * var(--namina-title-scale)); }
+}
+
+/* The mobile hero has three independent rows: navigation, film, and profile. */
+@media (max-width: 700px) {
+  .vini-cinema {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto clamp(280px, 42svh, 420px) auto;
+    align-content: start;
+    background: var(--namina-bg, #08080c);
+    min-height: 100svh;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+  .vini-cinema__layout { display: contents; }
+  .vini-cinema__header {
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "brand contact" "nav nav";
+    gap: 8px 10px;
+    width: 100%;
+    min-height: 0;
+    padding: 13px 18px 0;
+    background: var(--namina-bg, #08080c);
+  }
+  .vini-cinema__brand {
+    grid-area: brand;
+    margin: 0;
+    justify-self: start;
+    align-self: center;
+    min-height: 44px;
+  }
+  .vini-cinema__brand .namina-logo--compact { gap: 8px; }
+  .vini-cinema__brand .namina-logo--compact .namina-logo__symbol { width: 32px; }
+  .vini-cinema__brand .namina-logo--compact .namina-logo__name { font-size: 28px; }
+  .vini-cinema__menu-toggle { display: none; }
+  .vini-cinema__contact-top {
+    grid-area: contact;
+    display: inline-flex;
+    min-height: 44px;
+    padding: 9px 14px;
+    margin: 0;
+    align-self: center;
+    border-radius: 10px;
+    font-size: 11px;
+    line-height: 1;
+  }
+  .vini-cinema__nav,
+  .vini-cinema__nav--open {
+    grid-area: nav;
+    position: static;
+    z-index: auto;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+    min-width: 0;
+    margin: 0 -8px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .vini-cinema__nav button {
+    display: grid;
+    place-items: center;
+    min-height: 48px;
+    min-width: 0;
+    padding: 7px 1px;
+    color: var(--namina-ink, #f7eee9);
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    font-size: clamp(10px, 2.9vw, 12px);
+    line-height: 1.1;
+    font-weight: 700;
+    box-shadow: none;
+  }
+  .vini-cinema__nav button:hover,
+  .vini-cinema__nav button.is-active,
+  .vini-cinema--styled .vini-cinema__nav button.is-active {
+    color: var(--namina-ink, #fff5ed);
+    background: transparent;
+    border-color: var(--namina-accent, #f34b53);
+    box-shadow: none;
+  }
+  .vini-cinema__stage {
+    grid-row: 2;
+    position: relative;
+    z-index: 0;
+    inset: auto;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--namina-bg, #08080c);
+  }
+  .vini-cinema__video {
+    inset: 10px 0 0;
+    width: 100%;
+    height: calc(100% - 10px);
+    object-fit: cover;
+    transform: scale(.90);
+    transform-origin: center center;
+    filter: saturate(1.02) contrast(1.03) brightness(1.08);
+  }
+  .vini-cinema__scrim,
+  .vini-cinema--styled .vini-cinema__scrim {
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--namina-bg, #08080c) 20%, transparent) 0%,
+      transparent 60%,
+      transparent 82%,
+      color-mix(in srgb, var(--namina-bg, #08080c) 36%, transparent) 94%,
+      var(--namina-bg, #08080c) 100%);
+  }
+  .vini-cinema__main,
+  .vini-cinema--gallery .vini-cinema__main {
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 8px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+    transform: none;
+  }
+  .vini-cinema__intro,
+  .vini-cinema--gallery .vini-cinema__intro {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: clamp(212px, 25svh, 250px);
+  }
+  .vini-cinema__hello,
+  .vini-cinema--styled .vini-cinema__hello {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    padding: 8px 13px;
+    margin-bottom: 11px;
+    border-radius: 24px;
+    font-size: clamp(10px, 2.55vw, 12px);
+    line-height: 1.35;
+    letter-spacing: .01em;
+  }
+  .vini-cinema__intro h1,
+  .vini-cinema--gallery .vini-cinema__intro h1 {
+    font-size: clamp(43px, 12.9vw, 62px);
+    line-height: .96;
+    letter-spacing: -.055em;
+  }
+  .vini-cinema--styled .vini-cinema__intro h1,
+  .vini-cinema--styled.vini-cinema--gallery .vini-cinema__intro h1 {
+    font-size: calc(clamp(43px, 12.9vw, 62px) * var(--namina-title-scale));
+  }
+  .vini-cinema__intro h1 span,
+  .vini-cinema--gallery .vini-cinema__intro h1 span {
+    margin-top: 7px;
+    font-size: clamp(20px, 5.5vw, 26px);
+    line-height: 1.08;
+    letter-spacing: -.035em;
+  }
+  .vini-cinema--styled .vini-cinema__intro h1 span,
+  .vini-cinema--styled.vini-cinema--gallery .vini-cinema__intro h1 span {
+    font-size: calc(clamp(20px, 5.5vw, 26px) * var(--namina-title-scale));
+  }
+  .vini-cinema__intro > p,
+  .vini-cinema--gallery .vini-cinema__intro > p {
+    max-width: 100%;
+    margin-top: 12px;
+    font-size: clamp(13px, 3.6vw, 15px);
+    line-height: 1.48;
+  }
+  .vini-cinema--styled .vini-cinema__intro > p {
+    font-size: calc(clamp(13px, 3.6vw, 15px) * var(--namina-body-scale));
+  }
+  .vini-cinema__highlights,
+  .vini-cinema__gallery-viewport {
+    order: initial;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 6px 0 0;
+    overflow: hidden;
+  }
+  .vini-cinema__highlight-track { min-height: 97px; align-items: flex-start; }
+  .vini-cinema__highlight-track .vini-cinema__highlight,
+  .vini-cinema--styled .vini-cinema__highlight-track .vini-cinema__highlight {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    min-height: 90px;
+    margin: 0 5px;
+    padding: 13px 15px;
+    text-align: left;
+    border: 1px solid var(--namina-line, #66585c);
+    border-radius: 12px;
+    background: #151316;
+  }
+  .vini-cinema__highlight-track .vini-cinema__highlight img {
+    width: 34px;
+    height: 34px;
+  }
+  .vini-cinema__highlight-track .vini-cinema__highlight span { font-size: 11px; }
+  .vini-cinema__highlight-track .vini-cinema__highlight strong {
+    font-size: clamp(12px, 3.7vw, 15px);
+    line-height: 1.3;
+  }
+  .vini-cinema__gallery-slide { padding-inline: 5px; }
+  .vini-cinema__visual-card { border-radius: 11px; }
+  .vini-cinema__empty { margin-top: 8px; }
+}
+@media (max-width: 360px) {
+  .vini-cinema__header { padding-inline: 13px; }
+  .vini-cinema__main,
+  .vini-cinema--gallery .vini-cinema__main { padding-inline: 15px; }
+  .vini-cinema__contact-top { padding-inline: 10px; }
+  .vini-cinema__brand .namina-logo--compact .namina-logo__name { font-size: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vini-cinema__gallery-track,
+  .vini-cinema__highlight-track { animation: none; transform: none; }
 }

@@ -99,8 +99,8 @@ export function ViniCinematic({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const activeSection = original[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"];
-  const factColumns = pageSize === 1 && customStyle ? 1 : (customStyle?.factColumns ?? 3);
-  const galleryColumns = pageSize === 1 ? 1 : (customStyle?.galleryColumns ?? 2);
+  const factColumns = pageSize === 1 ? 1.12 : (customStyle?.factColumns ?? 3);
+  const galleryColumns = pageSize === 1 ? 1.12 : (customStyle?.galleryColumns ?? 2);
   const styleVariables = customStyle ? {
     "--namina-bg": customStyle.backgroundColor,
     "--namina-ink": customStyle.textColor,
@@ -275,7 +275,7 @@ export function ViniCinematic({
               </button>
             ))}
           </nav>
-          {original.contactUrl && <a className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Japri Saya !</a>}
+          {original.contactUrl && <a className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Japri Saya!</a>}
         </header>
 
         <div className="vini-cinema__main">
