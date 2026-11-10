@@ -287,7 +287,7 @@ export function ViniCinematic({
               </>
             ) : (
               <>
-                <h1 className="vini-cinema__section-title">{activeMenu}<span>{activeMenu === "Karir" ? "PERJALANAN & PERAN" : activeMenu === "Skill" ? "KEAHLIAN DIGITAL" : activeMenu === "Karya" ? "PORTOFOLIO WEBSITE" : "KREASI & BISNIS"}</span></h1>
+                <h1 className="vini-cinema__section-title">{activeMenu}<span>{activeMenu === "Karir" ? "PERJALANAN & PENGALAMAN" : activeMenu === "Skill" ? "KEAHLIAN & KEMAMPUAN" : activeMenu === "Karya" ? "YANG SUDAH DIBAGIKAN" : "KREASI & BISNIS"}</span></h1>
                 <p>{activeMenu === "Karir" ? "Peran dan perjalanan karir yang aku tekuni." : activeMenu === "Skill" ? "Bidang yang aku pelajari dan kembangkan." : activeMenu === "Karya" ? "Kumpulan website yang aku kerjakan. Sentuh kartu untuk melihat detailnya." : "Produk dan proyek yang aku bangun. Sentuh kartu untuk melihat detailnya."}</p>
               </>
             )}
