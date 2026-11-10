@@ -27,6 +27,13 @@ type VisualCard = {
 };
 
 const menus: MenuKey[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
+const menuIntroductions: Record<MenuKey, string> = {
+  Nama: "Halo, perkenalkan nama saya adalah...",
+  Karir: "Pengalaman mengenai...",
+  Skill: "Aku selalu belajar mengembangkan...",
+  Karya: "Dan inilah...",
+  Produk: "Ambil berkah dan manfaat dari...",
+};
 
 const nameFacts: TickerFact[] = [
   { label: "Nama", value: "Vini Junia N", icon: 8121295 },
@@ -272,7 +279,7 @@ export function ViniCinematic({
 
         <div className="vini-cinema__main">
           <div className="vini-cinema__intro">
-            <span className="vini-cinema__hello">Halo, aku</span>
+            <span className="vini-cinema__hello">{menuIntroductions[activeMenu]}</span>
             {activeMenu === "Nama" ? (
               <>
                 <h1>{content.identity.displayName}<span>{content.identity.profession}</span></h1>
