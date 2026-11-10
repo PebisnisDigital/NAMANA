@@ -453,8 +453,8 @@
   .vini-cinema__highlights { margin-top: 16px; }
 }
 
-/* Two identical six-item sequences make the rightward movement seamless.
-   Exactly three identities fit the viewport at any moment. */
+/* Two identical variable-length sequences make a seamless rightward marquee.
+   Exactly three facts fit the viewport. Constant velocity, no pauses. */
 .vini-cinema__highlights {
   overflow: hidden;
   flex-wrap: nowrap;
@@ -462,16 +462,15 @@
 }
 .vini-cinema__highlight-track {
   display: flex;
-  flex: 0 0 400%;
-  width: 400%;
+  flex: 0 0 auto;
   min-height: 94px;
   align-items: flex-start;
-  animation: vini-identity-right 9s linear infinite;
+  animation: vini-identity-right var(--marquee-duration, 18s) linear infinite;
   will-change: transform;
 }
 .vini-cinema__highlight-track .vini-cinema__highlight {
-  flex: 0 0 calc(100% / 12);
-  width: calc(100% / 12);
+  flex: 0 0 calc(100% / var(--slot-count));
+  width: calc(100% / var(--slot-count));
   min-width: 0;
   padding-inline: 8px;
   flex-direction: column;
@@ -495,4 +494,99 @@
   .vini-cinema__highlight-track { min-height: 112px; }
   .vini-cinema__highlight-track .vini-cinema__highlight { padding-inline: 4px; }
   .vini-cinema__highlight-track .vini-cinema__highlight img { width: 29px; height: 29px; }
+}
+
+/* Karya and Produk: cinematic 19:6 picture cards with clickable detail popup. */
+.vini-cinema__section-title { text-transform: uppercase; }
+.vini-cinema__gallery-grid {
+  width: min(100%, 790px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: clamp(18px, 3vh, 35px);
+  animation: vini-gallery-arrive .45s ease-out both;
+}
+@keyframes vini-gallery-arrive { from { opacity: .35; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.vini-cinema__visual-card {
+  display: block;
+  width: 100%;
+  aspect-ratio: 19 / 6;
+  padding: 0;
+  border: 1px solid #ffffff3e;
+  border-radius: 13px;
+  background: #17101a;
+  overflow: hidden;
+  box-shadow: 0 13px 26px #0009;
+  transition: transform .22s, border-color .22s, box-shadow .22s;
+}
+.vini-cinema__visual-card:hover,
+.vini-cinema__visual-card:focus-visible {
+  transform: translateY(-4px) scale(1.012);
+  border-color: #fa6876;
+  box-shadow: 0 15px 35px #000b, 0 0 24px #cb263146;
+}
+.vini-cinema__artwork { display: block; width: 100%; height: 100%; }
+.vini-cinema__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #000c;
+  backdrop-filter: blur(12px);
+}
+.vini-cinema__modal {
+  position: relative;
+  width: min(100%, 780px);
+  border-radius: 20px;
+  border: 1px solid #fb92916b;
+  overflow: hidden;
+  color: #fff5ed;
+  background: #151117;
+  box-shadow: 0 24px 80px #000e;
+}
+.vini-cinema__modal > .vini-cinema__artwork { aspect-ratio: 19 / 6; }
+.vini-cinema__modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #fff;
+  background: #0b0a0dd9;
+  border: 1px solid #ffffff76;
+  font-size: 28px !important;
+  line-height: 1;
+}
+.vini-cinema__modal-copy { padding: clamp(20px, 3vw, 35px); }
+.vini-cinema__modal-copy > span { color: #f28b91; text-transform: uppercase; letter-spacing: .13em; font-size: 11px; font-weight: 700; }
+.vini-cinema__modal-copy h2 { margin: 10px 0; font-size: clamp(22px, 3vw, 34px); }
+.vini-cinema__modal-copy p { color: #e2d7d6; line-height: 1.65; margin: 0; font-size: 14px; }
+@media (min-width: 851px) {
+  .vini-cinema--gallery { overflow: visible; }
+  .vini-cinema--gallery .vini-cinema__main {
+    width: min(59%, 850px);
+    transform: translateY(-2vh);
+    padding-top: 35px;
+    padding-bottom: 30px;
+  }
+  .vini-cinema--gallery .vini-cinema__intro h1 { font-size: clamp(62px, 6.8vw, 103px); }
+  .vini-cinema--gallery .vini-cinema__intro h1 span { font-size: clamp(25px, 2.4vw, 38px); }
+  .vini-cinema--gallery .vini-cinema__intro > p { margin-top: 12px; }
+}
+@media (max-width: 700px) {
+  .vini-cinema__gallery-grid { grid-template-columns: 1fr; gap: 13px; margin-top: 22px; }
+  .vini-cinema__modal-copy { padding: 22px; }
+  .vini-cinema__modal-copy p { font-size: 13px; }
+  .vini-cinema--gallery .vini-cinema__main { padding-bottom: 40px; }
+  .vini-cinema--gallery .vini-cinema__intro h1 { font-size: clamp(57px, 14vw, 85px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vini-cinema__gallery-grid { animation: none; }
+  .vini-cinema__visual-card { transition: none; }
 }
