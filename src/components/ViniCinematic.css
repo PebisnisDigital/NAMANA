@@ -47,6 +47,8 @@
   padding: 26px clamp(24px, 5.5vw, 100px) 32px;
 }
 .vini-cinema__header {
+  position: relative;
+  z-index: 4;
   display: flex;
   align-items: center;
   gap: 22px;
