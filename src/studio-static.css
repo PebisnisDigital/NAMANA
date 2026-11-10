@@ -291,16 +291,16 @@
 .studio-client > label { margin-bottom: 5px; }
 .studio-client > select { font-size: 14px; font-weight: 600; background: #28241f; }
 .studio-client__new { margin-top: 9px; }
-.studio-client__new summary { padding: 8px 0; color: #e6b88c; font-size: 12px; cursor: pointer; }
+.studio-client__new summary { display: flex; align-items: center; min-height: 44px; padding: 8px 0; color: #e6b88c; font-size: 12px; cursor: pointer; }
 .studio-client__new .studio-inline { margin: 5px 0 9px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
 .studio-client__new .studio-inline label { grid-column: 1 / -1; margin: 0; }
 .studio-client__new .studio-inline button { padding-inline: 20px; }
 .studio-header { min-height: 66px; background: #151411; }
 .studio-header__separator { color: #bd9272; margin-inline: 5px; }
 .studio-header__actions { gap: 12px; }
-.studio-header__actions > button { min-height: 38px; padding: 8px 12px; background: transparent; border-color: #625a50; }
+.studio-header__actions > button { min-height: 44px; padding: 8px 12px; background: transparent; border-color: #625a50; }
 .studio-header__actions > button[aria-pressed="true"] { color: #fff2d9; border-color: #c28d6e; }
-.studio-header__actions a { font-weight: 600; }
+.studio-header__actions a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
 .studio-main__toolbar { min-height: 72px; padding: 12px 18px; gap: 10px; }
 .studio-main__toolbar > div { flex: 1; min-width: 0; }
 .studio-main__toolbar strong { font-size: 16px; }
@@ -319,7 +319,7 @@
 }
 .studio-root .studio-original__tabs button {
   min-width: 0;
-  min-height: 42px;
+  min-height: 44px;
   padding: 8px 2px;
   border-color: transparent;
   background: transparent;
@@ -369,8 +369,9 @@
 .studio-original__fact .studio-original__field { margin-bottom: 0 !important; }
 .studio-original__fact .studio-original__field span { font-size: 10px; margin-bottom: 3px; }
 .studio-original__fact .studio-original__field input,
-.studio-original__fact .studio-original__field select { min-height: 42px; padding: 8px 6px; font-size: 12px; }
-.studio-root .studio-original__remove { min-height: 42px; padding: 4px; border: 0; background: transparent; color: #e9b6b1; font-size: 22px; }
+.studio-original__fact .studio-original__field select { min-height: 44px; padding: 8px 6px; font-size: 12px; }
+.studio-root .studio-original__remove { min-height: 44px; padding: 4px; border: 0; background: transparent; color: #e9b6b1; font-size: 22px; }
+.studio-root .studio-original__item-head button { min-height: 44px; }
 .studio-root .studio-original__remove:hover { background: #462727; color: #fff4f2; }
 .studio-root .studio-original__add { display: block; width: calc(100% - 40px); margin: 13px 20px 22px; min-height: 44px; border: 1px dashed #ab8771; background: transparent; color: #f0c7a4; font-weight: 600; }
 .studio-root .studio-original__add:hover { background: #352821; border-style: solid; }

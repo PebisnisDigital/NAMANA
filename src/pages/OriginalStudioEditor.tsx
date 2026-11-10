@@ -83,7 +83,7 @@ export function OriginalStudioEditor({ site, change, onUpload, uploading, previe
     <nav className="studio-original__tabs" aria-label="Pilih menu untuk diedit">
       {([ ["dasar", "Dasar"], ["nama", "Nama"], ["karir", "Karir"], ["skill", "Skill"], ["karya", "Karya"], ["produk", "Produk"] ] as const).map(([key, label]) =>
         <button type="button" key={key} className={activeTab === key ? "is-active" : ""}
-          aria-current={activeTab === key ? "page" : undefined}
+          aria-pressed={activeTab === key}
           onClick={() => { setActiveTab(key); setSelectedGallery(null); }}>{label}</button>)}
     </nav>
     {activeTab === "dasar" && <>
