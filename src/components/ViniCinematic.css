@@ -64,7 +64,6 @@
   background: transparent;
   color: inherit;
 }
-.vini-cinema__brand-pro { color: #eb4247; font: 700 16px/1 'Montserrat', sans-serif; letter-spacing: .07em; }
 .vini-cinema__nav {
   display: flex;
   align-items: center;
@@ -133,7 +132,6 @@
   text-transform: uppercase;
   margin-bottom: 14px;
 }
-.vini-cinema__hello::before { content: ''; width: 29px; height: 2px; background: var(--vini-red); align-self: center; margin-right: 13px; }
 .vini-cinema__intro h1 {
   margin: 0;
   color: #fff9f3;
@@ -286,7 +284,6 @@
 @media (max-width: 700px) {
   .vini-cinema { overflow: clip; }
   .vini-cinema__layout { padding: 17px 21px 26px; }
-  .vini-cinema__brand-pro { font-size: 11px; }
   .vini-cinema__contact-top { display: none; }
   .vini-cinema__main { flex: 1; width: 100%; padding-top: clamp(255px, 38svh, 470px); justify-content: flex-start; }
   .vini-cinema__stage { bottom: auto; height: min(66svh, 620px); }
@@ -384,7 +381,6 @@
     margin-bottom: clamp(18px, 2.5vh, 27px);
     color: #ffccbb;
   }
-  .vini-cinema__hello::before { width: 21px; background: #ffbda8; }
   .vini-cinema__intro h1 {
     font-size: clamp(76px, 8vw, 128px);
     line-height: .91;
@@ -641,7 +637,6 @@
     letter-spacing: 0;
     padding-inline: 10px;
   }
-  .vini-cinema__hello::before { width: 14px; margin-right: 7px; }
   .vini-cinema__highlights,
   .vini-cinema__gallery-viewport { margin-top: 0; }
 }
