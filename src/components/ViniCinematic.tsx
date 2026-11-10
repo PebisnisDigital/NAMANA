@@ -203,9 +203,9 @@ export function ViniCinematic({
           </button>
           <nav id="vini-navigation" className={`vini-cinema__nav${menuOpen ? " vini-cinema__nav--open" : ""}`} aria-label="Navigasi cerita">
             <button type="button" className="is-active" aria-current="page" onClick={goToName}>Nama</button>
-            {(["profil", "keahlian", "karya", "kontak"] as const).map((section) => (
-              <button key={section} type="button" disabled title="Konten sedang disiapkan">
-                {section === "profil" ? "Profil" : section === "keahlian" ? "Keahlian" : section === "karya" ? "Karya" : "Kontak"}
+            {(["Karir", "Skill", "Karya", "Produk"] as const).map((label) => (
+              <button key={label} type="button" disabled title="Konten sedang disiapkan">
+                {label}
               </button>
             ))}
           </nav>
