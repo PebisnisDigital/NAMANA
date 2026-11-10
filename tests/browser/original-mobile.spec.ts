@@ -45,9 +45,13 @@ for (const width of [320, 390, 430]) {
     expect(layout.navHeights).toHaveLength(5);
     expect(Math.min(...layout.navHeights)).toBeGreaterThanOrEqual(44);
 
-    const identityTrack = screen.locator(".vini-cinema__highlight-track");
-    await expect(identityTrack).toHaveCSS("animation-name", "vini-identity-right");
-    await expect(identityTrack).toHaveCSS("animation-play-state", "running");
+    await expect(screen.getByRole("button", { name: "Putar slide otomatis" })).toHaveCount(0);
+    const identityViewport = screen.locator(".vini-cinema__highlights");
+    await expect(identityViewport).toHaveCSS("overflow-x", "auto");
+    const identityBefore = await identityViewport.evaluate((element) => element.scrollLeft);
+    await page.waitForTimeout(900);
+    const identityAfter = await identityViewport.evaluate((element) => element.scrollLeft);
+    expect(identityAfter).toBeLessThan(identityBefore - 20);
 
     await screen.locator(".vini-cinema__nav").getByRole("button", { name: "Karya" }).click();
     await expect(screen.locator(".vini-cinema__section-title")).toContainText("Karya");
@@ -63,18 +67,40 @@ for (const width of [320, 390, 430]) {
     expect(after.documentWidth).toBeLessThanOrEqual(width + 1);
 
     await screen.locator(".vini-cinema__nav").getByRole("button", { name: "Produk" }).click();
-    const productTrack = screen.locator(".vini-cinema__gallery-track");
-    await expect(productTrack).toHaveCSS("animation-name", "vini-identity-right");
-    await expect(productTrack).toHaveCSS("animation-play-state", "running");
-    const beforeMotion = await productTrack.evaluate((element) => getComputedStyle(element).transform);
-    await page.waitForTimeout(450);
-    const afterMotion = await productTrack.evaluate((element) => getComputedStyle(element).transform);
-    expect(afterMotion).not.toBe(beforeMotion);
+    const productViewport = screen.locator(".vini-cinema__gallery-viewport");
+    await expect(productViewport).toHaveCSS("overflow-x", "auto");
+    const productBefore = await productViewport.evaluate((element) => element.scrollLeft);
+    await page.waitForTimeout(900);
+    const productAfter = await productViewport.evaluate((element) => element.scrollLeft);
+    expect(productAfter).toBeLessThan(productBefore - 20);
 
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(productTrack).toHaveCSS("animation-name", "none");
-    await screen.getByRole("button", { name: "Putar slide otomatis" }).click();
-    await expect(productTrack).toHaveCSS("animation-name", "vini-identity-right");
-    await expect(productTrack).toHaveCSS("animation-play-state", "running");
+    const bounds = await productViewport.boundingBox();
+    expect(bounds).not.toBeNull();
+    const startX = bounds!.x + bounds!.width * .75;
+    const endX = bounds!.x + bounds!.width * .25;
+    const pointerY = bounds!.y + bounds!.height * .5;
+    await page.mouse.move(startX, pointerY);
+    await page.mouse.down();
+    await page.mouse.move(endX, pointerY, { steps: 10 });
+    await page.mouse.up();
+    const afterDrag = await productViewport.evaluate((element) => element.scrollLeft);
+    expect(afterDrag).toBeGreaterThan(productAfter + 50);
+    await page.waitForTimeout(1500);
+    const afterResume = await productViewport.evaluate((element) => element.scrollLeft);
+    expect(afterResume).toBeLessThan(afterDrag - 10);
   });
 }
+
+test("NAMINA Original desktop sliders auto-run without playback controls", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.route("**/www.dropbox.com/**", (route) => route.abort());
+  await page.goto("/vini");
+  const screen = page.locator(".vini-cinema");
+  await expect(screen).toBeVisible({ timeout: 15000 });
+  await expect(screen.getByRole("button", { name: "Putar slide otomatis" })).toHaveCount(0);
+  const viewport = screen.locator(".vini-cinema__highlights");
+  const before = await viewport.evaluate((element) => element.scrollLeft);
+  await page.waitForTimeout(1000);
+  const after = await viewport.evaluate((element) => element.scrollLeft);
+  expect(after).toBeLessThan(before - 20);
+});

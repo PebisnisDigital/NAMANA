@@ -456,17 +456,30 @@
 /* Two identical variable-length sequences make a seamless rightward marquee.
    Exactly three facts fit the viewport. Constant velocity, no pauses. */
 .vini-cinema__highlights {
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   flex-wrap: nowrap;
   width: min(100%, 740px);
 }
+.vini-cinema__highlights,
+.vini-cinema__gallery-viewport {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+.vini-cinema__highlights::-webkit-scrollbar,
+.vini-cinema__gallery-viewport::-webkit-scrollbar { display: none; }
+.vini-cinema__highlights:active,
+.vini-cinema__gallery-viewport:active { cursor: grabbing; }
+.vini-cinema__highlights:focus-visible,
+.vini-cinema__gallery-viewport:focus-visible { outline: 3px solid #ffc6a5; outline-offset: 3px; }
 .vini-cinema__highlight-track {
   display: flex;
   flex: 0 0 auto;
   min-height: 94px;
   align-items: flex-start;
-  animation: vini-identity-right var(--marquee-duration, 18s) linear infinite;
-  will-change: transform;
 }
 .vini-cinema__highlight-track .vini-cinema__highlight {
   flex: 0 0 calc(100% / var(--slot-count));
@@ -485,10 +498,7 @@
 .vini-cinema__highlight-track .vini-cinema__highlight img {
   width: 37px;
   height: 37px;
-}
-@keyframes vini-identity-right {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
+  -webkit-user-drag: none;
 }
 @media (max-width: 700px) {
   .vini-cinema__highlight-track { min-height: 112px; }
@@ -501,7 +511,8 @@
 .vini-cinema__gallery-viewport {
   order: 2;
   width: min(100%, 790px);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   margin-top: clamp(18px, 3vh, 35px);
   mask-image: linear-gradient(90deg, transparent 0%, black 2%, black 98%, transparent 100%);
 }
@@ -509,13 +520,6 @@
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  animation: vini-identity-right var(--gallery-duration, 18s) linear infinite;
-  will-change: transform;
-}
-/* Pointer hover can stick after a tap; pause only while pressing or keyboard-focusing a card. */
-.vini-cinema__gallery-viewport:has(.vini-cinema__visual-card:active) .vini-cinema__gallery-track,
-.vini-cinema__gallery-viewport:has(.vini-cinema__visual-card:focus-visible) .vini-cinema__gallery-track {
-  animation-play-state: paused;
 }
 .vini-cinema__gallery-slide {
   flex: 0 0 calc(100% / var(--gallery-slots));
@@ -542,22 +546,10 @@
   box-shadow: 0 15px 35px #000b, 0 0 24px #cb263146;
 }
 .vini-cinema__artwork { display: block; width: 100%; height: 100%; }
+.vini-cinema__artwork { -webkit-user-drag: none; }
 .vini-cinema__visual-card img.vini-cinema__artwork,
 .vini-cinema__modal img.vini-cinema__artwork { object-fit: cover; }
 .vini-cinema__empty { color: #ded0c9; margin: 10px 0 0; min-height: 94px; }
-.vini-cinema__restore-loop {
-  align-self: flex-start;
-  min-height: 44px;
-  margin-top: 12px;
-  padding: 9px 14px;
-  border: 1px solid #f34b53;
-  border-radius: 9px;
-  background: #251519;
-  color: #fff5ed;
-  font-size: 12px;
-  font-weight: 700;
-}
-.vini-cinema__restore-loop:hover { background: #442027; }
 .vini-cinema__detail-link {
   display: inline-flex;
   align-items: center;
@@ -1023,7 +1015,8 @@
     width: 100%;
     max-width: none;
     margin: 6px 0 0;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
   .vini-cinema__highlight-track { min-height: 97px; align-items: flex-start; }
   .vini-cinema__highlight-track .vini-cinema__highlight,
@@ -1061,6 +1054,3 @@
   .vini-cinema__contact-top { padding-inline: 10px; }
   .vini-cinema__brand .namina-logo--compact .namina-logo__name { font-size: 25px; }
 }
-/* The device's motion preference starts the slider paused, with a deliberate opt-in. */
-.vini-cinema--reduce-motion .vini-cinema__gallery-track,
-.vini-cinema--reduce-motion .vini-cinema__highlight-track { animation: none; transform: none; }

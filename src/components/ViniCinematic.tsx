@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { AssetUrls, OriginalProfile, SiteContent } from "../domain/content";
 import { blankOriginal } from "../static/originalSeed";
 import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
@@ -26,6 +26,7 @@ type VisualCard = {
   link: string;
   owner: string;
 };
+type SlideDrag = { pointerId: number; startX: number; startScroll: number; moved: boolean };
 
 const menus: MenuKey[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
 
@@ -98,10 +99,6 @@ export function ViniCinematic({
   const [pageSize, setPageSize] = useState(getPageSize);
   const [activeMenu, setActiveMenu] = useState<MenuKey>("Nama");
   const [selectedCard, setSelectedCard] = useState<VisualCard | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-  const [motionOptIn, setMotionOptIn] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
@@ -110,10 +107,15 @@ export function ViniCinematic({
   const [introElapsed, setIntroElapsed] = useState(false);
   const [introTimedOut, setIntroTimedOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sliderRef = useRef<HTMLElement | null>(null);
+  const dragRef = useRef<SlideDrag | null>(null);
+  const resumeAtRef = useRef(0);
+  const suppressCardClickRef = useRef(false);
 
   const activeSection = original[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"];
   const factColumns = pageSize === 1 ? 1.12 : (customStyle?.factColumns ?? 3);
   const galleryColumns = pageSize === 1 ? 1.12 : (customStyle?.galleryColumns ?? 2);
+  const visibleFactColumns = Math.min(factColumns, Math.max(1, original[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"].items.length));
   const styleVariables = customStyle ? {
     "--namina-bg": customStyle.backgroundColor,
     "--namina-ink": customStyle.textColor,
@@ -146,6 +148,7 @@ export function ViniCinematic({
       link: item.link,
       owner: content.identity.displayName,
     })) : null;
+  const visibleGalleryColumns = Math.min(galleryColumns, Math.max(1, activeGallery?.length ?? 1));
   const mobileVideoId = content.background.mobileVideoAssetId;
   const desktopVideoId = content.background.desktopVideoAssetId;
   const videoSrc = assetUrls[
@@ -160,14 +163,72 @@ export function ViniCinematic({
     return () => window.removeEventListener("resize", updatePageSize);
   }, []);
 
+  // A continuous native scroll position stays draggable on touch and mouse.
+  // Three matching sequences let the offset wrap invisibly in either direction.
   useEffect(() => {
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => {
-      setReducedMotion(preference.matches);
+    const viewport = sliderRef.current;
+    if (!viewport) return;
+    const reset = () => { viewport.scrollLeft = viewport.scrollWidth / 3; };
+    reset();
+    const observer = new ResizeObserver(reset);
+    observer.observe(viewport);
+    let frame = 0;
+    let previous = performance.now();
+    const speed = activeGallery ? 64 : 68; // px/s: legible cards and visible, gentle movement.
+    const animate = (now: number) => {
+      const delta = Math.min(now - previous, 48) / 1000;
+      previous = now;
+      if (!dragRef.current && now >= resumeAtRef.current && document.visibilityState === "visible") {
+        const sequenceWidth = viewport.scrollWidth / 3;
+        if (sequenceWidth > 0) {
+          let next = viewport.scrollLeft - speed * delta;
+          while (next < sequenceWidth * .5) next += sequenceWidth;
+          while (next > sequenceWidth * 1.5) next -= sequenceWidth;
+          viewport.scrollLeft = next;
+        }
+      }
+      frame = window.requestAnimationFrame(animate);
     };
-    preference.addEventListener("change", onChange);
-    return () => preference.removeEventListener("change", onChange);
-  }, []);
+    frame = window.requestAnimationFrame(animate);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      dragRef.current = null;
+    };
+  }, [activeMenu, activeFacts.length, activeGallery?.length, visibleFactColumns, visibleGalleryColumns, pageSize]);
+
+  const onSliderPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    suppressCardClickRef.current = false;
+    dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startScroll: event.currentTarget.scrollLeft, moved: false };
+  };
+  const onSliderPointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const distance = event.clientX - drag.startX;
+    if (!drag.moved && Math.abs(distance) < 8) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      suppressCardClickRef.current = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    event.currentTarget.scrollLeft = drag.startScroll - distance;
+  };
+  const onSliderPointerEnd = (event: ReactPointerEvent<HTMLElement>) => {
+    if (dragRef.current?.pointerId !== event.pointerId) return;
+    dragRef.current = null;
+    resumeAtRef.current = performance.now() + 1100;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+  const onSliderWheel = (event: ReactWheelEvent<HTMLElement>) => {
+    if (Math.abs(event.deltaX) > 0) resumeAtRef.current = performance.now() + 1100;
+  };
+  const onSliderKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+    event.preventDefault();
+    event.currentTarget.scrollLeft += event.key === "ArrowRight" ? 110 : -110;
+    resumeAtRef.current = performance.now() + 1100;
+  };
 
   useEffect(() => {
     const onVisibilityChange = () => setPageVisible(document.visibilityState === "visible");
@@ -245,7 +306,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion && !motionOptIn ? " vini-cinema--reduce-motion" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
+    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
@@ -309,14 +370,14 @@ export function ViniCinematic({
           </div>
 
           {activeGallery ? activeGallery.length ? (
-            <section className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${activeMenu}, bergerak otomatis`} aria-roledescription="carousel" key={activeMenu}>
+            <section ref={sliderRef} tabIndex={0} className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${activeMenu}, bergerak otomatis, dapat digeser`} aria-roledescription="carousel" key={activeMenu} onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
               <div
                 className="vini-cinema__gallery-track"
-                style={{ width: `${activeGallery.length * 200 / galleryColumns}%`, "--gallery-slots": activeGallery.length * 2, "--gallery-duration": `${activeGallery.length * 3}s` } as CSSProperties}
+                style={{ width: `${activeGallery.length * 300 / visibleGalleryColumns}%`, "--gallery-slots": activeGallery.length * 3 } as CSSProperties}
               >
-                {[...activeGallery, ...activeGallery].map((card, index) => (
-                  <div className="vini-cinema__gallery-slide" key={`${card.id}-${index}`} aria-hidden={index >= activeGallery.length}>
-                    <button type="button" className="vini-cinema__visual-card" onClick={() => setSelectedCard(card)} tabIndex={index >= activeGallery.length ? -1 : 0} aria-label={`Lihat detail ${card.title}`}>
+                {[...activeGallery, ...activeGallery, ...activeGallery].map((card, index) => (
+                  <div className="vini-cinema__gallery-slide" key={`${card.id}-${index}`} aria-hidden={index < activeGallery.length || index >= activeGallery.length * 2}>
+                    <button type="button" className="vini-cinema__visual-card" onClick={(event) => { if (suppressCardClickRef.current) { suppressCardClickRef.current = false; event.preventDefault(); return; } setSelectedCard(card); }} tabIndex={index >= activeGallery.length && index < activeGallery.length * 2 ? 0 : -1} aria-label={`Lihat detail ${card.title}`}>
                       <CardArtwork card={card} />
                     </button>
                   </div>
@@ -326,10 +387,10 @@ export function ViniCinematic({
           ) : (
             <p className="vini-cinema__empty">Belum ada {activeMenu.toLowerCase()} yang ditampilkan.</p>
           ) : activeFacts.length ? (
-            <section className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan tanpa jeda`} aria-roledescription="carousel">
-              <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 200 / factColumns}%`, "--slot-count": activeFacts.length * 2, "--marquee-duration": `${activeFacts.length * 1.6}s` } as CSSProperties}>
-                {[...activeFacts, ...activeFacts].map((item, index) => (
-                  <div key={`${item.label}-${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= activeFacts.length}>
+            <section ref={sliderRef} tabIndex={0} className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan, dapat digeser`} aria-roledescription="carousel" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
+              <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 300 / visibleFactColumns}%`, "--slot-count": activeFacts.length * 3 } as CSSProperties}>
+                {[...activeFacts, ...activeFacts, ...activeFacts].map((item, index) => (
+                  <div key={`${item.label}-${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index < activeFacts.length || index >= activeFacts.length * 2}>
                     <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
                     <span>{item.label}<strong>{item.value}</strong></span>
                   </div>
@@ -338,11 +399,6 @@ export function ViniCinematic({
             </section>
           ) : (
             <p className="vini-cinema__empty">Belum ada data {activeMenu.toLowerCase()}.</p>
-          )}
-          {reducedMotion && !motionOptIn && (activeFacts.length > 0 || (activeGallery?.length ?? 0) > 0) && (
-            <button className="vini-cinema__restore-loop" type="button" onClick={() => setMotionOptIn(true)}>
-              Putar slide otomatis
-            </button>
           )}
         </div>
       </div>
