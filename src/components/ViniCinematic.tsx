@@ -15,6 +15,17 @@ function getPageSize() {
   return 2;
 }
 
+// Beranda /vini: keep the six public identity fields separate from the
+// historical portfolio cards, which remain available in Studio.
+const homeFacts = [
+  { label: "Nama", value: "Vini Junia N", icon: 8121295 },
+  { label: "Tanggal lahir", value: "8 Juni 1996", icon: 8121312 },
+  { label: "Alamat", value: "Garut", icon: 8121270 },
+  { label: "Agama", value: "Islam", icon: 8121302 },
+  { label: "Jenis kelamin", value: "Perempuan", icon: 8121295 },
+  { label: "Status perkawinan", value: "Kawin", icon: 8121302 },
+];
+
 export function ViniCinematic({
   content,
   assetUrls,
@@ -26,7 +37,6 @@ export function ViniCinematic({
 }) {
   const [pageSize, setPageSize] = useState(getPageSize);
   const [slideIndex, setSlideIndex] = useState(0);
-  const [highlightIndex, setHighlightIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -40,14 +50,6 @@ export function ViniCinematic({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const slides = useMemo(() => buildViniSlides(content.cards, pageSize), [content.cards, pageSize]);
-  const visibleCards = useMemo(() => content.cards.filter((card) => card.visible), [content.cards]);
-  const highlightPageCount = Math.ceil(visibleCards.length / 3);
-  const activeHighlights = useMemo(() => {
-    if (!visibleCards.length) return [];
-    return Array.from({ length: Math.min(3, visibleCards.length) }, (_, column) =>
-      visibleCards[(highlightIndex * 3 + column) % visibleCards.length],
-    );
-  }, [visibleCards, highlightIndex]);
   const currentIndex = Math.min(slideIndex, Math.max(0, slides.length - 1));
   const current = slides[currentIndex];
   const mobileVideoId = content.background.mobileVideoAssetId;
@@ -97,14 +99,6 @@ export function ViniCinematic({
     }, 4200);
     return () => window.clearTimeout(timeout);
   }, [pageVisible, slides.length, currentIndex, showLoader]);
-
-  useEffect(() => {
-    if (!pageVisible || showLoader || highlightPageCount < 2) return;
-    const timer = window.setInterval(() => {
-      setHighlightIndex((index) => (index + 1) % highlightPageCount);
-    }, 2800);
-    return () => window.clearInterval(timer);
-  }, [pageVisible, showLoader, highlightPageCount]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -284,30 +278,15 @@ export function ViniCinematic({
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Hubungi Vini</a>
           </div>
 
-          <div className="vini-cinema__highlights" aria-label="Data profil dan karya, berganti otomatis" aria-roledescription="carousel">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={highlightIndex}
-                className="vini-cinema__highlight-page"
-                initial={{ opacity: 0, x: 46 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -46 }}
-                transition={{ duration: 0.42, ease: [0.22, 0.8, 0.2, 1] }}
-              >
-                {activeHighlights.map((item) => (
-                  <div key={item.id} className="vini-cinema__highlight">
-                    <img
-                      src={(item.imageAssetId && assetUrls[item.imageAssetId]) || `/animated-icons/${item.animatedIcon || 8121295}.webp`}
-                      width={40}
-                      height={40}
-                      alt=""
-                      decoding="async"
-                    />
-                    <span>{item.title}<strong>{item.subtitle || item.title}</strong></span>
-                  </div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
+          <div className="vini-cinema__highlights" aria-label="Enam data identitas Teh Vini" aria-roledescription="carousel">
+            <div className="vini-cinema__highlight-track">
+              {[...homeFacts, ...homeFacts].map((item, index) => (
+                <div key={`${item.label}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= homeFacts.length}>
+                  <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
+                  <span>{item.label}<strong>{item.value}</strong></span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
