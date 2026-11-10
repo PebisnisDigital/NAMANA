@@ -352,6 +352,7 @@
   }
   .vini-cinema__main {
     width: min(58%, 790px);
+    margin-left: clamp(65px, 5.5vw, 110px);
     padding-top: clamp(42px, 7vh, 98px);
     padding-bottom: 5px;
     padding-left: clamp(17px, 2.2vw, 35px);
