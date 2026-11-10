@@ -35,13 +35,11 @@ export function ViniCinematic({
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
-  const [paused, setPaused] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
   const [pageVisible, setPageVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [usingFallbackVideo, setUsingFallbackVideo] = useState(false);
   const [introElapsed, setIntroElapsed] = useState(false);
   const [introTimedOut, setIntroTimedOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -54,7 +52,8 @@ export function ViniCinematic({
   const videoSrc = assetUrls[
     (pageSize === 1 && mobileVideoId) || desktopVideoId || ""
   ];
-  const showLoader = !introElapsed || (!!videoSrc && !videoReady && !videoFailed && !introTimedOut);
+  const activeVideoSrc = usingFallbackVideo ? "/videos/hero.mp4" : (videoSrc || "/videos/hero.mp4");
+  const showLoader = !introElapsed || (!videoReady && !videoFailed && !introTimedOut);
 
   useEffect(() => {
     const updatePageSize = () => setPageSize(getPageSize());
@@ -66,7 +65,6 @@ export function ViniCinematic({
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = () => {
       setReducedMotion(preference.matches);
-      if (preference.matches) setPaused(true);
     };
     preference.addEventListener("change", onChange);
     return () => preference.removeEventListener("change", onChange);
@@ -81,8 +79,8 @@ export function ViniCinematic({
   useEffect(() => {
     const started = introStartedAt || Date.now();
     const elapsed = Date.now() - started;
-    const minimum = window.setTimeout(() => setIntroElapsed(true), Math.max(0, 5000 - elapsed));
-    const fallback = window.setTimeout(() => setIntroTimedOut(true), Math.max(0, 12000 - elapsed));
+    const minimum = window.setTimeout(() => setIntroElapsed(true), Math.max(0, 1200 - elapsed));
+    const fallback = window.setTimeout(() => setIntroTimedOut(true), Math.max(0, 8000 - elapsed));
     return () => {
       window.clearTimeout(minimum);
       window.clearTimeout(fallback);
@@ -90,12 +88,12 @@ export function ViniCinematic({
   }, [introStartedAt]);
 
   useEffect(() => {
-    if (paused || !pageVisible || slides.length < 2 || showLoader) return;
+    if (!pageVisible || slides.length < 2 || showLoader) return;
     const timeout = window.setTimeout(() => {
       setSlideIndex((index) => (index + 1) % slides.length);
-    }, 9500);
+    }, 4200);
     return () => window.clearTimeout(timeout);
-  }, [paused, pageVisible, slides.length, currentIndex, showLoader]);
+  }, [pageVisible, slides.length, currentIndex, showLoader]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -103,14 +101,26 @@ export function ViniCinematic({
     video.defaultMuted = true;
     video.muted = true;
     video.playsInline = true;
-    if (paused || !pageVisible) {
+    if (!pageVisible) {
       video.pause();
     } else {
       void video.play().catch(() => {
-        // Autoplay can be blocked by the visitor's browser settings.
+        // Some browsers block playback even for muted inline video.
       });
     }
-  }, [paused, pageVisible, videoFailed, videoSrc]);
+  }, [pageVisible, videoFailed, activeVideoSrc]);
+
+  useEffect(() => {
+    setVideoReady(false);
+    setVideoFailed(false);
+    setUsingFallbackVideo(false);
+  }, [videoSrc]);
+
+  useEffect(() => {
+    if (videoReady || videoFailed || usingFallbackVideo || !videoSrc) return;
+    const timeout = window.setTimeout(() => setUsingFallbackVideo(true), 5500);
+    return () => window.clearTimeout(timeout);
+  }, [videoReady, videoFailed, usingFallbackVideo, videoSrc]);
 
   const goTo = useCallback((index: number) => {
     setSlideIndex((index + slides.length) % Math.max(1, slides.length));
@@ -122,15 +132,22 @@ export function ViniCinematic({
     if (index >= 0) goTo(index);
   }, [slides, goTo]);
 
-  const togglePause = () => setPaused((value) => !value);
-
   const retryVideo = () => {
     setVideoFailed(false);
     setVideoReady(false);
     const video = videoRef.current;
     if (!video) return;
     video.load();
-    if (!paused) void video.play().catch(() => setVideoFailed(true));
+    void video.play().catch(() => setVideoFailed(true));
+  };
+
+  const handleVideoError = () => {
+    if (!usingFallbackVideo) {
+      setUsingFallbackVideo(true);
+      setVideoReady(false);
+    } else {
+      setVideoFailed(true);
+    }
   };
 
   return (
@@ -140,7 +157,7 @@ export function ViniCinematic({
           <video
             ref={videoRef}
             className="vini-cinema__video"
-            src={videoSrc}
+            src={activeVideoSrc}
             width={1280}
             height={720}
             autoPlay
@@ -149,7 +166,7 @@ export function ViniCinematic({
             playsInline
             preload="auto"
             onPlaying={() => setVideoReady(true)}
-            onError={() => setVideoFailed(true)}
+            onError={handleVideoError}
             style={{ objectPosition: `${content.background.focalX}% ${content.background.focalY}%` }}
           />
         )}
@@ -202,7 +219,7 @@ export function ViniCinematic({
               <span>{current?.label || "Cerita profil"}</span>
               <span className="vini-cinema__counter">{slides.length ? String(currentIndex + 1).padStart(2, "0") : "00"} / {String(slides.length).padStart(2, "0")}</span>
             </div>
-            <div className="vini-cinema__story-stage" aria-live={paused ? "polite" : "off"}>
+            <div className="vini-cinema__story-stage" aria-live="off">
               <AnimatePresence mode="wait" initial={false}>
                 {current ? (
                   <motion.div
@@ -240,19 +257,12 @@ export function ViniCinematic({
               <div className="vini-cinema__story-controls">
                 <div className="vini-cinema__progress" aria-label="Pilih slide cerita">
                   {slides.map((slide, index) => (
-                    <button
-                      type="button"
+                    <span
                       key={`${slide.section}-${index}`}
                       className={index === currentIndex ? "is-active" : ""}
-                      onClick={() => goTo(index)}
-                      aria-label={`Tampilkan cerita ${index + 1}: ${slide.label}`}
-                    ><span /></button>
+                      aria-label={`Cerita ${index + 1}: ${slide.label}`}
+                    ><span /></span>
                   ))}
-                </div>
-                <div className="vini-cinema__playback">
-                  <button type="button" onClick={() => goTo(currentIndex - 1)}>Sebelumnya</button>
-                  <button type="button" onClick={togglePause}>{paused ? "Putar" : "Jeda"}</button>
-                  <button type="button" onClick={() => goTo(currentIndex + 1)}>Berikutnya</button>
                 </div>
               </div>
             )}
