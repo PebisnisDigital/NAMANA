@@ -26,6 +26,18 @@ test("new clients have independent editable content and no inherited video", () 
   assert.equal(viniSeed.content.identity.displayName, "TEH VINI");
 });
 
+test("mobile video framing can be edited without changing desktop framing", () => {
+  const site = blankSite("bingkai-video");
+  site.content.background.focalX = 31;
+  site.content.background.mobileFocalX = 45;
+  const published = normalizeSite(site);
+  assert.equal(published.content.background.focalX, 31);
+  assert.equal(published.content.background.mobileFocalX, 45);
+  assert.equal(siteDocumentSchema.safeParse(published).success, true);
+  site.content.background.mobileFocalX = 101;
+  assert.equal(siteDocumentSchema.safeParse(site).success, false);
+});
+
 test("Original gallery images and specific HTTPS links are preserved for publication", () => {
   const site = blankSite("galeri-klien");
   const id = crypto.randomUUID();

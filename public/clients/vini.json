@@ -335,6 +335,7 @@
       "posterAssetId": null,
       "overlayOpacity": 0.85,
       "focalX": 31,
+      "mobileFocalX": 45,
       "focalY": 50
     },
     "theme": {
