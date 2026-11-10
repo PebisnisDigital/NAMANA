@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { AssetUrls, SiteContent } from "../domain/content";
-import { buildViniSlides, type StorySection } from "../domain/viniSlides";
 import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
 import "./ViniCinematic.css";
 
@@ -15,16 +14,89 @@ function getPageSize() {
   return 2;
 }
 
-// Beranda /vini: keep the six public identity fields separate from the
-// historical portfolio cards, which remain available in Studio.
-const homeFacts = [
+type MenuKey = "Nama" | "Karir" | "Skill" | "Karya" | "Produk";
+type TickerFact = { label: string; value: string; icon: number };
+type VisualCard = {
+  id: string;
+  title: string;
+  eyebrow: string;
+  detail: string;
+  accent: string;
+  glow: string;
+  motif: "storm" | "cinema" | "monogram" | "road" | "music" | "community" | "bot" | "animation";
+};
+
+const menus: MenuKey[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
+
+const nameFacts: TickerFact[] = [
   { label: "Nama", value: "Vini Junia N", icon: 8121295 },
-  { label: "Tanggal lahir", value: "8 Juni 1996", icon: 8121312 },
-  { label: "Alamat", value: "Garut", icon: 8121270 },
+  { label: "Tanggal Lahir", value: "8 Juni 1996", icon: 8121312 },
+  { label: "Domisili", value: "Garut", icon: 8121270 },
+  { label: "Jenis Kelamin", value: "Perempuan", icon: 8121295 },
   { label: "Agama", value: "Islam", icon: 8121302 },
-  { label: "Jenis kelamin", value: "Perempuan", icon: 8121295 },
-  { label: "Status perkawinan", value: "Kawin", icon: 8121302 },
+  { label: "Status", value: "Kawin", icon: 8121302 },
+  { label: "Hobi", value: "Jalan & Jajan", icon: 8121279 },
+  { label: "Olahraga", value: "Badminton", icon: 8121297 },
+  { label: "Pendidikan", value: "TK Kartika", icon: 8121313 },
+  { label: "Pendidikan", value: "SDN Kartika", icon: 8121313 },
+  { label: "Pendidikan", value: "Pondok Pesantren Darul Arqam Muhammadiyah Garut", icon: 8121313 },
+  { label: "Pendidikan", value: "Unpad — Jurusan Keperawatan", icon: 8121313 },
 ];
+
+const careerFacts: TickerFact[] = [
+  "Founder Cuanify.id", "Founder Pebisnis.digital", "Founder Komunitas BADAI",
+  "Founder PESONAFLIX", "Founder NAMINA.PRO", "Internet Marketing",
+  "Affiliate Marketer", "Reseller", "Mentor", "Digital Creator", "AI Enthusiast",
+].map((value, index) => ({ label: "Karir", value, icon: [8121304, 8121309, 8121299, 8121272][index % 4] }));
+
+const skillFacts: TickerFact[] = [
+  "Digital Marketing", "Sales", "Lead", "Copywriting", "Digital Creation",
+  "AI Enthusiast", "WhatsApp Marketing", "AI Automation",
+].map((value, index) => ({ label: "Skill", value, icon: [8121272, 8121262, 8121290, 8121279][index % 4] }));
+
+const galleries: Record<"Karya" | "Produk", VisualCard[]> = {
+  Karya: [
+    { id: "badai-site", title: "Website BADAI", eyebrow: "Karya Website", detail: "Website BADAI, bagian dari karya digital Teh Vini untuk komunitas BADAI.", accent: "#ec4151", glow: "#592241", motif: "storm" },
+    { id: "pesonaflix-site", title: "Website PESONAFLIX", eyebrow: "Karya Website", detail: "Website PESONAFLIX, platform portofolio personal bergaya sinematik Netflix.", accent: "#ff4a4a", glow: "#6d141e", motif: "cinema" },
+    { id: "namina-site", title: "Website NAMINA.PRO", eyebrow: "Karya Website", detail: "Website NAMINA.PRO, proyek web profil personal dengan video dan interaksi sinematik.", accent: "#ed3441", glow: "#671f2a", motif: "monogram" },
+    { id: "asa-site", title: "Web Asanirwanaselaras.com", eyebrow: "Karya Website", detail: "Website Asa Nirwana Selaras untuk layanan transportasi dan rental kendaraan.", accent: "#ffb354", glow: "#60401d", motif: "road" },
+  ],
+  Produk: [
+    { id: "musicuan", title: "MUSICUAN", eyebrow: "Produk", detail: "MUSICUAN merupakan salah satu produk dalam portofolio Teh Vini.", accent: "#bb73ff", glow: "#44235f", motif: "music" },
+    { id: "badai", title: "BADAI", eyebrow: "Produk", detail: "BADAI merupakan komunitas dan produk yang dibangun Teh Vini.", accent: "#f65766", glow: "#722945", motif: "community" },
+    { id: "pesonaflix", title: "PESONAFLIX", eyebrow: "Produk", detail: "PESONAFLIX menyediakan jasa pembuatan website personal dengan nuansa Netflix.", accent: "#ff5454", glow: "#711e25", motif: "cinema" },
+    { id: "namina", title: "NAMINA.PRO", eyebrow: "Produk", detail: "NAMINA.PRO menawarkan website profil personal bergaya sinematik yang interaktif.", accent: "#ff5665", glow: "#5f1926", motif: "monogram" },
+    { id: "karyawan-ai", title: "Karyawan AI", eyebrow: "Produk", detail: "Karyawan AI merupakan salah satu produk berbasis AI dalam portofolio Teh Vini.", accent: "#77ccff", glow: "#214363", motif: "bot" },
+    { id: "cuanimasi", title: "CUANIMASI", eyebrow: "Produk", detail: "CUANIMASI merupakan salah satu produk kreatif Teh Vini.", accent: "#ffb96b", glow: "#63412d", motif: "animation" },
+  ],
+};
+
+function CardArtwork({ card }: { card: VisualCard }) {
+  const gradientId = `visual-gradient-${card.id}`;
+  return (
+    <svg className="vini-cinema__artwork" viewBox="0 0 950 300" role="img" aria-label={`Ilustrasi ${card.title}`} preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="#101017" /><stop offset=".52" stopColor={card.glow} /><stop offset="1" stopColor="#101018" />
+        </linearGradient>
+      </defs>
+      <rect width="950" height="300" fill={`url(#${gradientId})`} />
+      <path d="M480 -80 L960 300 M610 -120 L1050 240 M740 -150 L1100 130" stroke={card.accent} strokeWidth="2" opacity=".22" />
+      <circle cx="765" cy="145" r="165" fill={card.accent} opacity=".11" />
+      <circle cx="765" cy="145" r="119" stroke={card.accent} strokeWidth="2" opacity=".54" fill="none" />
+      {card.motif === "music" ? <path d="M660 125V83L820 50v159m-160-84v92m160-8c-15-18-62-13-66 14-5 31 57 33 66 2m-160-8c-16-20-64-13-67 13-3 29 57 34 67 3" fill="none" stroke={card.accent} strokeWidth="15" strokeLinecap="round" /> : null}
+      {card.motif === "storm" || card.motif === "community" ? <path d="M778 32L672 161h76l-39 116 137-156h-81l46-89Z" stroke={card.accent} strokeWidth="6" fill={card.accent} fillOpacity=".4" strokeLinejoin="round" /> : null}
+      {card.motif === "cinema" || card.motif === "animation" ? <g transform="translate(672 65) rotate(-9 90 70)"><rect width="195" height="142" rx="14" fill="#0b0c17" stroke={card.accent} strokeWidth="6" /><path d="M0 44h195" stroke={card.accent} strokeWidth="5" /><path d="M35 0L72 44M97 0l37 44M157 0l37 44" stroke={card.accent} strokeWidth="7" /><path d="m76 70 66 29-66 28Z" fill={card.accent} /></g> : null}
+      {card.motif === "monogram" ? <g transform="translate(692 67)"><rect width="150" height="150" rx="29" fill={card.accent} /><path d="M34 121V30h25l55 73V30" fill="none" stroke="white" strokeWidth="22" strokeLinecap="round" strokeLinejoin="round" /></g> : null}
+      {card.motif === "road" ? <g transform="translate(635 55)"><path d="M100 215L163 0h40l63 215Z" fill={card.accent} fillOpacity=".30" stroke={card.accent} strokeWidth="5" /><path d="M185 20v35m0 28v35m0 28v35" stroke="#fff8e7" strokeWidth="8" strokeLinecap="round" /></g> : null}
+      {card.motif === "bot" ? <g transform="translate(695 52)" stroke={card.accent} strokeWidth="7"><rect width="150" height="162" rx="29" fill="#111c2a" /><path d="M75-28v28M0 95h-25m175 0h25" /><circle cx="45" cy="67" r="11" fill={card.accent}/><circle cx="105" cy="67" r="11" fill={card.accent}/><path d="M42 111q33 25 66 0" fill="none" strokeLinecap="round" /></g> : null}
+      <text x="48" y="57" fill={card.accent} fontFamily="Montserrat, sans-serif" fontWeight="700" fontSize="22" letterSpacing="4">{card.eyebrow.toUpperCase()}</text>
+      <text x="48" y="177" fill="#fff6f3" fontFamily="Montserrat, sans-serif" fontWeight="800" fontSize={card.title.length > 22 ? "39" : card.title.length > 15 ? "48" : "61"} letterSpacing="-2">{card.title}</text>
+      <path d="M48 205h248" stroke={card.accent} strokeWidth="5" strokeLinecap="round" />
+      <text x="48" y="255" fill="#fff1ea" fontFamily="Montserrat, sans-serif" fontSize="20" letterSpacing="3" opacity=".76">TEH VINI · NAMINA.PRO</text>
+    </svg>
+  );
+}
 
 export function ViniCinematic({
   content,
@@ -36,8 +108,8 @@ export function ViniCinematic({
   introStartedAt?: number;
 }) {
   const [pageSize, setPageSize] = useState(getPageSize);
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [marqueeKey, setMarqueeKey] = useState(0);
+  const [activeMenu, setActiveMenu] = useState<MenuKey>("Nama");
+  const [selectedCard, setSelectedCard] = useState<VisualCard | null>(null);
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -50,9 +122,8 @@ export function ViniCinematic({
   const [introTimedOut, setIntroTimedOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const slides = useMemo(() => buildViniSlides(content.cards, pageSize), [content.cards, pageSize]);
-  const currentIndex = Math.min(slideIndex, Math.max(0, slides.length - 1));
-  const current = slides[currentIndex];
+  const activeFacts = activeMenu === "Nama" ? nameFacts : activeMenu === "Karir" ? careerFacts : activeMenu === "Skill" ? skillFacts : [];
+  const activeGallery = activeMenu === "Karya" || activeMenu === "Produk" ? galleries[activeMenu] : null;
   const mobileVideoId = content.background.mobileVideoAssetId;
   const desktopVideoId = content.background.desktopVideoAssetId;
   const videoSrc = assetUrls[
@@ -94,14 +165,6 @@ export function ViniCinematic({
   }, [introStartedAt]);
 
   useEffect(() => {
-    if (!pageVisible || slides.length < 2 || showLoader) return;
-    const timeout = window.setTimeout(() => {
-      setSlideIndex((index) => (index + 1) % slides.length);
-    }, 4200);
-    return () => window.clearTimeout(timeout);
-  }, [pageVisible, slides.length, currentIndex, showLoader]);
-
-  useEffect(() => {
     const video = videoRef.current;
     if (!video || videoFailed) return;
     video.defaultMuted = true;
@@ -128,22 +191,18 @@ export function ViniCinematic({
     return () => window.clearTimeout(timeout);
   }, [videoReady, videoFailed, usingFallbackVideo, videoSrc]);
 
-  const goTo = useCallback((index: number) => {
-    setSlideIndex((index + slides.length) % Math.max(1, slides.length));
+  const selectMenu = (menu: MenuKey) => {
+    setActiveMenu(menu);
     setMenuOpen(false);
-  }, [slides.length]);
-
-  const goToSection = useCallback((section: StorySection) => {
-    const index = slides.findIndex((slide) => slide.section === section);
-    if (index >= 0) goTo(index);
-  }, [slides, goTo]);
-
-  const goToName = useCallback(() => {
-    setSlideIndex(0);
-    setMenuOpen(false);
-    setMarqueeKey((current) => current + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  };
+
+  useEffect(() => {
+    if (!selectedCard) return;
+    const onEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setSelectedCard(null); };
+    document.addEventListener("keydown", onEscape);
+    return () => document.removeEventListener("keydown", onEscape);
+  }, [selectedCard]);
 
   const retryVideo = () => {
     setVideoFailed(false);
@@ -164,7 +223,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion ? " vini-cinema--reduce-motion" : ""}`}>
+    <main className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${reducedMotion ? " vini-cinema--reduce-motion" : ""}${activeGallery ? " vini-cinema--gallery" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
@@ -188,7 +247,7 @@ export function ViniCinematic({
 
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
-          <button className="vini-cinema__brand" type="button" onClick={goToName} aria-label="NAMINA, kembali ke Nama">
+          <button className="vini-cinema__brand" type="button" onClick={() => selectMenu("Nama")} aria-label="NAMINA, kembali ke Nama">
             <NaminaLogo variant="compact" />
             <span className="vini-cinema__brand-pro">.PRO</span>
           </button>
@@ -202,10 +261,9 @@ export function ViniCinematic({
             {menuOpen ? "Tutup" : "Menu"}
           </button>
           <nav id="vini-navigation" className={`vini-cinema__nav${menuOpen ? " vini-cinema__nav--open" : ""}`} aria-label="Navigasi cerita">
-            <button type="button" className="is-active" aria-current="page" onClick={goToName}>Nama</button>
-            {(["Karir", "Skill", "Karya", "Produk"] as const).map((label) => (
-              <button key={label} type="button" disabled title="Konten sedang disiapkan">
-                {label}
+            {menus.map((menu) => (
+              <button key={menu} type="button" className={activeMenu === menu ? "is-active" : ""} aria-current={activeMenu === menu ? "page" : undefined} onClick={() => selectMenu(menu)}>
+                {menu}
               </button>
             ))}
           </nav>
@@ -213,84 +271,64 @@ export function ViniCinematic({
         </header>
 
         <div className="vini-cinema__main">
-          <div className="vini-cinema__intro">
+          <div className="vini-cinema__intro" key={activeMenu}>
             <span className="vini-cinema__hello">Halo, aku</span>
-            <h1>{content.identity.displayName}<span>{content.identity.profession}</span></h1>
-            <p>Ibu rumah tangga yang jatuh cinta pada AI, digital marketing, dan karya-karya kreatif.</p>
-            <span className="vini-cinema__bio">{content.identity.bio}</span>
+            {activeMenu === "Nama" ? (
+              <>
+                <h1>{content.identity.displayName}<span>{content.identity.profession}</span></h1>
+                <p>Ibu rumah tangga yang jatuh cinta pada AI, digital marketing, dan karya-karya kreatif.</p>
+                <span className="vini-cinema__bio">{content.identity.bio}</span>
+              </>
+            ) : (
+              <>
+                <h1 className="vini-cinema__section-title">{activeMenu}<span>{activeMenu === "Karir" ? "PERJALANAN & PERAN" : activeMenu === "Skill" ? "KEAHLIAN DIGITAL" : activeMenu === "Karya" ? "PORTOFOLIO WEBSITE" : "KREASI & BISNIS"}</span></h1>
+                <p>{activeMenu === "Karir" ? "Peran dan perjalanan karir yang aku tekuni." : activeMenu === "Skill" ? "Bidang yang aku pelajari dan kembangkan." : activeMenu === "Karya" ? "Kumpulan website yang aku kerjakan. Sentuh kartu untuk melihat detailnya." : "Produk dan proyek yang aku bangun. Sentuh kartu untuk melihat detailnya."}</p>
+              </>
+            )}
           </div>
 
-          <section className="vini-cinema__story" aria-label="Slide cerita identitas Teh Vini" aria-roledescription="carousel">
-            <div className="vini-cinema__story-heading">
-              <span>{current?.label || "Cerita profil"}</span>
-              <span className="vini-cinema__counter">{slides.length ? String(currentIndex + 1).padStart(2, "0") : "00"} / {String(slides.length).padStart(2, "0")}</span>
-            </div>
-            <div className="vini-cinema__story-stage" aria-live="off">
-              <AnimatePresence mode="wait" initial={false}>
-                {current ? (
-                  <motion.div
-                    key={`${current.section}-${currentIndex}-${pageSize}`}
-                    className="vini-cinema__story-entries"
-                    initial={reducedMotion ? false : { opacity: 0, x: 28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -28 }}
-                    transition={{ duration: reducedMotion ? 0 : 0.55, ease: [0.22, 0.8, 0.2, 1] }}
-                  >
-                    {current.items.map((card) => (
-                      <article className="vini-cinema__entry" key={card.id}>
-                        <img
-                          className="vini-cinema__entry-icon"
-                          src={card.imageAssetId && assetUrls[card.imageAssetId] || `/animated-icons/${card.animatedIcon || 8121295}.webp`}
-                          width={40}
-                          height={40}
-                          alt=""
-                          decoding="async"
-                        />
-                        <div>
-                          <h2>{card.subtitle || card.title}</h2>
-                          {card.description && <p>{card.description}</p>}
-                          {card.link && <a href={card.link} target="_blank" rel="noopener noreferrer">Buka {card.title}</a>}
-                        </div>
-                      </article>
-                    ))}
-                  </motion.div>
-                ) : (
-                  <div className="vini-cinema__story-empty" key="empty">Belum ada cerita yang dipublikasikan.</div>
-                )}
-              </AnimatePresence>
-            </div>
-            {slides.length > 0 && (
-              <div className="vini-cinema__story-controls">
-                <div className="vini-cinema__progress" aria-label="Pilih slide cerita">
-                  {slides.map((slide, index) => (
-                    <span
-                      key={`${slide.section}-${index}`}
-                      className={index === currentIndex ? "is-active" : ""}
-                      aria-label={`Cerita ${index + 1}: ${slide.label}`}
-                    ><span /></span>
+          {activeGallery ? (
+            <section className="vini-cinema__gallery-grid" aria-label={`Kartu ${activeMenu}`} key={activeMenu}>
+              {activeGallery.map((card) => (
+                <button key={card.id} type="button" className="vini-cinema__visual-card" onClick={() => setSelectedCard(card)} aria-label={`Lihat detail ${card.title}`}>
+                  <CardArtwork card={card} />
+                </button>
+              ))}
+            </section>
+          ) : (
+            <>
+              <div className="vini-cinema__actions">
+                <button type="button" onClick={() => selectMenu("Karya")}>Lihat Karyaku</button>
+                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Hubungi Vini</a>
+              </div>
+              <section className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan tanpa jeda`} aria-roledescription="carousel">
+                <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 200 / 3}%`, "--slot-count": activeFacts.length * 2, "--marquee-duration": `${activeFacts.length * 1.6}s` } as CSSProperties}>
+                  {[...activeFacts, ...activeFacts].map((item, index) => (
+                    <div key={`${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= activeFacts.length}>
+                      <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
+                      <span>{item.label}<strong>{item.value}</strong></span>
+                    </div>
                   ))}
                 </div>
-              </div>
-            )}
-          </section>
-
-          <div className="vini-cinema__actions">
-            <button type="button" onClick={() => goToSection("karya")}>Lihat Karyaku</button>
-            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Hubungi Vini</a>
-          </div>
-
-          <div className="vini-cinema__highlights" aria-label="Enam data identitas Teh Vini" aria-roledescription="carousel">
-            <div key={marqueeKey} className="vini-cinema__highlight-track">
-              {[...homeFacts, ...homeFacts].map((item, index) => (
-                <div key={`${item.label}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= homeFacts.length}>
-                  <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
-                  <span>{item.label}<strong>{item.value}</strong></span>
-                </div>
-              ))}
-            </div>
-          </div>
+              </section>
+            </>
+          )}
         </div>
       </div>
+
+      {selectedCard && !showLoader && (
+        <div className="vini-cinema__modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedCard(null); }}>
+          <section className="vini-cinema__modal" role="dialog" aria-modal="true" aria-label={`Detail ${selectedCard.title}`}>
+            <button type="button" className="vini-cinema__modal-close" onClick={() => setSelectedCard(null)} aria-label="Tutup detail">×</button>
+            <CardArtwork card={selectedCard} />
+            <div className="vini-cinema__modal-copy">
+              <span>{selectedCard.eyebrow}</span>
+              <h2>{selectedCard.title}</h2>
+              <p>{selectedCard.detail}</p>
+            </div>
+          </section>
+        </div>
+      )}
 
       {videoFailed && !showLoader && (
         <div className="vini-cinema__video-status" role="status">
