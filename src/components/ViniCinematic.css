@@ -444,3 +444,50 @@
   .vini-cinema__story-stage { height: 89px; min-height: 89px; }
   .vini-cinema__highlights { margin-top: 16px; }
 }
+
+/* Two identical six-item sequences make the rightward movement seamless.
+   Exactly three identities fit the viewport at any moment. */
+.vini-cinema__highlights {
+  overflow: hidden;
+  flex-wrap: nowrap;
+  width: min(100%, 740px);
+}
+.vini-cinema__highlight-track {
+  display: flex;
+  flex: 0 0 400%;
+  width: 400%;
+  min-height: 94px;
+  align-items: flex-start;
+  animation: vini-identity-right 13s linear infinite;
+  will-change: transform;
+}
+.vini-cinema__highlight-track .vini-cinema__highlight {
+  flex: 0 0 calc(100% / 12);
+  width: calc(100% / 12);
+  min-width: 0;
+  padding-inline: 8px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 7px;
+  border-right: 1px solid #ffffff45;
+}
+.vini-cinema__highlight-track .vini-cinema__highlight span {
+  overflow-wrap: anywhere;
+}
+.vini-cinema__highlight-track .vini-cinema__highlight img {
+  width: 37px;
+  height: 37px;
+}
+@keyframes vini-identity-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@media (max-width: 700px) {
+  .vini-cinema__highlight-track { min-height: 112px; }
+  .vini-cinema__highlight-track .vini-cinema__highlight { padding-inline: 4px; }
+  .vini-cinema__highlight-track .vini-cinema__highlight img { width: 29px; height: 29px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vini-cinema__highlight-track { animation: none; transform: translateX(-50%); }
+}
