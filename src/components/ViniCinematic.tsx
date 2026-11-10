@@ -266,7 +266,6 @@ export function ViniCinematic({
         <header className="vini-cinema__header">
           <button className="vini-cinema__brand" type="button" onClick={() => selectMenu("Nama")} aria-label="NAMINA, kembali ke Nama">
             <NaminaLogo variant="compact" />
-            <span className="vini-cinema__brand-pro">.PRO</span>
           </button>
           <button
             className="vini-cinema__menu-toggle"
@@ -284,7 +283,7 @@ export function ViniCinematic({
               </button>
             ))}
           </nav>
-          <a className="vini-cinema__contact-top" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Hubungi Saya</a>
+          <a className="vini-cinema__contact-top" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Japri Saya !</a>
         </header>
 
         <div className="vini-cinema__main">
