@@ -277,7 +277,6 @@ export function ViniCinematic({
               <>
                 <h1>{content.identity.displayName}<span>{content.identity.profession}</span></h1>
                 <p>Ibu rumah tangga yang jatuh cinta pada AI, digital marketing, dan karya-karya kreatif.</p>
-                <span className="vini-cinema__bio">{content.identity.bio}</span>
               </>
             ) : (
               <>
@@ -303,22 +302,16 @@ export function ViniCinematic({
               </div>
             </section>
           ) : (
-            <>
-              <div className="vini-cinema__actions">
-                <button type="button" onClick={() => selectMenu("Karya")}>Lihat Karyaku</button>
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">Hubungi Vini</a>
+            <section className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan tanpa jeda`} aria-roledescription="carousel">
+              <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 200 / 3}%`, "--slot-count": activeFacts.length * 2, "--marquee-duration": `${activeFacts.length * 1.6}s` } as CSSProperties}>
+                {[...activeFacts, ...activeFacts].map((item, index) => (
+                  <div key={`${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= activeFacts.length}>
+                    <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
+                    <span>{item.label}<strong>{item.value}</strong></span>
+                  </div>
+                ))}
               </div>
-              <section className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kanan tanpa jeda`} aria-roledescription="carousel">
-                <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 200 / 3}%`, "--slot-count": activeFacts.length * 2, "--marquee-duration": `${activeFacts.length * 1.6}s` } as CSSProperties}>
-                  {[...activeFacts, ...activeFacts].map((item, index) => (
-                    <div key={`${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index >= activeFacts.length}>
-                      <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
-                      <span>{item.label}<strong>{item.value}</strong></span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </>
+            </section>
           )}
         </div>
       </div>
