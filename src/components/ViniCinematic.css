@@ -607,3 +607,33 @@
 @media (prefers-reduced-motion: reduce) {
   .vini-cinema__visual-card { transition: none; }
 }
+
+/* Shared two-slot hero: menu changes must never relocate the heading or media. */
+@media (min-width: 851px) {
+  .vini-cinema__main,
+  .vini-cinema--gallery .vini-cinema__main {
+    justify-content: flex-start;
+    transform: none;
+    padding-top: clamp(26px, 3.8vh, 43px);
+    padding-bottom: 24px;
+  }
+  .vini-cinema__intro {
+    min-height: clamp(390px, 50svh, 520px);
+    flex-shrink: 0;
+  }
+  .vini-cinema__highlights,
+  .vini-cinema__gallery-viewport {
+    margin-top: 0;
+  }
+}
+@media (min-width: 701px) and (max-width: 850px) {
+  .vini-cinema__main { justify-content: flex-start; padding-top: 46px; }
+  .vini-cinema__intro { min-height: 405px; }
+  .vini-cinema__highlights,
+  .vini-cinema__gallery-viewport { margin-top: 0; }
+}
+@media (max-width: 700px) {
+  .vini-cinema__intro { min-height: clamp(230px, 32svh, 320px); }
+  .vini-cinema__highlights,
+  .vini-cinema__gallery-viewport { margin-top: 0; }
+}
