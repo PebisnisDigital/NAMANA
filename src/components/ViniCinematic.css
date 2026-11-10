@@ -86,6 +86,14 @@
   background: #8f20273b;
   border-color: #ef6e7668;
 }
+.vini-cinema__nav button:disabled,
+.vini-cinema__nav button:disabled:hover {
+  cursor: not-allowed;
+  opacity: .6;
+  color: #c7bab9;
+  background: transparent;
+  border-color: transparent;
+}
 .vini-cinema__contact-top {
   display: inline-flex;
   justify-content: center;
@@ -458,7 +466,7 @@
   width: 400%;
   min-height: 94px;
   align-items: flex-start;
-  animation: vini-identity-right 13s linear infinite;
+  animation: vini-identity-right 9s linear infinite;
   will-change: transform;
 }
 .vini-cinema__highlight-track .vini-cinema__highlight {
@@ -487,7 +495,4 @@
   .vini-cinema__highlight-track { min-height: 112px; }
   .vini-cinema__highlight-track .vini-cinema__highlight { padding-inline: 4px; }
   .vini-cinema__highlight-track .vini-cinema__highlight img { width: 29px; height: 29px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .vini-cinema__highlight-track { animation: none; transform: translateX(-50%); }
 }
