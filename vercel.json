@@ -36,6 +36,8 @@
     }
   ],
   "rewrites": [
+    { "source": "/vinihtml", "destination": "/vinihtml/index.html" },
+    { "source": "/vinihtml/", "destination": "/vinihtml/index.html" },
     { "source": "/((?!api/|clients/|videos/|animated-icons/|robots.txt).*)", "destination": "/index.html" }
   ]
 }
