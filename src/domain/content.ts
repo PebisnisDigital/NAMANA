@@ -165,6 +165,7 @@ export const contentSchema = z
         posterAssetId: asset,
         overlayOpacity: z.number().min(0.25).max(0.85),
         focalX: z.number().min(0).max(100),
+        mobileFocalX: z.number().min(0).max(100).optional(),
         focalY: z.number().min(0).max(100),
       })
       .strict(),
