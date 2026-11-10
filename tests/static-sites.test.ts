@@ -16,8 +16,31 @@ test("new clients have independent editable content and no inherited video", () 
   assert.equal(siteDocumentSchema.safeParse(prepareSite(client)).success, true);
   assert.equal(client.content.cards.length, 1);
   assert.equal(client.media.desktopVideo, "");
+  assert.equal(client.content.original?.nama.items.length, 1);
+  assert.equal(client.content.original?.karir.items.length, 0);
+  assert.equal(client.content.original?.karya.items.length, 0);
+  assert.equal(client.content.original?.produk.items.length, 0);
+  assert.equal(client.content.original?.contactUrl, "");
   client.content.identity.displayName = "Profil baru";
   assert.equal(viniSeed.content.identity.displayName, "TEH VINI");
+});
+
+test("Original gallery images and specific HTTPS links are preserved for publication", () => {
+  const site = blankSite("galeri-klien");
+  const id = crypto.randomUUID();
+  site.content.original!.karya.items.push({
+    id, title: "Website Klien", description: "Detail dari karya ini.", link: "https://contoh.com/portofolio",
+    imageAssetId: null, color: "#ee4851", motif: "cinema",
+  });
+  site.media.cards[id] = "/media/galeri-klien/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.webp";
+  const normalized = normalizeSite(site);
+  assert.equal(normalized.content.original!.karya.items[0].imageAssetId, id);
+  assert.equal(normalized.content.original!.karya.items[0].link, "https://contoh.com/portofolio");
+  assert.equal(resolveMedia(normalized)[id], site.media.cards[id]);
+  site.content.original!.karya.items[0].link = "javascript:alert(1)";
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(site)).success, false);
+  site.content.original!.karya.items[0].link = "mailto:hi@example.com";
+  assert.equal(siteDocumentSchema.safeParse(prepareSite(site)).success, false);
 });
 
 test("media validation allows HTTPS Dropbox URLs but blocks scripts and insecure URLs", () => {

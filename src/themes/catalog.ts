@@ -13,7 +13,7 @@ export type DemoTheme = {
 };
 
 export const demoThemes: readonly DemoTheme[] = [
-  { id: 1, slug: "gaya1", name: "Original Cinematic", category: "Sinema", description: "Panggung gelap, tombol Enter 3D, kartu jatuh dan memantul.", motif: "Kartu fisik dan cahaya panggung", energy: 3, rhythm: 2, motion: 3 },
+  { id: 1, slug: "gaya1", name: "Original Cinematic", category: "Sinema", description: "Video sinematik dengan lima menu profil dan slider kartu yang bergerak otomatis.", motif: "Video panggung dan kartu portofolio bergerak", energy: 3, rhythm: 2, motion: 3 },
   { id: 2, slug: "gaya2", name: "Executive Noir", category: "Profesional", description: "Dossier hitam-putih dengan susunan rapi dan tegas.", motif: "Dokumen eksekutif berbingkai", energy: 2, rhythm: 1, motion: 1 },
   { id: 3, slug: "gaya3", name: "Luxury Gold", category: "Premium", description: "Potret berbingkai lengkung dan tipografi seperti undangan eksklusif.", motif: "Lengkungan emas dan garis halus", energy: 3, rhythm: 2, motion: 2 },
   { id: 4, slug: "gaya4", name: "Clean Professional", category: "Profesional", description: "Profil profesional di atas halaman terang yang lapang.", motif: "Kertas putih dan bidang editorial", energy: 1, rhythm: 2, motion: 1 },

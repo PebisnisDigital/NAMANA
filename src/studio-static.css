@@ -120,6 +120,50 @@
 .studio-alert--error { color: #ffd4d4; background: #402323; border-color: #e78a8a; }
 .studio-preview { flex: 1; min-height: 0; overflow: auto; position: relative; }
 .studio-preview > .cinematic-page { width: 100%; min-height: 100%; }
+.studio-preview--original > .vini-cinema {
+  min-height: max(680px, calc(100dvh - 166px));
+}
+.studio-original__preset {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  background: #29201d;
+  border: 1px solid #a15954;
+  border-radius: 7px;
+}
+.studio-original__preset strong { color: #ffe1d5; }
+.studio-original__preset span { font-size: 11px; color: #d4b8aa; }
+.studio-original__chapter > summary {
+  cursor: pointer;
+  list-style-position: inside;
+  font-weight: 700;
+  font-size: 15px;
+  padding-block: 6px 13px;
+  color: #f1e9dd;
+}
+.studio-original__chapter > summary span { float: right; font-size: 11px; color: #c2b1a3; font-weight: 500; }
+.studio-original__field { display: block; margin: 0 0 14px !important; }
+.studio-original__field span { display: block; margin-bottom: 6px; }
+.studio-original__field input,
+.studio-original__field textarea,
+.studio-original__field select { display: block; }
+.studio-original__item {
+  background: #221e1b;
+  border: 1px solid #4d4139;
+  border-radius: 8px;
+  padding: 13px;
+  margin-bottom: 12px;
+}
+.studio-original__item-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+.studio-original__item-head strong { font-size: 12px; color: #e8d5c8; }
+.studio-root .studio-original__item-head button { min-height: 36px; padding: 7px 12px; color: #ffd1cb; border-color: #a55854; }
+.studio-root .studio-original__add { width: 100%; margin-top: 5px; border-color: #cf8d7c; }
+.studio-original__image { display: block; width: 100%; height: auto; aspect-ratio: 19 / 6; object-fit: cover; border-radius: 6px; margin-bottom: 12px; }
+.studio-original__no-image { font-size: 12px; color: #cbafa3; }
+.studio-original__upload { display: block; font-size: 12px; line-height: 1.4; }
+.studio-original__upload input { margin-top: 8px; font-size: 11px; }
 .studio-canvas-commands {
   position: absolute;
   z-index: 120;

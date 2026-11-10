@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { contentSchema } from "../domain/content";
 import { rpc } from "../platform/client";
-import { IdentityFlip } from "../components/IdentityFlip";
+import { ViniCinematic } from "../components/ViniCinematic";
 import { Notice, Shell } from "./shared";
 import { useLoad, useMediaUrls } from "../platform/hooks";
 export function PublicSite({ slug, token }: { slug?: string; token?: string }) {
@@ -45,5 +45,5 @@ export function PublicSite({ slug, token }: { slug?: string; token?: string }) {
       </Shell>
     );
   if (!data) return <Notice>Memuat website…</Notice>;
-  return <IdentityFlip content={data.content} assetUrls={urls} />;
+  return <ViniCinematic content={data.content} assetUrls={urls} />;
 }

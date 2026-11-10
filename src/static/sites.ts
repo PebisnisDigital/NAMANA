@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { contentSchema, slugSchema, type AssetUrls, type SiteContent } from "../domain/content";
 import { originalProfileTabs } from "./originalProfileTabs";
+import { blankOriginal, viniOriginal } from "./originalSeed";
 
 const mediaUrl = z.string().max(2000).refine((value) => {
   if (!value) return true;
@@ -44,6 +45,7 @@ export const viniSeed: SiteDocument = {
   content: {
     schemaVersion: 1,
     template: "ORIGINAL",
+    original: structuredClone(viniOriginal),
     identity: {
       displayName: "TEH VINI",
       profession: "AI ENTHUSIAST",
@@ -95,9 +97,10 @@ export function blankSite(slug: string): SiteDocument {
       identity: {
         displayName: "Nama klien",
         profession: "Profesi",
-        bio: "Isi cerita singkat klien di sini.",
+        bio: "",
         portraitAssetId: null,
       },
+      original: blankOriginal("Nama klien"),
       cards: [
         {
           ...structuredClone(viniSeed.content.cards[0]),
@@ -124,6 +127,12 @@ export function resolveMedia(document: SiteDocument): AssetUrls {
     const url = document.media.cards[card.id];
     if (url) entries.push([card.id, url]);
   }
+  for (const gallery of [document.content.original?.karya, document.content.original?.produk]) {
+    for (const item of gallery?.items || []) {
+      const url = document.media.cards[item.id];
+      if (url) entries.push([item.id, url]);
+    }
+  }
   return Object.fromEntries(entries.filter(([, url]) => !!url));
 }
 
@@ -137,6 +146,11 @@ export function prepareSite(document: SiteDocument): SiteDocument {
   site.content.cards.forEach((card) => {
     card.imageAssetId = site.media.cards[card.id] ? card.id : null;
   });
+  for (const gallery of [site.content.original?.karya, site.content.original?.produk]) {
+    gallery?.items.forEach((item) => {
+      item.imageAssetId = site.media.cards[item.id] ? item.id : null;
+    });
+  }
   return site;
 }
 

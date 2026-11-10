@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { slugSchema } from "../domain/content";
-import { IdentityFlip } from "../components/IdentityFlip";
 import { ViniCinematic } from "../components/ViniCinematic";
 import { NaminaIntroStage } from "../components/NaminaLogo";
 import { createNaminaIntroSound } from "../components/naminaIntroSound";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import { viniOriginal } from "../static/originalSeed";
 import { Shell } from "./shared";
 
 type SiteState =
@@ -66,10 +66,7 @@ export function StaticSite({ slug }: { slug: string }) {
   }, [state]);
 
   if (state.status === "ready") {
-    if (slug === "vini") {
-      return <ViniCinematic key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} introStartedAt={introStart ?? undefined} />;
-    }
-    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} />;
+    return <ViniCinematic key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} introStartedAt={introStart ?? undefined} fallbackOriginal={slug === "vini" ? viniOriginal : undefined} />;
   }
 
   if (slug === "vini" && state.status === "loading") {

@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type AnimationEvent, type CSSProperties, type PointerEvent } from "react";
-import { EnterKeycap, IdentityFlip } from "../components/IdentityFlip";
+import { EnterKeycap } from "../components/IdentityFlip";
+import { ViniCinematic } from "../components/ViniCinematic";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import { viniOriginal } from "../static/originalSeed";
 import { demoCategories, demoThemes, type DemoTheme } from "../themes/catalog";
 import "../theme-demos.css";
 
@@ -292,7 +294,7 @@ export function ThemeDemo({ theme }: { theme: DemoTheme }) {
   if (theme.id === 1) {
     return (
       <div className="demo-original-wrap">
-        <IdentityFlip key="original-demo" content={demo.site.content} assetUrls={resolveMedia(demo.site)} startOpen />
+        <ViniCinematic key="original-demo" content={demo.site.content} assetUrls={resolveMedia(demo.site)} fallbackOriginal={viniOriginal} previewMode />
         <DemoOriginalNav />
       </div>
     );

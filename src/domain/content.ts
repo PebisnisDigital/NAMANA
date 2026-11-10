@@ -78,10 +78,47 @@ export const cardSchema = z
     linkLabel: text(80).optional(),
   })
   .strict();
+const originalFactSchema = z.object({
+  id: z.uuid(),
+  label: text(40).min(1),
+  value: text(180),
+  icon: z.number().int().positive(),
+}).strict();
+const originalGalleryItemSchema = z.object({
+  id: z.uuid(),
+  title: text(80).min(1),
+  description: text(1200),
+  link: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Masukkan URL HTTPS yang valid."),
+  imageAssetId: asset,
+  color,
+  motif: z.enum(["storm", "cinema", "monogram", "road", "music", "community", "bot", "animation"]),
+}).strict();
+const originalFactSectionSchema = z.object({
+  intro: text(120),
+  subtitle: text(100),
+  description: text(400),
+  items: z.array(originalFactSchema).max(30),
+}).strict();
+const originalGallerySectionSchema = z.object({
+  intro: text(120),
+  subtitle: text(100),
+  description: text(400),
+  items: z.array(originalGalleryItemSchema).max(20),
+}).strict();
+export const originalProfileSchema = z.object({
+  contactUrl: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan URL WhatsApp HTTPS yang valid."),
+  nama: originalFactSectionSchema,
+  karir: originalFactSectionSchema,
+  skill: originalFactSectionSchema,
+  karya: originalGallerySectionSchema,
+  produk: originalGallerySectionSchema,
+}).strict();
+export type OriginalProfile = z.infer<typeof originalProfileSchema>;
 export const contentSchema = z
   .object({
     schemaVersion: z.literal(1),
     template: z.literal("ORIGINAL"),
+    original: originalProfileSchema.optional(),
     identity: z
       .object({
         displayName: text(60).min(1),
@@ -185,6 +222,8 @@ export function assetIds(content: SiteContent) {
         content.background.posterAssetId,
         content.theme.enterKeyAssetId,
         ...content.cards.map((c) => c.imageAssetId),
+        ...(content.original?.karya.items.map((c) => c.imageAssetId) || []),
+        ...(content.original?.produk.items.map((c) => c.imageAssetId) || []),
       ].filter((id): id is string => !!id),
     ),
   ];
