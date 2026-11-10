@@ -634,6 +634,13 @@
 }
 @media (max-width: 700px) {
   .vini-cinema__intro { min-height: clamp(230px, 32svh, 320px); }
+  .vini-cinema__hello {
+    white-space: nowrap;
+    font-size: clamp(10px, 2.7vw, 12px);
+    letter-spacing: 0;
+    padding-inline: 10px;
+  }
+  .vini-cinema__hello::before { width: 14px; margin-right: 7px; }
   .vini-cinema__highlights,
   .vini-cinema__gallery-viewport { margin-top: 0; }
 }
