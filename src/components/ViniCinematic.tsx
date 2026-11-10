@@ -271,7 +271,7 @@ export function ViniCinematic({
         </header>
 
         <div className="vini-cinema__main">
-          <div className="vini-cinema__intro" key={activeMenu}>
+          <div className="vini-cinema__intro">
             <span className="vini-cinema__hello">Halo, aku</span>
             {activeMenu === "Nama" ? (
               <>
