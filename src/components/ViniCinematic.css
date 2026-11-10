@@ -71,6 +71,7 @@
   gap: clamp(5px, 1.4vw, 26px);
   flex: 1;
 }
+.vini-cinema__nav-icon { display: none; }
 .vini-cinema__nav button {
   background: transparent;
   border: 1px solid transparent;
@@ -801,12 +802,12 @@
   .vini-cinema--styled:not(.vini-cinema--gallery) .vini-cinema__intro h1 { font-size: calc(60px * var(--namina-title-scale)); }
 }
 
-/* The mobile hero has three independent rows: navigation, film, and profile. */
+/* On mobile the navigation stays under the thumb while the story crosses the film's lower half. */
 @media (max-width: 700px) {
   .vini-cinema {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto clamp(280px, 42svh, 420px) auto;
+    grid-template-rows: auto clamp(370px, 59svh, 560px) auto;
     align-content: start;
     background: var(--namina-bg, #08080c);
     min-height: 100svh;
@@ -818,11 +819,11 @@
     grid-row: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "brand contact" "nav nav";
-    gap: 8px 10px;
+    grid-template-areas: "brand contact";
+    gap: 10px;
     width: 100%;
     min-height: 0;
-    padding: 13px 18px 0;
+    padding: 11px 18px 5px;
     background: var(--namina-bg, #08080c);
   }
   .vini-cinema__brand {
@@ -849,44 +850,61 @@
   }
   .vini-cinema__nav,
   .vini-cinema__nav--open {
-    grid-area: nav;
-    position: static;
-    z-index: auto;
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 12;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 2px;
+    align-items: stretch;
+    gap: 3px;
+    width: 100%;
     min-width: 0;
-    margin: 0 -8px;
-    padding: 0;
-    background: transparent;
+    margin: 0;
+    padding: 8px 9px calc(7px + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--namina-bg, #08080c) 96%, #221217);
     border: 0;
+    border-top: 1px solid var(--namina-line, #59464b);
     border-radius: 0;
-    box-shadow: none;
+    box-shadow: 0 -10px 30px #0009;
   }
   .vini-cinema__nav button {
     display: grid;
-    place-items: center;
-    min-height: 48px;
+    grid-template-rows: 24px auto;
+    align-content: center;
+    justify-items: center;
+    gap: 5px;
+    position: relative;
+    min-height: 56px;
     min-width: 0;
-    padding: 7px 1px;
+    padding: 5px 1px 3px;
     color: var(--namina-ink, #f7eee9);
     background: transparent;
     border: 0;
-    border-bottom: 3px solid transparent;
-    border-radius: 0;
-    font-size: clamp(10px, 2.9vw, 12px);
-    line-height: 1.1;
-    font-weight: 700;
+    border-radius: 9px;
+    font-size: clamp(10px, 2.8vw, 11px);
+    line-height: 1.15;
+    font-weight: 600;
     box-shadow: none;
   }
+  .vini-cinema__nav-icon { display: block; width: 22px; height: 22px; }
   .vini-cinema__nav button:hover,
   .vini-cinema__nav button.is-active,
   .vini-cinema--styled .vini-cinema__nav button.is-active {
-    color: var(--namina-ink, #fff5ed);
-    background: transparent;
-    border-color: var(--namina-accent, #f34b53);
+    color: var(--namina-accent, #f34b53);
+    background: color-mix(in srgb, var(--namina-accent, #f34b53) 12%, transparent);
+    border-color: transparent;
     box-shadow: none;
   }
+  .vini-cinema__nav button.is-active::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    width: 35px;
+    height: 2px;
+    border-radius: 0 0 2px 2px;
+    background: var(--namina-accent, #f34b53);
+  }
+  .vini-cinema__nav button:active { transform: translateY(1px); }
   .vini-cinema__stage {
     grid-row: 2;
     position: relative;
@@ -898,34 +916,40 @@
     background: var(--namina-bg, #08080c);
   }
   .vini-cinema__video {
-    inset: 10px 0 0;
+    inset: 0;
     width: 100%;
-    height: calc(100% - 10px);
+    height: 100%;
     object-fit: cover;
-    transform: scale(.90);
+    transform: scale(.94);
     transform-origin: center center;
     filter: saturate(1.02) contrast(1.03) brightness(1.08);
   }
   .vini-cinema__scrim,
   .vini-cinema--styled .vini-cinema__scrim {
     background: linear-gradient(180deg,
-      color-mix(in srgb, var(--namina-bg, #08080c) 20%, transparent) 0%,
-      transparent 60%,
-      transparent 82%,
-      color-mix(in srgb, var(--namina-bg, #08080c) 36%, transparent) 94%,
+      color-mix(in srgb, var(--namina-bg, #08080c) 9%, transparent) 0%,
+      transparent 33%,
+      color-mix(in srgb, var(--namina-bg, #08080c) 33%, transparent) 46%,
+      color-mix(in srgb, var(--namina-bg, #08080c) 82%, transparent) 60%,
+      var(--namina-bg, #08080c) 91%,
       var(--namina-bg, #08080c) 100%);
   }
   .vini-cinema__main,
   .vini-cinema--gallery .vini-cinema__main {
     grid-row: 3;
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     width: 100%;
     min-width: 0;
-    margin: 0;
-    padding: 8px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+    margin: calc(-1 * clamp(172px, 29svh, 280px)) 0 0;
+    padding: 8px 20px calc(110px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--namina-bg, #08080c) 52%, transparent) 0%,
+      var(--namina-bg, #08080c) 190px);
     transform: none;
   }
   .vini-cinema__intro,
@@ -933,7 +957,7 @@
     flex: 0 0 auto;
     width: 100%;
     min-width: 0;
-    min-height: clamp(212px, 25svh, 250px);
+    min-height: clamp(195px, 23svh, 230px);
   }
   .vini-cinema__hello,
   .vini-cinema--styled .vini-cinema__hello {
@@ -1019,6 +1043,7 @@
   .vini-cinema__header { padding-inline: 13px; }
   .vini-cinema__main,
   .vini-cinema--gallery .vini-cinema__main { padding-inline: 15px; }
+  .vini-cinema__nav { padding-inline: 5px; gap: 1px; }
   .vini-cinema__contact-top { padding-inline: 10px; }
   .vini-cinema__brand .namina-logo--compact .namina-logo__name { font-size: 25px; }
 }

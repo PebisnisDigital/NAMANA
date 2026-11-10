@@ -29,6 +29,18 @@ type VisualCard = {
 
 const menus: MenuKey[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
 
+function MenuIcon({ menu }: { menu: MenuKey }) {
+  return (
+    <svg className="vini-cinema__nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      {menu === "Nama" && <><circle cx="12" cy="8" r="3.5" /><path d="M5 20v-2.5A5.5 5.5 0 0 1 10.5 12h3A5.5 5.5 0 0 1 19 17.5V20" /></>}
+      {menu === "Karir" && <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18m-10-1v3h2v-3" /></>}
+      {menu === "Skill" && <><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="9" cy="6" r="2" fill="var(--namina-bg, #08080c)" /><circle cx="16" cy="12" r="2" fill="var(--namina-bg, #08080c)" /><circle cx="8" cy="18" r="2" fill="var(--namina-bg, #08080c)" /></>}
+      {menu === "Karya" && <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8" cy="9" r="1.5" /><path d="m4 17 5-5 4 4 3-3 4 4" /></>}
+      {menu === "Produk" && <><path d="M4 9h16l-1 12H5L4 9Zm4 0V7a4 4 0 0 1 8 0v2" /></>}
+    </svg>
+  );
+}
+
 function IntroDescription({ text }: { text: string }) {
   return (
     <p>
@@ -271,7 +283,8 @@ export function ViniCinematic({
           <nav id="vini-navigation" className={`vini-cinema__nav${menuOpen ? " vini-cinema__nav--open" : ""}`} aria-label="Navigasi cerita">
             {menus.map((menu) => (
               <button key={menu} type="button" className={activeMenu === menu ? "is-active" : ""} aria-current={activeMenu === menu ? "page" : undefined} onClick={() => selectMenu(menu)}>
-                {menu}
+                <MenuIcon menu={menu} />
+                <span>{menu}</span>
               </button>
             ))}
           </nav>

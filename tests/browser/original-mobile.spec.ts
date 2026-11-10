@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 for (const width of [320, 390, 430]) {
-  test(`NAMINA Original mobile layout keeps film and menus separate at ${width}px`, async ({ page }) => {
+  test(`NAMINA Original mobile overlaps the film and fixes icon navigation below at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.route("**/www.dropbox.com/**", (route) => route.abort());
     await page.goto("/vini");
@@ -16,6 +16,7 @@ for (const width of [320, 390, 430]) {
       const header = document.querySelector(".vini-cinema__header")!.getBoundingClientRect();
       const stage = document.querySelector(".vini-cinema__stage")!.getBoundingClientRect();
       const main = document.querySelector(".vini-cinema__main")!.getBoundingClientRect();
+      const nav = document.querySelector(".vini-cinema__nav")!.getBoundingClientRect();
       const navTargets = [...document.querySelectorAll<HTMLButtonElement>(".vini-cinema__nav button")];
       return {
         headerBottom: header.bottom,
@@ -23,14 +24,23 @@ for (const width of [320, 390, 430]) {
         videoBottom: stage.bottom,
         contentTop: main.top,
         videoHeight: stage.height,
+        navBottom: nav.bottom,
+        navTop: nav.top,
+        navIconCount: document.querySelectorAll(".vini-cinema__nav-icon").length,
+        contentBottomPadding: parseFloat(getComputedStyle(document.querySelector(".vini-cinema__main")!).paddingBottom),
         documentWidth: document.documentElement.scrollWidth,
         viewportWidth: window.innerWidth,
         navHeights: navTargets.map((button) => button.getBoundingClientRect().height),
       };
     });
     expect(layout.videoTop).toBeGreaterThanOrEqual(layout.headerBottom - 1);
-    expect(layout.contentTop).toBeGreaterThanOrEqual(layout.videoBottom - 1);
-    expect(layout.videoHeight).toBeGreaterThanOrEqual(280);
+    expect(layout.contentTop).toBeGreaterThan(layout.videoTop + layout.videoHeight * 0.35);
+    expect(layout.contentTop).toBeLessThan(layout.videoTop + layout.videoHeight * 0.7);
+    expect(layout.videoHeight).toBeGreaterThanOrEqual(370);
+    expect(layout.navBottom).toBeCloseTo(844, 0);
+    expect(layout.navTop).toBeGreaterThan(700);
+    expect(layout.navIconCount).toBe(5);
+    expect(layout.contentBottomPadding).toBeGreaterThan(80);
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth + 1);
     expect(layout.navHeights).toHaveLength(5);
     expect(Math.min(...layout.navHeights)).toBeGreaterThanOrEqual(44);
