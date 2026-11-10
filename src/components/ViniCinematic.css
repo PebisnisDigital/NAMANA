@@ -199,10 +199,9 @@
 .vini-cinema__story-empty { padding: 30px 0; color: #d7c8c6; }
 .vini-cinema__story-controls { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding-top: 13px; }
 .vini-cinema__progress { display: flex; flex: 1; gap: 4px; max-width: 310px; }
-.vini-cinema__progress button { display: block; flex: 1 1 0; min-width: 7px; height: 22px; padding: 8px 0; border: 0; background: none; }
-.vini-cinema__progress button span { display: block; height: 4px; border-radius: 3px; background: #ffffff55; transition: background .25s; }
-.vini-cinema__progress button.is-active span { background: #f4484e; box-shadow: 0 0 14px #f4484e88; }
-.vini-cinema__progress button:hover span { background: #fff4e6; }
+.vini-cinema__progress > span { display: block; flex: 1 1 0; min-width: 7px; height: 22px; padding: 8px 0; }
+.vini-cinema__progress > span > span { display: block; height: 4px; border-radius: 3px; background: #ffffff55; transition: background .25s; }
+.vini-cinema__progress > span.is-active > span { background: #f4484e; box-shadow: 0 0 14px #f4484e88; }
 .vini-cinema__playback { display: flex; align-items: center; gap: 4px; }
 .vini-cinema__playback button {
   color: #e8dedd;
@@ -315,5 +314,5 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .vini-cinema__actions button, .vini-cinema__actions a { transition: none; }
-  .vini-cinema__progress button span { transition: none; }
+  .vini-cinema__progress > span > span { transition: none; }
 }
