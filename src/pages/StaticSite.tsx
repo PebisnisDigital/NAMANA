@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { slugSchema } from "../domain/content";
 import { IdentityFlip } from "../components/IdentityFlip";
+import { ViniCinematic } from "../components/ViniCinematic";
 import { NaminaIntroStage } from "../components/NaminaLogo";
 import { createNaminaIntroSound } from "../components/naminaIntroSound";
 import { normalizeSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
@@ -65,7 +66,10 @@ export function StaticSite({ slug }: { slug: string }) {
   }, [state]);
 
   if (state.status === "ready") {
-    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} textMode={slug === "vini"} introStartedAt={slug === "vini" ? introStart ?? undefined : undefined} />;
+    if (slug === "vini") {
+      return <ViniCinematic key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} introStartedAt={introStart ?? undefined} />;
+    }
+    return <IdentityFlip key={slug} content={state.document.content} assetUrls={resolveMedia(state.document)} />;
   }
 
   if (slug === "vini" && state.status === "loading") {
