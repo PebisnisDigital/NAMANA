@@ -500,16 +500,26 @@
 
 /* Karya and Produk: cinematic 19:6 picture cards with clickable detail popup. */
 .vini-cinema__section-title { text-transform: uppercase; }
-.vini-cinema__gallery-grid {
+.vini-cinema__gallery-viewport {
   order: 2;
   width: min(100%, 790px);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  overflow: hidden;
   margin-top: clamp(18px, 3vh, 35px);
-  animation: vini-gallery-arrive .45s ease-out both;
+  mask-image: linear-gradient(90deg, transparent 0%, black 2%, black 98%, transparent 100%);
 }
-@keyframes vini-gallery-arrive { from { opacity: .35; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.vini-cinema__gallery-track {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  animation: vini-identity-right var(--gallery-duration, 18s) linear infinite;
+  will-change: transform;
+}
+.vini-cinema__gallery-slide {
+  flex: 0 0 calc(100% / var(--gallery-slots));
+  width: calc(100% / var(--gallery-slots));
+  min-width: 0;
+  padding-inline: 7px;
+}
 .vini-cinema__visual-card {
   display: block;
   width: 100%;
@@ -583,13 +593,13 @@
   .vini-cinema--gallery .vini-cinema__intro > p { margin-top: 12px; }
 }
 @media (max-width: 700px) {
-  .vini-cinema__gallery-grid { grid-template-columns: 1fr; gap: 13px; margin-top: 22px; }
+  .vini-cinema__gallery-viewport { margin-top: 22px; }
+  .vini-cinema__gallery-slide { padding-inline: 5px; }
   .vini-cinema__modal-copy { padding: 22px; }
   .vini-cinema__modal-copy p { font-size: 13px; }
   .vini-cinema--gallery .vini-cinema__main { padding-bottom: 40px; }
   .vini-cinema--gallery .vini-cinema__intro h1 { font-size: clamp(57px, 14vw, 85px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vini-cinema__gallery-grid { animation: none; }
   .vini-cinema__visual-card { transition: none; }
 }
