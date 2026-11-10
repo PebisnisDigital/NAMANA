@@ -78,6 +78,16 @@ const galleries: Record<"Karya" | "Produk", VisualCard[]> = {
   ],
 };
 
+function IntroDescription({ text }: { text: string }) {
+  return (
+    <p>
+      {text.split(/(?<=\.)\s+/).map((sentence, index) => (
+        <span className="vini-cinema__description-sentence" key={index}>{sentence}</span>
+      ))}
+    </p>
+  );
+}
+
 function CardArtwork({ card }: { card: VisualCard }) {
   const gradientId = `visual-gradient-${card.id}`;
   return (
@@ -283,12 +293,12 @@ export function ViniCinematic({
             {activeMenu === "Nama" ? (
               <>
                 <h1>{content.identity.displayName}<span>{content.identity.profession}</span></h1>
-                <p>Ibu rumah tangga yang jatuh cinta pada AI, digital marketing, dan karya-karya kreatif.</p>
+                <IntroDescription text="Ibu rumah tangga yang jatuh cinta pada AI, digital marketing, dan karya-karya kreatif." />
               </>
             ) : (
               <>
                 <h1 className="vini-cinema__section-title">{activeMenu}<span>{activeMenu === "Karir" ? "PERJALANAN & PENGALAMAN" : activeMenu === "Skill" ? "KEAHLIAN & KEMAMPUAN" : activeMenu === "Karya" ? "YANG SUDAH DIBAGIKAN" : "KREASI & BISNIS"}</span></h1>
-                <p>{activeMenu === "Karir" ? "Peran dan perjalanan karir yang aku tekuni." : activeMenu === "Skill" ? "Bidang yang aku pelajari dan kembangkan." : activeMenu === "Karya" ? "Kumpulan website yang aku kerjakan. Sentuh kartu untuk melihat detailnya." : "Produk dan proyek yang aku bangun. Sentuh kartu untuk melihat detailnya."}</p>
+                <IntroDescription text={activeMenu === "Karir" ? "Peran dan perjalanan karir yang aku tekuni." : activeMenu === "Skill" ? "Bidang yang aku pelajari dan kembangkan." : activeMenu === "Karya" ? "Kumpulan website yang aku kerjakan. Sentuh kartu untuk melihat detailnya." : "Produk dan proyek yang aku bangun. Sentuh kartu untuk melihat detailnya."} />
               </>
             )}
           </div>
