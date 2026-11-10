@@ -62,7 +62,7 @@ export function StaticSite({ slug }: { slug: string }) {
 
   useEffect(() => {
     if (state.status !== "ready") return;
-    document.title = `${state.document.content.identity.displayName} | NAMINA.PRO`;
+    document.title = `${state.document.content.identity.displayName} | NamiNa`;
   }, [state]);
 
   if (state.status === "ready") {
