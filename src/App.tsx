@@ -3,6 +3,9 @@ import { Landing, Legal } from "./pages/Landing";
 import { StaticStudio } from "./pages/StaticStudio";
 import { StudioV2 } from "./pages/StudioV2";
 import { StudioV2Canvas } from "./pages/StudioV2Canvas";
+import { BusinessPortal } from "./pages/BusinessPortal";
+import { BusinessAdmin } from "./pages/BusinessAdmin";
+import { BusinessVisualStudio } from "./pages/BusinessVisualStudio";
 import { ClientForm } from "./pages/ClientForm";
 import { StaticSite } from "./pages/StaticSite";
 import { ThemeDemo, ThemeGallery } from "./pages/ThemeDemos";
@@ -20,6 +23,9 @@ function App() {
   let page;
   if (path === "/") page = <Landing />;
   else if (path === "/formulir") page = <ClientForm />;
+  else if (["/mitra","/daftar"].includes(path)) page = <BusinessPortal />;
+  else if (path === "/mitra/studio") page = <BusinessVisualStudio />;
+  else if (path === "/mitra/admin") page = <BusinessAdmin />;
   // Visual Studio is the official editor; the 8-stage generator remains available.
   else if (path === "/studio" || path === "/studio-v2") page = <StudioV2 />;
   else if (path === "/studio-v1" || path === "/generator") page = <StaticStudio />;
