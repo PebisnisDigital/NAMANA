@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
-import { slugSchema, type OriginalStyle } from "../domain/content";
+import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
 import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
@@ -15,6 +15,20 @@ type GalleryKey = "karya" | "produk";
 type PublishStatus = "deploying" | "live" | "pending" | null;
 
 const menuList: Menu[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
+const navigationIconOptions: Array<{ value: OriginalMenuIcon; label: string }> = [
+  { value: "default", label: "Ikon bawaan menu" },
+  { value: "person", label: "Profil / orang" },
+  { value: "briefcase", label: "Tas kerja / karir" },
+  { value: "sliders", label: "Pengaturan / keahlian" },
+  { value: "image", label: "Galeri gambar" },
+  { value: "shopping", label: "Tas belanja / produk" },
+  { value: "star", label: "Bintang" },
+  { value: "book", label: "Buku" },
+  { value: "award", label: "Penghargaan" },
+  { value: "sparkles", label: "Kilau kreatif" },
+  { value: "globe", label: "Globe / website" },
+  { value: "heart", label: "Hati" },
+];
 const icons = [
   [8121295, "Profil"], [8121312, "Kalender"], [8121270, "Lokasi"],
   [8121302, "Rumah"], [8121313, "Pendidikan"], [8121304, "Karir"],
@@ -187,14 +201,6 @@ export function StudioV2() {
   useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_MENU", menu }); }, [menu, ready, sendFrame]);
   useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_SELECT", key: selected }); }, [selected, ready, sendFrame]);
 
-  const chooseMenu = (next: Menu) => {
-    setMenu(next);
-    setSelected(next === "Nama" ? "name" : "menu-title");
-    setShowDesign(false);
-    setPopupOpen(false);
-    sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
-    sendFrame({ type: "NAMINA_V2_MENU", menu: next });
-  };
   const addCard = (section: GalleryKey) => {
     if (!site) return;
     if (site.content.original![section].items.length >= 20) {
@@ -230,7 +236,7 @@ export function StudioV2() {
         const key = value.key;
         setSelected(key);
         setShowDesign(false);
-        const isInlineText = ["name", "profession", "intro", "description", "subtitle", "menu-title"].includes(key) || key.startsWith("menu:");
+        const isInlineText = ["name", "profession", "intro", "description", "subtitle", "menu-title"].includes(key);
         setPopupOpen(!isInlineText);
         if (!isInlineText && value.rect && typeof value.rect === "object") {
           const rect = value.rect as { left?: number; top?: number; width?: number; height?: number };
@@ -252,6 +258,9 @@ export function StudioV2() {
       }
       if (value.type === "NAMINA_V2_ADD_CARD" && (value.section === "karya" || value.section === "produk")) {
         addCard(value.section);
+      }
+      if (value.type === "NAMINA_V2_ADD_FACT" && (value.section === "nama" || value.section === "karir" || value.section === "skill")) {
+        addFact(value.section);
       }
       if (value.type === "NAMINA_V2_UPDATE" && typeof value.key === "string" && typeof value.value === "string") {
         const key = value.key;
@@ -406,18 +415,38 @@ export function StudioV2() {
     setSelected("menu-title");
     setPopupOpen(false);
   };
-  const addFact = () => {
-    if (!site || !["Nama", "Karir", "Skill"].includes(menu)) return;
-    const section = menuKey as FactKey;
-    const originalItems = site.content.original![section].items;
-    if (originalItems.length >= 30) return;
-    const id = crypto.randomUUID();
+  const addFact = (sectionOverride?: FactKey) => {
+    if (!site) return;
+    const section = sectionOverride || (menu.toLowerCase() as FactKey);
+    if (!["nama", "karir", "skill"].includes(section)) return;
+    const items = site.content.original![section].items;
+    if (items.length >= 30) {
+      setError("Maksimal 30 kartu data per menu.");
+      return;
+    }
+    const index = items.length;
     change((next) => {
       next.content.original![section].items.push({
-        id, label: "Data baru", value: "Isi keterangan", icon: 8121295,
+        id: crypto.randomUUID(), label: "Data baru", value: "Klik untuk mengedit", icon: 8121295,
       });
     });
-    setSelected("fact:" + section + ":" + originalItems.length);
+    setMenu((section.charAt(0).toUpperCase() + section.slice(1)) as Menu);
+    setSelected("fact:" + section + ":" + index);
+    setShowDesign(false);
+    setPopupOpen(true);
+    setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 116 });
+    sendFrame({ type: "NAMINA_V2_MENU", menu: section.charAt(0).toUpperCase() + section.slice(1) });
+  };
+
+  const moveSlide = (section: MenuKey, index: number, direction: -1 | 1) => {
+    change((next) => {
+      // Move the existing object, preserving its UUID, image mapping and links.
+      const items: Array<{ id: string }> = next.content.original![section].items;
+      const destination = index + direction;
+      if (index < 0 || destination < 0 || destination >= items.length) return;
+      const [slide] = items.splice(index, 1);
+      if (slide) items.splice(destination, 0, slide);
+    });
   };
 
   const login = async (event: React.FormEvent) => {
@@ -457,7 +486,8 @@ export function StudioV2() {
     if (selected === "intro") return "Kalimat pembuka";
     if (selected === "description") return "Deskripsi bagian " + menuTitle;
     if (selected === "subtitle") return "Subjudul";
-    if (selected === "menu-title" || selected.startsWith("menu:")) return "Nama menu";
+    if (selected.startsWith("menu:")) return "Menu " + (original?.menuTitles?.[selected.slice(5) as MenuKey] || selected.slice(5));
+    if (selected === "menu-title") return "Judul menu";
     if (selected === "contact") return "Tombol WhatsApp";
     if (selected === "video") return "Video background";
     if (fact) return "Kartu data · " + fact.label;
@@ -528,15 +558,77 @@ export function StudioV2() {
       value={currentSection?.description || ""} onChange={(value) => updateSection("description", value)} />;
     if (selected === "subtitle") return <Field label="Subjudul halaman" maxLength={100}
       value={currentSection?.subtitle || ""} onChange={(value) => updateSection("subtitle", value)} />;
-    if (selected === "menu-title" || selected.startsWith("menu:")) {
-      const key = selected.startsWith("menu:") && ["nama", "karir", "skill", "karya", "produk"].includes(parts[1])
-        ? parts[1] as MenuKey : menuKey;
-      return <Field label="Nama menu di navigasi" maxLength={24}
-        value={original.menuTitles?.[key] ?? key.charAt(0).toUpperCase() + key.slice(1)}
-        onChange={(value) => change((next) => {
-          next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [key]: value };
-        })} />;
+    if (selected.startsWith("menu:") && ["nama", "karir", "skill", "karya", "produk"].includes(parts[1])) {
+      const key = parts[1] as MenuKey;
+      const isGallery = key === "karya" || key === "produk";
+      const items = original[key].items;
+      const speed = original.menuSettings?.[key]?.slideSpeed ?? (isGallery ? 64 : 68);
+      return <>
+        <p className="studio-v2__inspector-hint">
+          Menu website asli. Ganti judul dan ikon, lalu atur kartu yang bergerak di bagian ini.
+        </p>
+        <Field label="Teks nama menu" maxLength={24}
+          value={original.menuTitles?.[key] ?? key.charAt(0).toUpperCase() + key.slice(1)}
+          onChange={(value) => change((next) => {
+            next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [key]: value };
+          })} />
+        <label className="studio-v2__field"><span>Ikon navigasi</span>
+          <select value={original.menuSettings?.[key]?.icon ?? "default"}
+            onChange={(event) => change((next) => {
+              const current = next.content.original!;
+              current.menuSettings = {
+                ...current.menuSettings,
+                [key]: { ...current.menuSettings?.[key], icon: event.target.value as OriginalMenuIcon },
+              };
+            })}>
+            {navigationIconOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+          </select>
+        </label>
+        <label className="studio-v2__slider">
+          <span>Kecepatan slide <b>{speed === 0 ? "Diam" : speed + " px/detik"}</b></span>
+          <input type="range" min="0" max="150" step="5" value={speed}
+            onChange={(event) => change((next) => {
+              const current = next.content.original!;
+              current.menuSettings = {
+                ...current.menuSettings,
+                [key]: { ...current.menuSettings?.[key], slideSpeed: Number(event.target.value) },
+              };
+            })} />
+        </label>
+        <section className="studio-v2__menu-slides">
+          <div className="studio-v2__menu-slides-heading">
+            <strong>Urutan slide / kartu</strong>
+            <span>{items.length} kartu</span>
+          </div>
+          {items.map((item, index) => {
+            const title = "title" in item ? item.title : item.label;
+            const target = isGallery ? "card:" + key + ":" + item.id : "fact:" + key + ":" + index;
+            return <div className="studio-v2__slide-entry" key={item.id}>
+              <span className="studio-v2__slide-index">{index + 1}</span>
+              <span className="studio-v2__slide-name" title={title}>{title}</span>
+              <button type="button" onClick={() => { setSelected(target); setPopupOpen(true); }} aria-label={"Edit " + title}>Edit</button>
+              <button type="button" onClick={() => moveSlide(key, index, -1)} disabled={index === 0} aria-label={"Naikkan " + title}>↑</button>
+              <button type="button" onClick={() => moveSlide(key, index, 1)} disabled={index >= items.length - 1} aria-label={"Turunkan " + title}>↓</button>
+            </div>;
+          })}
+          <button className="studio-v2__add-slide" type="button"
+            onClick={() => {
+              if (isGallery) addCard(key as GalleryKey);
+              else addFact(key as FactKey);
+            }}>
+            + Tambah {isGallery ? "kartu" : "data"} di menu ini
+          </button>
+        </section>
+        <p className="studio-v2__inspector-hint">
+          Klik judul besar atau kartu langsung di website untuk mengedit isinya. Panah ↑ ↓ mengubah urutan slide.
+        </p>
+      </>;
     }
+    if (selected === "menu-title") return <Field label="Judul menu di halaman" maxLength={24}
+      value={original.menuTitles?.[menuKey] ?? menu}
+      onChange={(value) => change((next) => {
+        next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [menuKey]: value };
+      })} />;
     if (selected === "contact") return <>
       <Field label="Nomor WhatsApp (tanpa link)" type="tel" placeholder="081234567890"
         value={whatsappNumber(original.contactUrl)} onChange={(value) => change((next) => {
@@ -571,7 +663,7 @@ export function StudioV2() {
           setSelected("description");
           setPopupOpen(false);
         }}>Hapus data ini</button>
-        <button type="button" onClick={addFact}>+ Tambah data</button>
+        <button type="button" onClick={() => addFact(factSection || undefined)}>+ Tambah data</button>
       </div>
     </>;
     if (card && gallerySection) {
@@ -646,29 +738,6 @@ export function StudioV2() {
       </div>
     </header>
 
-    <nav className="studio-v2__elementbar" aria-label="Elemen halaman">
-      <span className="studio-v2__edit-hint">✎ Klik teks untuk mengedit</span>
-      <div className="studio-v2__elementbar-menus">
-        {menuList.map((item) => <button key={item} type="button" className={menu === item ? "is-active" : ""}
-          onClick={() => chooseMenu(item)}>{original?.menuTitles?.[item.toLowerCase() as MenuKey]?.trim() || item}</button>)}
-      </div>
-      <div className="studio-v2__elementbar-tools">
-        <button type="button" onClick={() => addCard("karya")} disabled={!site}>+ Karya</button>
-        <button type="button" onClick={() => addCard("produk")} disabled={!site}>+ Produk</button>
-        {["Nama", "Karir", "Skill"].includes(menu) && <button type="button" onClick={addFact} disabled={!site}>+ Data</button>}
-        <button type="button" onClick={() => {
-          setSelected("contact"); setShowDesign(false); setPopupOpen(true);
-          setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 138 });
-          sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
-        }}>WhatsApp</button>
-        <button type="button" onClick={() => {
-          setSelected("video"); setShowDesign(false); setPopupOpen(true);
-          setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 138 });
-          sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
-        }}>Video</button>
-      </div>
-    </nav>
-
     {error && <p className="studio-v2__floating-message studio-v2__floating-message--error" role="alert">{error}
       <button type="button" onClick={() => setError("")}>×</button>
     </p>}
@@ -699,7 +768,6 @@ export function StudioV2() {
       </div>
       <div className="studio-v2__inline-popover-content">
         {inspectorContent()}
-        {!showDesign && ["Nama", "Karir", "Skill"].includes(menu) && <button className="studio-v2__add-data" type="button" onClick={addFact}>+ Tambah data {menu}</button>}
       </div>
     </div>}
 

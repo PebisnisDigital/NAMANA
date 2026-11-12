@@ -95,7 +95,8 @@ export function StudioV2Canvas() {
         notify({ type: "NAMINA_V2_MENU_CHANGED", menu: chosen });
       }
     }
-    const isText = editableText.has(key) || key.startsWith("menu:");
+    // Native website menus open the contextual icon/title/slide editor in the parent.
+    const isText = editableText.has(key);
     if (!isText) {
       setInline(null);
       return;
@@ -127,6 +128,7 @@ export function StudioV2Canvas() {
           notify({ type: "NAMINA_V2_MENU_CHANGED", menu });
         }}
         onEditorAddCard={(section) => notify({ type: "NAMINA_V2_ADD_CARD", section })}
+        onEditorAddFact={(section) => notify({ type: "NAMINA_V2_ADD_FACT", section })}
       />
     </div> : <div className="studio-v2-canvas__loading">Memuat tampilan website asli…</div>}
     {inline && <div className="studio-v2-canvas__inline" style={{
