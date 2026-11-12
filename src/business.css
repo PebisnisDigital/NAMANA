@@ -68,3 +68,68 @@
 .business__admin-row label{display:grid;gap:8px;color:#eed4d2;font-size:11px;font-weight:700;flex:0 0 176px}
 .business__admin-row select{min-height:43px;border:1px solid #905664;border-radius:10px;padding:9px 10px;color:#fdf0e8;background:#302128;font:700 12px Montserrat,system-ui}
 @media(max-width:560px){.business__admin-row{flex-wrap:wrap}.business__admin-row label{flex:1 1 100%}}
+
+
+/* Magic Link onboarding for nontechnical NAMINA partners. */
+.business__magic-info {
+  display: grid; justify-items: start; gap: 12px;
+  max-width: 540px; padding: 26px;
+  background: #20171c; border: 1px solid #714651;
+  border-radius: 19px; box-shadow: 0 20px 60px #0004;
+}
+.business__magic-info .business__magic-symbol {
+  display: grid; place-items: center;
+  width: 54px; height: 54px; border-radius: 14px;
+  background: #6c2b39; color: #ffcbcc; font-size: 27px;
+}
+.business__magic-info h2 {margin: 0;font-size: 20px;color:#fff3eb;letter-spacing:-.04em}
+.business__magic-info p {margin:0 0 5px;font-size:12px;line-height:1.75;color:#d7bdbd}
+.business__magic-info .business__primary {text-decoration:none}
+.business__staff-login {width:min(100%,470px);margin-top:26px}
+.business__staff-login summary {padding:12px;color:#bca8a7;font-size:11px;cursor:pointer}
+.business__staff-login .business__auth-card {margin-top:8px}
+.business__invite-form {display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:18px}
+.business__invite-form label {display:grid;gap:8px;font-size:12px;font-weight:750;color:#eed7d1}
+.business__invite-form label:first-child {grid-column:1/-1}
+.business__invite-form input,
+.business__issued input {
+  display:block;box-sizing:border-box;width:100%;min-height:45px;
+  padding:10px 13px;border:1px solid #84505c;border-radius:11px;
+  background:#100c10;color:#fff1ed;font:600 12px Montserrat,system-ui;
+}
+.business__invite-form .business__primary {justify-self:start;align-self:end;grid-column:1/-1}
+.business__issued {margin:17px 0;padding:23px;border:1px solid #e15a68;border-radius:17px;background:#3a1f2a;color:#fff2ed}
+.business__issued h2 {font-size:17px;letter-spacing:-.02em}
+.business__issued p {color:#d9c3c1;font-size:12px;line-height:1.65}
+.business__issued input {padding:14px;background:#130e12;overflow:hidden;text-overflow:ellipsis}
+.business__issued-actions {display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:15px}
+.business__issued-actions a {text-decoration:none}
+.business__secondary {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:37px;width:max-content;margin-top:8px;padding:9px 12px;
+  border:1px solid #89535f;border-radius:10px;
+  color:#ffdbdf;background:#39242b;
+  font:750 11px Montserrat,system-ui;cursor:pointer;
+}
+.business__secondary:disabled {opacity:.5;cursor:not-allowed}
+.business__access {display:grid;place-items:center;padding:20px}
+.business__access-card {
+  width:min(100%,470px);padding:35px 28px;
+  border:1px solid #693e48;border-radius:22px;
+  background:#20181d;text-align:center;box-shadow:0 20px 70px #0008;
+}
+.business__access-card .business__access-logo {justify-content:center;margin-bottom:22px;font-size:25px}
+.business__access-icon {
+  display:grid;place-items:center;width:58px;height:58px;margin:0 auto 19px;
+  background:#642c39;border-radius:50%;color:#ffd9dc;font-size:27px;
+}
+.business__access-card h1 {font-size:clamp(23px,4vw,31px);margin-bottom:13px}
+.business__access-card .business__lead {margin:0 auto 22px;text-align:center}
+.business__access-card .business__primary {text-decoration:none}
+@media(max-width:580px) {
+  .business__invite-form {grid-template-columns:1fr}
+  .business__invite-form label:first-child {grid-column:auto}
+  .business__issued {padding:16px}
+  .business__issued-actions .business__primary {width:100%}
+  .business__issued-actions {align-items:stretch}
+}
