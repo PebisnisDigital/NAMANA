@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { PublishSuccessModal } from "../components/PublishSuccessModal";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
@@ -755,18 +756,6 @@ export function StudioV2() {
         <button type="button" className="studio-v2__modal-close" onClick={() => { setPublishConfirmOpen(false); setApproved(false); }}>Batal</button>
       </section>
     </div>}
-    {published && <div className="studio-v2__modal-backdrop">
-      <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-modal-title">
-        <div className="studio-v2__modal-mark">✓</div>
-        <h2 id="v2-modal-title">Website berhasil dipublikasikan!</h2>
-        <p>Perubahan telah tersimpan di database dan dapat dilihat tanpa deploy ulang.</p>
-        <strong>{"https://namina.biz.id/" + slug}</strong>
-        <div className="studio-v2__modal-actions">
-          <a href={"/" + slug} target="_blank" rel="noreferrer">Buka Website ↗</a>
-          <button type="button" onClick={() => void navigator.clipboard.writeText("https://namina.biz.id/" + slug)}>Salin Link</button>
-        </div>
-        <button className="studio-v2__modal-close" type="button" onClick={() => setPublished(null)}>Tutup</button>
-      </section>
-    </div>}
+    {published && <PublishSuccessModal url={"https://namina.biz.id/" + slug} onClose={() => setPublished(null)} />}
   </main>;
 }

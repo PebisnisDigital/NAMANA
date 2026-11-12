@@ -1,0 +1,155 @@
+.namina-publish-success__backdrop {
+  position: fixed;
+  z-index: 500;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: rgba(0, 0, 0, .79);
+  backdrop-filter: blur(9px);
+}
+.namina-publish-success {
+  position: relative;
+  box-sizing: border-box;
+  width: min(100%, 465px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 34px clamp(18px, 5vw, 32px) 24px;
+  border: 1px solid #a3515e;
+  border-radius: 23px;
+  background: #21181e;
+  color: #fff1ec;
+  box-shadow: 0 26px 95px #000d;
+  text-align: center;
+  font-family: "Montserrat", system-ui, sans-serif;
+}
+.namina-publish-success * { box-sizing: border-box; }
+.namina-publish-success__close {
+  position: absolute;
+  right: 13px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #764b55;
+  border-radius: 10px;
+  background: #432a33;
+  color: #ffdfd9;
+  font-size: 22px;
+  cursor: pointer;
+}
+.namina-publish-success__check {
+  display: grid;
+  place-items: center;
+  width: 69px;
+  height: 69px;
+  margin: 0 auto 16px;
+  border: 1px solid #ff8c99;
+  border-radius: 50%;
+  background: #8b2635;
+  box-shadow: 0 0 0 9px #ec4a5b14;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 800;
+}
+.namina-publish-success__eyebrow {
+  margin: 0 0 8px;
+  color: #ff9ea7;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .19em;
+}
+.namina-publish-success h2 {
+  margin: 0;
+  color: #fff4ec;
+  font-size: clamp(27px, 6vw, 37px);
+  font-weight: 900;
+  letter-spacing: -.055em;
+}
+.namina-publish-success > p:not(.namina-publish-success__hint) {
+  margin: 9px 0 23px;
+  color: #ebd4cf;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.namina-publish-success__url {
+  display: block;
+  margin-bottom: 17px;
+  text-align: left;
+}
+.namina-publish-success__url span {
+  display: block;
+  margin: 0 0 8px;
+  color: #d8acaf;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+.namina-publish-success__url input {
+  display: block;
+  width: 100%;
+  min-height: 47px;
+  padding: 12px;
+  border: 1px solid #85525e;
+  border-radius: 10px;
+  background: #110d11;
+  color: #ffe6df;
+  font: 650 12px "Montserrat", system-ui, sans-serif;
+}
+.namina-publish-success__actions { display: grid; gap: 10px; }
+.namina-publish-success__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 11px 16px;
+  border: 1px solid #a96671;
+  border-radius: 12px;
+  background: #3c2630;
+  color: #fff5f0 !important;
+  font: 800 13px "Montserrat", system-ui, sans-serif;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+.namina-publish-success__action:hover { background: #61313d; }
+.namina-publish-success__action--primary {
+  border-color: #ed6372;
+  background: #d72d3e;
+}
+.namina-publish-success__action--primary:hover { background: #ed3e50; }
+.namina-publish-success__action--whatsapp {
+  border-color: #3c9a69;
+  background: #1d6047;
+}
+.namina-publish-success__action--whatsapp:hover { background: #257857; }
+.namina-publish-success__action-icon { font-size: 18px; font-weight: 800; line-height: 1; }
+.namina-publish-success__hint {
+  margin: 12px 0 0;
+  color: #c5aeb2;
+  font-size: 10px;
+  line-height: 1.65;
+}
+.namina-publish-success__done {
+  min-height: 39px;
+  margin: 13px auto 0;
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  color: #f9b8c0;
+  font: 750 11px "Montserrat", system-ui, sans-serif;
+  cursor: pointer;
+}
+.namina-publish-success__action:focus-visible,
+.namina-publish-success__close:focus-visible,
+.namina-publish-success__done:focus-visible {
+  outline: 3px solid #ff9da7;
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  .namina-publish-success__backdrop { padding-inline: 12px; }
+  .namina-publish-success { padding: 30px 18px 16px; border-radius: 18px; }
+  .namina-publish-success__action { min-height: 46px; font-size: 12px; }
+}
