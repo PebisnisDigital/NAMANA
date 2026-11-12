@@ -1056,3 +1056,41 @@
   .vini-cinema__contact-top { padding-inline: 10px; }
   .vini-cinema__brand .namina-logo--compact .namina-logo__name { font-size: 25px; }
 }
+
+
+/* Optional layout presets and independent typography scales from NAMINA Studio. */
+.vini-cinema--styled .vini-cinema__nav button { font-size: calc(12px * var(--namina-menu-scale, 1)); }
+@media (min-width: 851px) {
+  .vini-cinema--styled .vini-cinema__intro h1 span {
+    font-size: calc(clamp(32px, 3.5vw, 58px) * var(--namina-role-scale, 1));
+  }
+  .vini-cinema--layout-center .vini-cinema__video { width: 100%; }
+  .vini-cinema--layout-center .vini-cinema__scrim {
+    background: linear-gradient(90deg, #08080cc9, #08080ca9 55%, #08080cb4);
+  }
+  .vini-cinema--layout-center .vini-cinema__main {
+    width: min(76%, 930px);
+    margin-inline: auto;
+    padding-inline: 0;
+    text-align: center;
+    align-items: center;
+  }
+  .vini-cinema--layout-center .vini-cinema__intro {
+    max-width: 790px;
+    text-align: center;
+  }
+  .vini-cinema--layout-center .vini-cinema__intro > p { margin-inline: auto; }
+  .vini-cinema--layout-compact .vini-cinema__main {
+    width: min(53%, 680px);
+    transform: translateY(-5vh);
+  }
+  .vini-cinema--layout-compact .vini-cinema__intro h1 { letter-spacing: -.07em; }
+}
+@media (max-width: 850px) {
+  .vini-cinema--styled .vini-cinema__intro h1 span {
+    font-size: calc(clamp(26px, 7.7vw, 42px) * var(--namina-role-scale, 1));
+  }
+  .vini-cinema--layout-center .vini-cinema__intro { text-align: center; margin-inline: auto; }
+  .vini-cinema--layout-center .vini-cinema__intro > p { margin-inline: auto; }
+  .vini-cinema--layout-compact .vini-cinema__intro { min-height: 200px; }
+}
