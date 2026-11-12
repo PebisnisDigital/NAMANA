@@ -36,6 +36,12 @@ export function BusinessVisualStudio() {
   const [dirty,setDirty] = useState(false);
   const [error,setError] = useState("");
   const [feedback,setFeedback] = useState("");
+  // Completion tips should not sit on top of the website navigation forever.
+  useEffect(() => {
+    if (!feedback) return;
+    const timeout = window.setTimeout(() => setFeedback(""), 5200);
+    return () => window.clearTimeout(timeout);
+  }, [feedback]);
   const original = site?.content.original;
   const style = { ...originalStyleDefaults,...original?.style };
   const parts = selected.split(":");
