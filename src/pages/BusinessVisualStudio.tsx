@@ -350,7 +350,7 @@ export function BusinessVisualStudio() {
     <div className={"studio-v2__site-workspace studio-v2__site-workspace--"+(mobile?"mobile":"desktop")}>
       <div className={"studio-v2__site-frame"+(mobile?" studio-v2__site-frame--phone":"")}>
         {mobile&&<div className="studio-v2__phone-notch" aria-hidden="true"/>}
-        <iframe ref={frame} src="/studio-v2-canvas" title="Editor website pribadi" onLoad={()=>setReady(true)}/>
+        <iframe ref={frame} src="/studio-v2-canvas" title="Editor website pribadi" allow="autoplay; fullscreen" onLoad={()=>setReady(true)}/>
       </div>
       <div className="studio-v2__canvas-indicator"><span>{dirty?"Ada perubahan belum disimpan":"Draft tersimpan"}</span><span>·</span><span>{publishedSha?"Website telah terbit":"Belum dipublikasikan"}</span></div>
     </div>
