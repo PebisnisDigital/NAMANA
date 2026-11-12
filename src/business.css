@@ -1,0 +1,61 @@
+/* NAMINA Business — private beta area, visually separate from the admin Studio. */
+.business { --biz-red:#e63845; --biz-border:#513b43; --biz-muted:#bda9ab; box-sizing:border-box; min-height:100svh; background:#0b0a0d; color:#fbf1eb; font-family:"Montserrat",system-ui,sans-serif; }
+.business *, .business *::before, .business *::after {box-sizing:border-box}
+.business__header{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid #483138;min-height:68px;padding:14px clamp(16px,3vw,48px);background:#151014}
+.business__header nav{display:flex;align-items:center;gap:14px}
+.business__header nav a,.business__header nav button{color:#ffdde0;background:transparent;border:0;text-decoration:none;font:700 12px Montserrat,system-ui;cursor:pointer}
+.business__logo{display:flex;align-items:center;gap:10px;color:#fff4ec;text-decoration:none;font:850 22px Montserrat,system-ui;letter-spacing:-.055em}
+.business__logo span{font-size:9px;letter-spacing:.07em;padding:6px 8px;border-radius:99px;background:#49272f;color:#ffb8bc}
+.business__shell{max-width:920px;margin:auto;padding:52px 20px 95px}
+.business__eyebrow{color:#ff6770;font-size:11px;letter-spacing:.13em;font-weight:850;margin-bottom:12px}
+.business h1{font-size:clamp(27px,5vw,43px);line-height:1.16;letter-spacing:-.055em;margin:0 0 12px}
+.business__lead{max-width:700px;margin:0 0 29px;color:var(--biz-muted);font-size:13px;line-height:1.8}
+.business__auth-card{width:min(100%,470px);background:#1d171b;border:1px solid #68424e;border-radius:20px;padding:25px;box-shadow:0 16px 55px #0004}
+.business__switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:22px;padding:5px;border-radius:12px;background:#2e2227}
+.business__switch button{min-height:44px;border:0;border-radius:9px;color:#d7bfc0;background:transparent;font:800 12px Montserrat,system-ui;cursor:pointer}
+.business__switch button.is-active{background:#b72b39;color:#fff}
+.business__auth-card form,.business__create{display:grid;gap:15px}
+.business__auth-card label,.business__create label{display:grid;gap:8px;color:#f0d7d3;font-size:12px;font-weight:750}
+.business__auth-card input,.business__create input{display:block;width:100%;min-height:46px;border:1px solid #81535d;border-radius:10px;padding:12px;background:#100d10;color:#fff7ef;font:600 13px Montserrat,system-ui}
+.business__auth-card input::placeholder,.business__create input::placeholder{color:#a28b8e}
+.business__primary{min-height:47px;display:inline-flex;justify-content:center;align-items:center;max-width:100%;padding:12px 18px;border:1px solid #ec6772;border-radius:11px;background:#d52e3a;color:white;font:850 12px Montserrat,system-ui;cursor:pointer;text-decoration:none}
+.business__primary:disabled{opacity:.5;cursor:not-allowed}
+.business__fineprint{font-size:11px;line-height:1.75;color:#b99e9f;margin:15px 0 0}
+.business__stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:27px 0 23px}
+.business__stats>div{border:1px solid #574047;border-radius:16px;background:#1f181d;padding:19px;display:grid;gap:11px}
+.business__stats small{color:#e0bcbe;font-size:11px}
+.business__stats strong{font-size:22px;letter-spacing:-.045em}
+.business__stats span{color:#baa6a6;font-size:11px;line-height:1.5}
+.business__section{border:1px solid #4b3740;border-radius:17px;background:#1b1519;padding:20px;margin:15px 0}
+.business__section h2{font-size:17px;letter-spacing:-.035em;margin:0 0 16px}
+.business__section-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.business__section-head span{font-size:11px;color:#ffc3c7}
+.business__site{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border-top:1px solid #3f3035}
+.business__site>div{display:grid;gap:5px}
+.business__site strong{font-size:14px}
+.business__site small{font-size:11px;color:#baa5a8}
+.business__site>a{display:inline-flex;justify-content:center;align-items:center;min-height:40px;padding:10px 15px;background:#542a34;color:#fff0ee;text-decoration:none;border:1px solid #9b4e5c;border-radius:10px;font-size:12px;font-weight:750}
+.business__empty{color:#b7a2a5;font-size:12px;padding:20px 0}
+.business__create{grid-template-columns:1fr auto;align-items:end;gap:12px}
+.business__error,.business__success,.business__notice{margin:16px 0;padding:14px;border:1px solid #c75965;border-radius:11px;background:#3c2129;color:#ffe9e6;line-height:1.6;font-size:12px}
+.business__success{border-color:#6a9a84;background:#22332b;color:#e9ffef}
+.business__loading{display:grid;place-items:center;gap:15px;padding:40px;text-align:center}
+.business__loading a{color:#ffc5c8}
+.business__visual-editor{min-height:100svh}
+.business__visual-editor .business__private{display:inline-block;background:#3b2931;color:#ffd5d8;border:1px solid #8c4a57;border-radius:99px;padding:7px 10px;font-size:9px;font-weight:800;white-space:nowrap}
+.business__visual-editor .business__current-slug{color:#fee8dd;font-size:12px}
+.business__visual-editor .studio-v2__workbar{position:relative}
+.business__visual-editor .studio-v2__site-workspace{min-height:calc(100svh - 68px)}
+.business__editor-alert{position:fixed;z-index:100;top:75px;left:50%;transform:translateX(-50%);max-width:90vw;padding:13px 17px;border-radius:11px;background:#47232e;border:1px solid #d45b68;color:#fff1ec;font:650 12px Montserrat,system-ui}
+.business__danger{border:1px solid #af5966;border-radius:9px;min-height:42px;padding:10px 15px;background:#552531;color:#ffdfdf;cursor:pointer;font-weight:750}
+@media(max-width:680px){
+  .business__shell{padding:32px 13px 75px}
+  .business__stats{grid-template-columns:1fr}
+  .business__create{grid-template-columns:1fr}
+  .business__visual-editor .studio-v2__workbar{display:flex;flex-wrap:wrap;justify-content:space-between;padding:9px 12px}
+  .business__visual-editor .studio-v2__workbar-left{order:1;width:100%;justify-content:space-between}
+  .business__visual-editor .studio-v2__device-switch{order:2}
+  .business__visual-editor .studio-v2__workbar-right{order:3}
+  .business__visual-editor .studio-v2__workbar .studio-v2__logo span{display:inline}
+  .business__visual-editor .studio-v2__site-workspace{min-height:calc(100svh - 125px)}
+}
