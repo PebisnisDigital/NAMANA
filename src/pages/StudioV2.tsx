@@ -189,6 +189,10 @@ export function StudioV2() {
   };
   const addCard = (section: GalleryKey) => {
     if (!site) return;
+    if (site.content.original![section].items.length >= 20) {
+      setError("Maksimal 20 kartu per menu. Hapus kartu lama sebelum menambah.");
+      return;
+    }
     const id = crypto.randomUUID();
     change((next) => {
       next.content.original![section].items.push({
@@ -619,6 +623,7 @@ export function StudioV2() {
           <div className="studio-v2__shortcuts">
             <button type="button" onClick={() => addCard("karya")}>+ Tambah Karya</button>
             <button type="button" onClick={() => addCard("produk")}>+ Tambah Produk</button>
+            <button type="button" onClick={() => { setMenu("Nama"); setSelected("contact"); setShowDesign(false); }}>Edit WhatsApp</button>
             <button type="button" onClick={() => { setSelected("video"); setShowDesign(false); }}>Ganti Video</button>
           </div>
         </section>
