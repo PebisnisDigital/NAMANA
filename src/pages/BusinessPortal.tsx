@@ -17,10 +17,8 @@ export function BusinessPortal() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [registering, setRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [workspace, setWorkspace] = useState<BusinessWorkspace | null>(null);
   const [sites, setSites] = useState<BusinessSiteRow[]>([]);
   const [newSlug, setNewSlug] = useState("");
@@ -88,26 +86,10 @@ export function BusinessPortal() {
     if (!businessClient) return;
     setBusy(true); setError(""); setFeedback("");
     try {
-      if (registering) {
-        if (name.trim().length < 2 || name.trim().length > 100) throw new Error("Nama harus 2–100 karakter.");
-        const result = await businessClient.auth.signUp({
-          email: email.trim(),
-          password,
-          options: { data: { full_name: name.trim() }, emailRedirectTo: window.location.origin + "/mitra" },
-        });
-        if (result.error) throw result.error;
-        if (!result.data.session) {
-          setFeedback("Pendaftaran diterima. Periksa email untuk verifikasi, lalu masuk ke Dashboard Mitra.");
-        } else {
-          setUser(result.data.user);
-          if (result.data.user) await refresh(result.data.user);
-        }
-      } else {
-        const result = await businessClient.auth.signInWithPassword({ email: email.trim(), password });
-        if (result.error) throw result.error;
-        setUser(result.data.user);
-        await refresh(result.data.user);
-      }
+      const result = await businessClient.auth.signInWithPassword({ email: email.trim(), password });
+      if (result.error) throw result.error;
+      setUser(result.data.user);
+      await refresh(result.data.user);
       setPassword("");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Tidak dapat masuk.");
@@ -153,30 +135,31 @@ export function BusinessPortal() {
       </nav>
     </header>
     <div className="business__shell">
-      {loading ? <p className="business__notice">Memeriksa akun mitra…</p> : !user ? <>
-        <div className="business__eyebrow">NAMINA BUSINESS · AKUN MITRA</div>
-        <h1>Bangun jasa website milikmu.</h1>
-        <p className="business__lead">Studio visual untuk mitra NAMINA. Daftar gratis untuk menyiapkan akun; akses komersial baru aktif setelah langganan diverifikasi.</p>
-        <div className="business__auth-card">
-          <div className="business__switch">
-            <button className={!registering ? "is-active" : ""} type="button" onClick={() => { setRegistering(false); setError(""); }}>Masuk</button>
-            <button className={registering ? "is-active" : ""} type="button" onClick={() => { setRegistering(true); setError(""); }}>Daftar Mitra</button>
-          </div>
-          <form onSubmit={(event) => void handleAuth(event)}>
-            {registering && <label>Nama lengkap
-              <input required minLength={2} maxLength={100} autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nama bisnis atau nama mitra" />
-            </label>}
-            <label>Email
-              <input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" />
-            </label>
-            <label>Password
-              <input required type="password" minLength={8} autoComplete={registering ? "new-password" : "current-password"}
-                value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Minimal 8 karakter" />
-            </label>
-            <button className="business__primary" type="submit" disabled={busy}>{busy ? "Memproses…" : registering ? "Daftar Akun" : "Masuk Dashboard"}</button>
-          </form>
-          <p className="business__fineprint">Paket Bisnis Rp87.000/bulan. Tahap ini belum menerima pembayaran dan belum mengaktifkan publikasi website.</p>
+      {loading ? <p className="business__notice">Memeriksa akses Studio…</p> : !user ? <>
+        <div className="business__eyebrow">NAMINA BUSINESS · AKSES MITRA</div>
+        <h1>Studio pribadi, tanpa password.</h1>
+        <p className="business__lead">Sudah menjadi mitra NAMINA? Buka tautan pribadi yang dikirim admin melalui WhatsApp. Kamu langsung masuk ke workspace dan daftar klien milikmu sendiri.</p>
+        <div className="business__magic-info">
+          <span className="business__magic-symbol" aria-hidden="true">✦</span>
+          <h2>Masuk lewat Magic Link</h2>
+          <p>Link hanya sekali pakai demi keamanan. Setelah masuk, sesi tersimpan di perangkat ini sehingga tidak perlu mengisi email dan password setiap kali bekerja.</p>
+          <a className="business__primary" target="_blank" rel="noopener noreferrer"
+            href={"https://wa.me/62881022445869?text="+encodeURIComponent("Halo Teh Vini, saya mau daftar atau minta ulang Magic Link Paket Bisnis NAMINA.")}>Minta Link via WA</a>
         </div>
+        <details className="business__staff-login">
+          <summary>Masuk manual (admin / akun lama)</summary>
+          <div className="business__auth-card">
+            <form onSubmit={(event) => void handleAuth(event)}>
+              <label>Email
+                <input required type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="email@contoh.com" />
+              </label>
+              <label>Password
+                <input required type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password akun lama" />
+              </label>
+              <button className="business__primary" type="submit" disabled={busy}>{busy ? "Memproses…" : "Masuk Manual"}</button>
+            </form>
+          </div>
+        </details>
       </> : <>
         <div className="business__eyebrow">DASHBOARD MITRA</div>
         <h1>Halo, {workspace?.display_name || user.email?.split("@")[0] || "Mitra"}.</h1>

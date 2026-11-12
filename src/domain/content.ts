@@ -26,6 +26,7 @@ export const reservedSlugs = new Set([
   "formulir",
   "mitra",
   "daftar",
+  "akses",
   "bisnis",
   "langganan",
   "studio-v1",
