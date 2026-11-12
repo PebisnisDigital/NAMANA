@@ -23,7 +23,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.dropbox.com https://*.dropboxusercontent.com; media-src 'self' blob: https://*.dropbox.com https://*.dropboxusercontent.com; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.dropbox.com https://*.dropboxusercontent.com; media-src 'self' blob: https://*.dropbox.com https://*.dropboxusercontent.com; connect-src 'self' https://xglpwdgygzhjsmiwkzgj.supabase.co wss://xglpwdgygzhjsmiwkzgj.supabase.co; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     },
