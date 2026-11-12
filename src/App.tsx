@@ -20,8 +20,9 @@ function App() {
   let page;
   if (path === "/") page = <Landing />;
   else if (path === "/formulir") page = <ClientForm />;
-  else if (path === "/studio") page = <StaticStudio />;
-  else if (path === "/studio-v2") page = <StudioV2 />;
+  // Visual Studio is the official editor; the 8-stage generator remains available.
+  else if (path === "/studio" || path === "/studio-v2") page = <StudioV2 />;
+  else if (path === "/studio-v1" || path === "/generator") page = <StaticStudio />;
   else if (path === "/studio-v2-canvas") page = <StudioV2Canvas />;
   else if (path === "/gaya" || path === "/templates") page = <ThemeGallery />;
   else if (demoTheme) page = <ThemeDemo theme={demoTheme} />;

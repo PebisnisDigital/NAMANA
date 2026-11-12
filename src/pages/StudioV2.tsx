@@ -463,19 +463,19 @@ export function StudioV2() {
     setSession({ configured: true, authenticated: false }); setSite(null); setLoadedOnce(false); setPopupOpen(false);
   };
 
-  if (!session) return <main className="studio-v2__gate"><p>{error || "Memeriksa akses Studio V2…"}</p></main>;
+  if (!session) return <main className="studio-v2__gate"><p>{error || "Memeriksa akses NAMINA Studio…"}</p></main>;
   if (!session.configured || !session.authenticated) return <main className="studio-v2__gate">
     <section className="studio-v2__login">
       <a href="/">NAMINA</a><span>VISUAL STUDIO 02</span>
-      <h1>Masuk Studio V2</h1>
-      <p>Gunakan kata sandi admin NAMINA yang sama dengan Studio V1.</p>
+      <h1>Masuk NAMINA Studio</h1>
+      <p>Login admin digunakan untuk pengelolaan NAMINA. Akun editor klien akan menggunakan akses pribadi setelah aktivasi.</p>
       {session.configured ? <form onSubmit={(event) => void login(event)}>
         <label htmlFor="v2-password">Kata sandi admin</label>
         <input id="v2-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
         <button type="submit" disabled={working}>Masuk Editor</button>
       </form> : <p>Studio menunggu konfigurasi admin.</p>}
       {error && <p role="alert" className="studio-v2__error">{error}</p>}
-      <a className="studio-v2__back-link" href="/studio">Kembali ke Studio V1</a>
+      <a className="studio-v2__back-link" href="/studio-v1">Buka Generator V1</a>
     </section>
   </main>;
 
@@ -703,7 +703,7 @@ export function StudioV2() {
   return <main className="studio-v2 studio-v2--fullscreen">
     <header className="studio-v2__workbar">
       <div className="studio-v2__workbar-left">
-        <a href="/" className="studio-v2__logo" aria-label="NAMINA beranda">NAMINA<span>STUDIO V2</span></a>
+        <a href="/" className="studio-v2__logo" aria-label="NAMINA beranda">NAMINA<span>STUDIO</span></a>
         <span className="studio-v2__workbar-divider" aria-hidden="true" />
         <label className="studio-v2__client-switch">
           <span className="studio-v2__sr-only">Pilih website klien</span>
@@ -733,7 +733,7 @@ export function StudioV2() {
           onClick={() => { setShowDesign(true); setPopupOpen(true); setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 82 }); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>✦ <span>Desain</span></button>
         <button type="button" className="studio-v2__publish-trigger" disabled={!site || working || uploading}
           onClick={() => { setPopupOpen(false); setPublishConfirmOpen(true); }}>Publikasikan</button>
-        <a href="/studio" className="studio-v2__v1-link" title="Buka generator Studio V1">V1</a>
+        <a href="/studio-v1" className="studio-v2__v1-link" title="Buka Generator 8 Tahap">V1</a>
         <button type="button" className="studio-v2__exit" onClick={() => void logout()} title="Keluar dari Studio">Keluar</button>
       </div>
     </header>
