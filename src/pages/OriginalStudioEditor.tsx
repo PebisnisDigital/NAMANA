@@ -114,15 +114,28 @@ export function OriginalStudioEditor({ site, change }: EditProps) {
       </div>
       <div className="studio-original__heading studio-original__subheading"><h3>Data slide</h3><span>Urutan animasi</span></div>
       {original[section].items.length === 0 && <p className="studio-hint">Belum ada data. Tambahkan baris pertama.</p>}
-      {original[section].items.map((item, index) => <div className="studio-original__item studio-original__fact" key={item.id}>
-        <span className="studio-original__row-index">{index + 1}</span>
-        <TextField label="Label" maxLength={40} value={item.label} onChange={(value) => updateFact(section, item.id, "label", value)} />
-        <TextField label="Isi" maxLength={180} value={item.value} onChange={(value) => updateFact(section, item.id, "value", value)} />
-        <label className="studio-original__field"><span>Ikon</span><select value={item.icon} onChange={(event) => updateFact(section, item.id, "icon", Number(event.target.value))}>
-          {icons.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
-        </select></label>
-        <button type="button" className="studio-original__remove" aria-label={`Hapus data ${index + 1}`} title={`Hapus data ${index + 1}`} onClick={() => change((next) => { next.content.original![section].items = next.content.original![section].items.filter((fact) => fact.id !== item.id); })}>×</button>
-      </div>)}
+      <div className="studio-original__facts">
+        {original[section].items.map((item, index) => (
+          <details className="studio-original__fact-card" key={item.id}>
+            <summary>
+              <span className="studio-original__fact-number">{index + 1}</span>
+              <span className="studio-original__fact-summary">
+                <strong>{item.label || "Data tanpa label"}</strong>
+                <small>{item.value || "Ketuk untuk mengisi data"}</small>
+              </span>
+              <span className="studio-original__fact-chevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div className="studio-original__fact-fields">
+              <TextField label="Nama data" maxLength={40} value={item.label} onChange={(value) => updateFact(section, item.id, "label", value)} />
+              <TextField label="Isinya" maxLength={180} value={item.value} onChange={(value) => updateFact(section, item.id, "value", value)} />
+              <label className="studio-original__field"><span>Ikon</span><select value={item.icon} onChange={(event) => updateFact(section, item.id, "icon", Number(event.target.value))}>
+                {icons.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
+              </select></label>
+              <button type="button" className="studio-original__remove" onClick={() => change((next) => { next.content.original![section].items = next.content.original![section].items.filter((fact) => fact.id !== item.id); })}>Hapus data</button>
+            </div>
+          </details>
+        ))}
+      </div>
       <button type="button" className="studio-original__add" disabled={original[section].items.length >= 30} onClick={() => addFact(section)}>+ Tambah data</button>
     </section>)}
 
