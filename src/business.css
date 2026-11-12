@@ -133,3 +133,27 @@
   .business__issued-actions .business__primary {width:100%}
   .business__issued-actions {align-items:stretch}
 }
+
+
+/* Admin-managed WhatsApp renewals, no checkout flow. */
+.business__admin-row--partner { align-items: flex-start; }
+.business__admin-summary { flex: 1; min-width: 0; }
+.business__partner-buttons { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+.business__renew-controls { flex: 0 0 195px; display: grid; gap: 9px; min-width: 0; }
+.business__renew-controls label {
+  display: grid; gap: 7px; font-size: 11px;
+  color: #f0d0d1; font-weight: 800;
+}
+.business__renew-controls input {
+  min-height: 41px; width: 100%; padding: 10px 12px;
+  border: 1px solid #965764; border-radius: 10px;
+  background: #160e14; color: #fff4ef;
+  font: 700 13px Montserrat,system-ui;
+}
+.business__renew-controls .business__primary { width: 100%; }
+.business__issued input { font-size: 12px; }
+.business__section .business__primary[href] { margin-top: 18px; }
+@media (max-width: 580px) {
+  .business__admin-row--partner { flex-direction: column; gap: 15px; }
+  .business__renew-controls { width: 100%; flex: 0 0 auto; }
+}
