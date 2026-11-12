@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { contentSchema, slugSchema, type AssetUrls, type SiteContent } from "../domain/content.js";
 import { originalProfileTabs } from "./originalProfileTabs.js";
-import { blankOriginal, viniOriginal } from "./originalSeed.js";
+import { viniOriginal } from "./originalSeed.js";
 
 const mediaUrl = z.string().max(2000).refine((value) => {
   if (!value) return true;
@@ -80,39 +80,75 @@ export const viniSeed: SiteDocument = {
     })),
   },
   media: {
-    desktopVideo: "/videos/hero.mp4",
+    desktopVideo: "https://www.dropbox.com/scl/fi/g0et9qnfbck0mx7y1wwvf/Person_walking_in_cinematic_studio_bfd986bf_720p-1.mp4?rlkey=m3lseluyujl8gul834ix8hwvj&raw=1",
     mobileVideo: "",
-    poster: "/videos/hero-poster.jpg",
+    poster: "",
     portrait: "",
     enterKey: "",
     cards: {},
   },
 };
 
+/**
+ * NAMINA's official starting point is the complete /vini demo,
+ * not a skeleton with empty slide collections. Each new client gets
+ * its own independent copy (including menu icons, facts, work, products,
+ * colors and preview video) and a unique slug.
+ *
+ * Do not mutate the source template or the published /vini website.
+ */
+export function cloneViniTemplate(slug: string, source: SiteDocument = viniSeed): SiteDocument {
+  const checkedSlug = slugSchema.parse(slug);
+  const site = structuredClone(siteDocumentSchema.parse(source));
+  site.slug = checkedSlug;
+
+  // Keep media references connected when duplicating any cards with images.
+  const oldCardMedia = site.media.cards;
+  const cardMedia: Record<string, string> = {};
+  for (const card of site.content.cards) {
+    const previous = card.id;
+    card.id = crypto.randomUUID();
+    if (oldCardMedia[previous]) cardMedia[card.id] = oldCardMedia[previous];
+    card.imageAssetId = null;
+  }
+  const original = site.content.original;
+  if (original) {
+    for (const key of ["nama", "karir", "skill"] as const) {
+      original[key].items = original[key].items.map((item) => ({
+        ...item, id: crypto.randomUUID(),
+      }));
+    }
+    for (const key of ["karya", "produk"] as const) {
+      original[key].items = original[key].items.map((item) => {
+        const previous = item.id;
+        const id = crypto.randomUUID();
+        if (oldCardMedia[previous]) cardMedia[id] = oldCardMedia[previous];
+        return { ...item, id, imageAssetId: null };
+      });
+    }
+  }
+  site.media.cards = cardMedia;
+  return siteDocumentSchema.parse(prepareSite(site));
+}
+
+/**
+ * Match the currently published /vini template, including its actual
+ * Dropbox video URL and latest icon/cards. Fallback is always populated
+ * with rich sample data if the JSON cannot be loaded.
+ */
+export async function loadViniTemplate(slug: string): Promise<SiteDocument> {
+  try {
+    const response = await fetch("/clients/vini.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("Template original tidak bisa diambil");
+    const original = siteDocumentSchema.parse(await response.json());
+    return cloneViniTemplate(slug, original);
+  } catch {
+    return cloneViniTemplate(slug);
+  }
+}
+
 export function blankSite(slug: string): SiteDocument {
-  return {
-    slug,
-    content: {
-      ...structuredClone(viniSeed.content),
-      identity: {
-        displayName: "Nama klien",
-        profession: "Profesi",
-        bio: "",
-        portraitAssetId: null,
-      },
-      original: blankOriginal("Nama klien"),
-      cards: [
-        {
-          ...structuredClone(viniSeed.content.cards[0]),
-          id: crypto.randomUUID(),
-          title: "Tentang saya",
-          subtitle: "Perkenalan",
-          description: "Isi kisah klien di sini.",
-        },
-      ],
-    },
-    media: { desktopVideo: "", mobileVideo: "", poster: "", portrait: "", enterKey: "", cards: {} },
-  };
+  return cloneViniTemplate(slug);
 }
 
 export function resolveMedia(document: SiteDocument): AssetUrls {
