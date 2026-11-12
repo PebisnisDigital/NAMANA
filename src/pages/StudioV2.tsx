@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
@@ -12,7 +12,7 @@ type Menu = "Nama" | "Karir" | "Skill" | "Karya" | "Produk";
 type MenuKey = "nama" | "karir" | "skill" | "karya" | "produk";
 type FactKey = "nama" | "karir" | "skill";
 type GalleryKey = "karya" | "produk";
-type PublishStatus = "deploying" | "live" | "pending" | null;
+type PublishStatus = "live" | null;
 
 const menuList: Menu[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
 const navigationIconOptions: Array<{ value: OriginalMenuIcon; label: string }> = [
@@ -64,15 +64,6 @@ function defaultSite(site: SiteDocument) {
     : blankOriginal(site.content.identity.displayName);
   return site;
 }
-async function imageToBase64(file: File) {
-  const result = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error("Gambar tidak bisa dibaca."));
-    reader.readAsDataURL(file);
-  });
-  return result.substring(result.indexOf(",") + 1);
-}
 function Field({ label, value, onChange, multiline, placeholder, maxLength, type = "text" }: {
   label: string; value: string; onChange: (value: string) => void;
   multiline?: boolean; placeholder?: string; maxLength?: number; type?: string;
@@ -87,7 +78,6 @@ function Field({ label, value, onChange, multiline, placeholder, maxLength, type
 export function StudioV2() {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const inspectorRef = useRef<HTMLDivElement>(null);
-  const previewUrls = useRef<string[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [password, setPassword] = useState("");
   const [slugs, setSlugs] = useState<string[]>([]);
@@ -104,11 +94,9 @@ export function StudioV2() {
   const [popupCoordinates, setPopupCoordinates] = useState({ left: 24, top: 120 });
   const [ready, setReady] = useState(false);
   const [working, setWorking] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [approved, setApproved] = useState(false);
   const [published, setPublished] = useState<PublishStatus>(null);
   const [error, setError] = useState("");
-  const [mediaPreviews, setMediaPreviews] = useState<Record<string, string>>({});
   const [loadedOnce, setLoadedOnce] = useState(false);
 
   const menuKey = menu.toLowerCase() as MenuKey;
@@ -125,12 +113,11 @@ export function StudioV2() {
   useEffect(() => {
     void studioApi<Session>("session").then(setSession).catch((cause: Error) => setError(cause.message));
   }, []);
-  useEffect(() => () => { previewUrls.current.forEach((url) => URL.revokeObjectURL(url)); }, []);
 
   const openClient = useCallback(async (nextSlug: string) => {
     setWorking(true); setError("");
     setPublished(null);
-    setSite(null); setMediaPreviews({});
+    setSite(null);
     setSlug(nextSlug);
     setMenu("Nama");
     setSelected("name");
@@ -191,10 +178,9 @@ export function StudioV2() {
   useEffect(() => {
     if (!site || !ready) return;
     const prepared = prepareSite(site);
-    const assets = Object.fromEntries(Object.entries(resolveMedia(prepared))
-      .map(([id, url]) => [id, mediaPreviews[url] || url]));
+    const assets = resolveMedia(prepared);
     sendFrame({ type: "NAMINA_V2_RENDER", site: prepared, assets });
-  }, [site, ready, mediaPreviews, sendFrame]);
+  }, [site, ready, sendFrame]);
   useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_MENU", menu }); }, [menu, ready, sendFrame]);
   useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_SELECT", key: selected }); }, [selected, ready, sendFrame]);
 
@@ -294,28 +280,7 @@ export function StudioV2() {
     setSha(null);
     setMenu("Nama"); setSelected("name");
     setApproved(false); setShowDesign(false); setPopupOpen(false); setPublished(null);
-    setMediaPreviews({});
     setNewSlug("");
-  };
-
-  const uploadCardImage = async (id: string, file: File) => {
-    if (!site) return;
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 1300000) {
-      setError("Gunakan foto JPG, PNG, atau WebP maksimal 1,3 MB.");
-      return;
-    }
-    setUploading(true); setError("");
-    try {
-      const response = await studioApi<{ url: string }>("upload", {
-        method: "POST",
-        body: JSON.stringify({ slug: site.slug, mime: file.type, base64: await imageToBase64(file) }),
-      });
-      const preview = URL.createObjectURL(file);
-      previewUrls.current.push(preview);
-      setMediaPreviews((previous) => ({ ...previous, [response.url]: preview }));
-      change((next) => { next.media.cards[id] = response.url; });
-    } catch (cause) { setError((cause as Error).message); }
-    finally { setUploading(false); }
   };
 
   const publish = async () => {
@@ -334,37 +299,11 @@ export function StudioV2() {
       setSite(result.data);
       localStorage.removeItem(draftKey(site.slug));
       setApproved(false);
-      setPublished("deploying");
+      setPublished("live");
       await refreshList();
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(false); }
   };
-
-  useEffect(() => {
-    if (published !== "deploying" || !site) return;
-    let live = true;
-    let tries = 0;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const expected = JSON.stringify(prepareSite(site));
-    const verify = async () => {
-      tries++;
-      try {
-        const response = await fetch("/clients/" + site.slug + ".json?check=" + Date.now(), { cache: "no-store" });
-        if (response.ok) {
-          const data: unknown = await response.json();
-          if (JSON.stringify(data) === expected) {
-            if (live) setPublished("live");
-            return;
-          }
-        }
-      } catch { /* Vercel may still be building. */ }
-      if (!live) return;
-      if (tries >= 45) { setPublished("pending"); return; }
-      timer = setTimeout(() => { void verify(); }, 4000);
-    };
-    void verify();
-    return () => { live = false; if (timer) clearTimeout(timer); };
-  }, [published, site]);
 
   const updateSection = (field: "intro" | "subtitle" | "description", value: string) =>
     change((next) => { next.content.original![menuKey][field] = value; });
@@ -667,18 +606,10 @@ export function StudioV2() {
         <Field label="Deskripsi popup" value={card.description} maxLength={1200} multiline onChange={(value) => updateCard("description", value)} />
         <Field label="Link tombol kartu" value={card.link} type="url" placeholder="https://..." onChange={(value) => updateCard("link", value)} />
         <div className="studio-v2__image">
-          {image ? <img src={mediaPreviews[image] || image} alt={"Foto " + card.title} /> : <span>Foto belum dipasang</span>}
+          {image ? <img src={image} alt={"Foto " + card.title} /> : <span>Foto belum dipasang</span>}
         </div>
-        <label className="studio-v2__upload">
-          <span>{uploading ? "Mengunggah foto…" : "+ Unggah / ganti foto"}</span>
-          <input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              const file = event.currentTarget.files?.[0];
-              if (file) void uploadCardImage(card.id, file);
-              event.currentTarget.value = "";
-            }} />
-        </label>
-        <Field label="Atau tempel URL foto" type="url" value={image} placeholder="https://.../foto.webp"
+        <p className="studio-v2__inspector-hint">Foto disimpan di hosting gambar; NAMINA cukup memakai URL publik agar tidak perlu deploy.</p>
+        <Field label="URL gambar (HTTPS)" type="url" value={image} placeholder="https://.../foto.webp"
           onChange={(value) => change((next) => { next.media.cards[card.id] = value; })} />
         <label className="studio-v2__color-field"><span>Warna kartu</span><input type="color" value={card.color}
           onChange={(event) => updateCard("color", event.target.value)} /></label>
@@ -725,7 +656,7 @@ export function StudioV2() {
         <span className="studio-v2__autosave"><i /> Draft otomatis</span>
         <button type="button" className="studio-v2__design-trigger"
           onClick={() => { setShowDesign(true); setPopupOpen(true); setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 82 }); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>✦ <span>Desain</span></button>
-        <button type="button" className="studio-v2__publish-trigger" disabled={!site || working || uploading}
+        <button type="button" className="studio-v2__publish-trigger" disabled={!site || working}
           onClick={() => { setPopupOpen(false); setPublishConfirmOpen(true); }}>Publikasikan</button>
         <a href="/studio-v1" className="studio-v2__v1-link" title="Buka Generator 8 Tahap">V1</a>
         <button type="button" className="studio-v2__exit" onClick={() => void logout()} title="Keluar dari Studio">Keluar</button>
@@ -773,22 +704,21 @@ export function StudioV2() {
           onChange={(event) => setApproved(event.target.checked)} />
           <span>Semua perubahan sudah benar dan siap dipublikasikan.</span>
         </label>
-        <button type="button" className="studio-v2__publish-button" disabled={!site || working || uploading || !approved}
+        <button type="button" className="studio-v2__publish-button" disabled={!site || working || !approved}
           onClick={() => { setPublishConfirmOpen(false); void publish(); }}>{working ? "Memproses…" : "Publikasikan sekarang"}</button>
         <button type="button" className="studio-v2__modal-close" onClick={() => { setPublishConfirmOpen(false); setApproved(false); }}>Batal</button>
       </section>
     </div>}
     {published && <div className="studio-v2__modal-backdrop">
       <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-modal-title">
-        <div className="studio-v2__modal-mark">{published === "live" ? "✓" : "↗"}</div>
-        <h2 id="v2-modal-title">{published === "live" ? "Website berhasil dipublikasikan!" : published === "deploying" ? "Website sedang diterbitkan" : "Website belum terkonfirmasi"}</h2>
-        <p>{published === "live" ? "Halaman klien sudah tersedia dan siap dibagikan." : published === "deploying" ? "Sedang menyiapkan website. Link akan siap dibagikan setelah proses selesai." : "Website belum dapat dipastikan tayang. Coba periksa kembali dalam beberapa saat."}</p>
+        <div className="studio-v2__modal-mark">✓</div>
+        <h2 id="v2-modal-title">Website berhasil dipublikasikan!</h2>
+        <p>Perubahan telah tersimpan di database dan dapat dilihat tanpa deploy ulang.</p>
         <strong>{"https://namina.biz.id/" + slug}</strong>
-        {published === "live" && <div className="studio-v2__modal-actions">
+        <div className="studio-v2__modal-actions">
           <a href={"/" + slug} target="_blank" rel="noreferrer">Buka Website ↗</a>
           <button type="button" onClick={() => void navigator.clipboard.writeText("https://namina.biz.id/" + slug)}>Salin Link</button>
-        </div>}
-        {published === "pending" && <button type="button" onClick={() => setPublished("deploying")}>Cek lagi</button>}
+        </div>
         <button className="studio-v2__modal-close" type="button" onClick={() => setPublished(null)}>Tutup</button>
       </section>
     </div>}
