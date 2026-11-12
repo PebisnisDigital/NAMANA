@@ -306,3 +306,46 @@
 @media (prefers-reduced-motion: reduce) {
   .studio-root.studio-app *, .studio-root.studio-app *::before, .studio-root.studio-app *::after { transition: none !important; }
 }
+
+
+/* One record per collapsible card; simple list first, form only on demand. */
+.studio-app .studio-original__facts { display: grid; gap: 9px; padding: 0 10px 10px; }
+.studio-app .studio-original__fact-card { border: 1px solid #e0eae3; border-radius: 13px; background: #fbfdfb; overflow: hidden; }
+.studio-app .studio-original__fact-card > summary { display: flex; align-items: center; min-height: 66px; gap: 12px; padding: 12px; cursor: pointer; list-style: none; }
+.studio-app .studio-original__fact-card > summary::-webkit-details-marker { display: none; }
+.studio-app .studio-original__fact-number { flex: 0 0 30px; display: grid; width: 30px; height: 30px; place-items: center; border-radius: 10px; color: var(--app-green); font-weight: 800; font-size: 12px; background: #e5f7eb; }
+.studio-app .studio-original__fact-summary { display: grid; flex: 1; gap: 4px; min-width: 0; }
+.studio-app .studio-original__fact-summary strong { font-size: 12px; font-weight: 800; color: #284d37; }
+.studio-app .studio-original__fact-summary small { font-size: 11px; color: var(--app-muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.studio-app .studio-original__fact-chevron { font-size: 18px; color: #719882; transition: transform .2s; }
+.studio-app .studio-original__fact-card[open] .studio-original__fact-chevron { transform: rotate(180deg); }
+.studio-app .studio-original__fact-card[open] > summary { background: #f0f9f3; border-bottom: 1px solid var(--app-line); }
+.studio-app .studio-original__fact-fields { padding: 13px 13px 6px; }
+.studio-root.studio-app .studio-original__fact-fields .studio-original__remove {
+  display: inline-block;
+  min-width: 110px;
+  margin: 1px 0 12px;
+  color: #a72d40;
+  background: #fff3f3;
+  border: 1px solid #f4d3da;
+}
+
+/* Fit the cinematic desktop stage into a phone-app-width preview card. */
+@media (min-width: 700px) {
+  .studio-app__preview > .vini-cinema {
+    width: 200%;
+    min-height: 850px;
+    transform: scale(.5);
+    transform-origin: top left;
+  }
+}
+
+/* Login belongs to the same calm visual system as the editor. */
+.studio-gate.studio-gate--app { display: grid; place-items: center; padding: 24px; }
+.studio-gate--app .studio-gate__card { width: min(100%, 430px); padding: 32px; border-radius: 23px; background: #fff; border: 1px solid #e1eae4; color: #1e3c2f; box-shadow: 0 16px 48px #1a513117; }
+.studio-gate--app h1 { color: #183b2e; }
+.studio-gate--app label { color: #3e604a; }
+.studio-gate--app input { border-radius: 12px; color: #17462d; background: #f7faf8; border-color: #d4e2d8; }
+.studio-gate--app button { border-radius: 12px; background: #07834e; border-color: #07834e; color: white; font-weight: 800; }
+.studio-gate--app button:hover { background: #05633c; }
+.studio-gate--app a { color: #087d4c; }
