@@ -10,6 +10,9 @@ export const originalStyleDefaults: OriginalStyle = {
   fontFamily: "montserrat",
   titleScale: 1,
   bodyScale: 1,
+  roleScale: 1,
+  menuScale: 1,
+  layoutPreset: "original",
   contentMargin: 90,
   topSpacing: 40,
   factColumns: 3,
@@ -26,6 +29,8 @@ export const originalFontFamilies: Record<OriginalStyle["fontFamily"], string> =
   space: '"Space Grotesk", Arial, sans-serif',
   georgia: 'Georgia, "Times New Roman", serif',
   system: 'system-ui, -apple-system, "Segoe UI", sans-serif',
+  poppins: '"Poppins", Arial, sans-serif',
+  cormorant: '"Cormorant Garamond", Georgia, serif',
 };
 
 export const originalShadowValues: Record<OriginalStyle["shadow"], string> = {

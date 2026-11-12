@@ -68,15 +68,26 @@ export function OriginalStyleEditor({ value, update, reset }: StyleProps) {
             <option value="space">Space Grotesk</option>
             <option value="georgia">Georgia</option>
             <option value="system">Font sistem</option>
+            <option value="poppins">Poppins</option>
+            <option value="cormorant">Cormorant Garamond</option>
           </select>
         </label>
-        <Range label="Ukuran judul" value={value.titleScale} min={0.8} max={1.2} step={0.05} unit="×" onChange={(next) => update("titleScale", next)} />
-        <Range label="Ukuran isi" value={value.bodyScale} min={0.85} max={1.2} step={0.05} unit="×" onChange={(next) => update("bodyScale", next)} />
+        <Range label="Ukuran judul" value={value.titleScale} min={0.65} max={1.6} step={0.05} unit="×" onChange={(next) => update("titleScale", next)} />
+        <Range label="Ukuran isi" value={value.bodyScale} min={0.75} max={1.5} step={0.05} unit="×" onChange={(next) => update("bodyScale", next)} />
+        <Range label="Ukuran profesi" value={value.roleScale ?? 1} min={0.75} max={1.5} step={0.05} unit="×" onChange={(next) => update("roleScale", next)} />
+        <Range label="Ukuran menu" value={value.menuScale ?? 1} min={0.75} max={1.5} step={0.05} unit="×" onChange={(next) => update("menuScale", next)} />
       </div>
     </details>
     <details className="studio-style__group">
       <summary>Layout <span>Kolom, margin, jarak</span></summary>
       <div className="studio-style__group-content">
+        <label className="studio-original__field"><span>Susunan konten</span>
+          <select value={value.layoutPreset || "original"} onChange={(event) => update("layoutPreset", event.target.value as OriginalStyle["layoutPreset"])}>
+            <option value="original">Original Sinematik</option>
+            <option value="center">Teks di tengah</option>
+            <option value="compact">Rapat & fokus konten</option>
+          </select>
+        </label>
         <div className="studio-style__two">
           <label className="studio-original__field"><span>Kolom data (desktop)</span>
             <select value={value.factColumns} onChange={(event) => update("factColumns", Number(event.target.value))}>
