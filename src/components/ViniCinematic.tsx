@@ -133,6 +133,8 @@ export function ViniCinematic({
     "--namina-font": originalFontFamilies[customStyle.fontFamily],
     "--namina-title-scale": customStyle.titleScale,
     "--namina-body-scale": customStyle.bodyScale,
+    "--namina-role-scale": customStyle.roleScale ?? 1,
+    "--namina-menu-scale": customStyle.menuScale ?? 1,
     "--namina-content-margin": `${customStyle.contentMargin}px`,
     "--namina-top-spacing": `${customStyle.topSpacing}px`,
     "--namina-card-gap": `${customStyle.cardGap}px`,
@@ -313,7 +315,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
+    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.layoutPreset ? ` vini-cinema--layout-${customStyle.layoutPreset}` : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
