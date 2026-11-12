@@ -190,3 +190,24 @@ body:has(.studio-v2--fullscreen),
     font-size: 11px;
   }
 }
+
+/* Status messages are temporary and must not cover the website's own
+   navigation, which is a direct-edit target in the canvas. */
+.business__visual-editor .business__editor-alert {
+  top: auto;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(92vw, 650px);
+  text-align: center;
+  pointer-events: none;
+}
+
+.studio-v2--fullscreen.studio-v2--immersive.business__visual-editor .business__editor-alert {
+  top: auto;
+  bottom: 16px;
+  left: 14px;
+  transform: none;
+  max-width: min(65vw, 580px);
+}
