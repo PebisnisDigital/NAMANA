@@ -43,17 +43,21 @@ export function StaticSite({ slug }: { slug: string }) {
     const load = async (): Promise<SiteDocument | null> => {
       // Prefer database-published sites. This query reads only already-public
       // documents and does not expose private partner drafts or admin keys.
+      let databaseUnavailable = false;
       if (businessClient) {
         const { data, error } = await businessClient.from("namina_published_sites")
           .select("document").eq("slug", slug).maybeSingle();
-        if (error) throw new Error("Database publikasi tidak dapat diakses.");
-        if (data) return siteDocumentSchema.parse(data.document);
+        if (error) databaseUnavailable = true;
+        else if (data) return siteDocumentSchema.parse(data.document);
       }
       // Older NAMINA sites continue to work without any data migration.
       const response = await fetch(`/clients/${slug}.json`, {
         signal: controller.signal, cache: "no-store",
       });
-      if (response.status === 404) return null;
+      if (response.status === 404) {
+        if (databaseUnavailable) throw new Error("Website belum dapat dimuat dari database.");
+        return null;
+      }
       if (!response.ok) throw new Error("Gagal mengakses data website.");
       return siteDocumentSchema.parse(await response.json());
     };
