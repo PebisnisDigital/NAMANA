@@ -149,7 +149,6 @@ export function BusinessPortal() {
     <header className="business__header">
       <Link href="/" className="business__logo">NAMINA<span>BUSINESS</span></Link>
       <nav>
-        <Link href="/studio">Studio Admin</Link>
         {user && <button type="button" onClick={() => void signOut()}>Keluar</button>}
       </nav>
     </header>
