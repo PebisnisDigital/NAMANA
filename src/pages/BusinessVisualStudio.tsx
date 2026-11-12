@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { businessClient } from "../business/client";
-import { prepareSite, resolveMedia, siteDocumentSchema, type SiteDocument } from "../static/sites";
+import { loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, type SiteDocument } from "../static/sites";
 import { originalStyleDefaults } from "../static/originalStyle";
 import type { OriginalMenuIcon, OriginalStyle } from "../domain/content";
 import "../business.css";
@@ -185,6 +185,23 @@ export function BusinessVisualStudio() {
     }catch(cause){setError(cause instanceof Error?cause.message:"Tidak bisa menyimpan.");}
     finally{setWorking(false)}
   }
+  async function applyViniTemplate() {
+    if (!site || working) return;
+    if (!window.confirm("Isi seluruh draft /" + site.slug +
+      " dari contoh /vini? Nama, profesi, video, slide ikon, karya, produk, dan kontak akan diganti. Website yang sudah tayang tidak berubah sebelum dipublikasikan.")) return;
+    setWorking(true); setError(""); setFeedback("");
+    try {
+      const template = await loadViniTemplate(site.slug);
+      setSite(template);
+      setDirty(true);
+      setMenu("Nama"); setSelected("name");
+      setPopup(false); setDesign(false);
+      setFeedback("Template /vini sudah dimuat. Ganti data contoh dengan data klien, lalu tekan Simpan Draft.");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Tidak bisa memuat template /vini.");
+    } finally { setWorking(false); }
+  }
+
   const field=(label:string,value:string,update:(v:string)=>void,multiline=false)=>
     <label className="studio-v2__field"><span>{label}</span>
       {multiline?<textarea rows={4} value={value} onChange={e=>update(e.target.value)}/>:
@@ -196,6 +213,11 @@ export function BusinessVisualStudio() {
   function controls(){
     if(!site||!original)return null;
     if(design)return <>
+      <div className="studio-v2__template-reset">
+        <strong>Isi dari Template /vini</strong>
+        <p>Draft klien terlanjur kosong? Salin contoh lengkap /vini: video, ikon slide, Nama, Karir, Skill, Karya, dan Produk. Perubahan hanya untuk website ini.</p>
+        <button className="studio-v2__ghost" type="button" disabled={working} onClick={() => void applyViniTemplate()}>Gunakan Template /vini</button>
+      </div>
       <p className="studio-v2__inspector-hint">Atur tampilan visual dari website klien ini saja.</p>
       <div className="studio-v2__colors">
         {(["backgroundColor","textColor","accentColor","buttonColor","buttonTextColor","borderColor"] as const).map(k=>
