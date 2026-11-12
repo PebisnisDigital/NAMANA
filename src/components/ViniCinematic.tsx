@@ -133,10 +133,12 @@ export function ViniCinematic({
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoNeedsInteraction, setVideoNeedsInteraction] = useState(false);
   const [videoPreviewTimedOut, setVideoPreviewTimedOut] = useState(false);
+  const [videoFailureReason, setVideoFailureReason] = useState("");
   const [usingFallbackVideo, setUsingFallbackVideo] = useState(false);
   const [introElapsed, setIntroElapsed] = useState(false);
   const [introTimedOut, setIntroTimedOut] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoPlayAttemptRef = useRef(0);
   const sliderRef = useRef<HTMLElement | null>(null);
   const dragRef = useRef<SlideDrag | null>(null);
   const resumeAtRef = useRef(0);
@@ -286,10 +288,23 @@ export function ViniCinematic({
     video.muted = true;
     video.playsInline = true;
     if (!video.paused) return;
-    void video.play().catch(() => {
-      // A browser can prevent autoplay inside a resized iframe. Offer a direct
-      // user-click playback recovery instead of leaving an unexplained black box.
-      if (editorMode) setVideoNeedsInteraction(true);
+    const attempt = ++videoPlayAttemptRef.current;
+    void video.play().then(() => {
+      if (attempt === videoPlayAttemptRef.current) {
+        setVideoNeedsInteraction(false);
+        setVideoFailureReason("");
+      }
+    }).catch((reason: unknown) => {
+      // Some browsers block video playback after resizing the editor iframe.
+      // Display a button and the reason; never pretend a black preview is ready.
+      if (attempt !== videoPlayAttemptRef.current) return;
+      if (editorMode) {
+        setVideoNeedsInteraction(true);
+        const name = reason instanceof Error ? reason.name : "";
+        setVideoFailureReason(name === "NotAllowedError"
+          ? "Browser membatasi autoplay."
+          : "Pemutaran otomatis belum diizinkan.");
+      }
     });
   };
 
@@ -306,6 +321,7 @@ export function ViniCinematic({
     setUsingFallbackVideo(false);
     setVideoNeedsInteraction(false);
     setVideoPreviewTimedOut(false);
+    setVideoFailureReason("");
   }, [videoSrc, pageSize]);
 
   // In edit mode previewMode hides the loading intro. Detect stalled playback
@@ -341,6 +357,7 @@ export function ViniCinematic({
     setVideoReady(false);
     setVideoNeedsInteraction(false);
     setVideoPreviewTimedOut(false);
+    setVideoFailureReason("");
     const video = videoRef.current;
     if (!video) return;
     video.defaultMuted = true;
@@ -354,6 +371,17 @@ export function ViniCinematic({
   };
 
   const handleVideoError = () => {
+    if (editorMode) {
+      const video = videoRef.current;
+      const code = video?.error?.code;
+      setVideoFailureReason(code === 4
+        ? "Sumber video tidak didukung browser. Pastikan tautan menuju file MP4."
+        : code === 3
+        ? "Format video tidak dapat dibaca browser."
+        : code === 2
+        ? "Video gagal diunduh dari hosting."
+        : "Tautan video tidak bisa dimuat.");
+    }
     if (!usingFallbackVideo && fallbackOriginal) {
       setUsingFallbackVideo(true);
       setVideoReady(false);
@@ -378,12 +406,23 @@ export function ViniCinematic({
             loop
             playsInline
             preload="auto"
+            onLoadedMetadata={() => {
+              // Eagerly play the actual video once metadata is available.
+              ensureVideoPlaying();
+            }}
             onLoadedData={ensureVideoPlaying}
             onCanPlay={ensureVideoPlaying}
+            onStalled={() => {
+              if (editorMode) {
+                setVideoPreviewTimedOut(true);
+                setVideoFailureReason("Koneksi video dari hosting sedang terhenti.");
+              }
+            }}
             onPlaying={() => {
               setVideoReady(true);
               setVideoNeedsInteraction(false);
               setVideoPreviewTimedOut(false);
+              setVideoFailureReason("");
             }}
             onError={handleVideoError}
             style={{ objectPosition: `${pageSize === 1 ? (content.background.mobileFocalX ?? content.background.focalX) : content.background.focalX}% ${content.background.focalY}%` }}
@@ -395,8 +434,13 @@ export function ViniCinematic({
       {editorMode && videoSrc && !videoReady &&
         (videoFailed || videoNeedsInteraction || videoPreviewTimedOut) && (
           <div className="vini-cinema__editor-video-retry" role="status">
-            <span>{videoFailed ? "Video belum bisa dimuat." : "Preview video belum bergerak."}</span>
+            <span>{videoFailureReason || (videoFailed
+              ? "Video belum bisa dimuat."
+              : videoNeedsInteraction
+              ? "Browser menahan autoplay video."
+              : "Video masih dimuat dari hosting.")}</span>
             <button type="button" onClick={retryVideo}>▶ Putar Video</button>
+            {videoFailed && <small>Periksa link MP4 atau coba tautan video lain.</small>}
           </div>
         )}
 
