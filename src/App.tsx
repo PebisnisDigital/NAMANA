@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Landing, Legal } from "./pages/Landing";
 import { StaticStudio } from "./pages/StaticStudio";
+import { StudioV2 } from "./pages/StudioV2";
+import { StudioV2Canvas } from "./pages/StudioV2Canvas";
 import { ClientForm } from "./pages/ClientForm";
 import { StaticSite } from "./pages/StaticSite";
 import { ThemeDemo, ThemeGallery } from "./pages/ThemeDemos";
@@ -19,6 +21,8 @@ function App() {
   if (path === "/") page = <Landing />;
   else if (path === "/formulir") page = <ClientForm />;
   else if (path === "/studio") page = <StaticStudio />;
+  else if (path === "/studio-v2") page = <StudioV2 />;
+  else if (path === "/studio-v2-canvas") page = <StudioV2Canvas />;
   else if (path === "/gaya" || path === "/templates") page = <ThemeGallery />;
   else if (demoTheme) page = <ThemeDemo theme={demoTheme} />;
   else if (["/login", "/auth", "/dashboard", "/admin"].includes(path))
