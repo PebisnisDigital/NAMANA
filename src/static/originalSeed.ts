@@ -1,4 +1,4 @@
-import type { OriginalProfile } from "../domain/content";
+import type { OriginalProfile } from "../domain/content.js";
 
 const makeId = (index: number) => `00000000-0000-4000-9001-${String(index).padStart(12, "0")}`;
 
