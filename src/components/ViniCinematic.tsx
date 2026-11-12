@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
-import type { AssetUrls, OriginalProfile, SiteContent } from "../domain/content";
+import type { AssetUrls, OriginalProfile, SiteContent, OriginalMenuIcon } from "../domain/content";
 import { blankOriginal } from "../static/originalSeed";
 import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
 import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
@@ -30,14 +30,23 @@ type SlideDrag = { pointerId: number; startX: number; startScroll: number; moved
 
 const menus: MenuKey[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
 
-function MenuIcon({ menu }: { menu: MenuKey }) {
+function MenuIcon({ menu, variant = "default" }: { menu: MenuKey; variant?: OriginalMenuIcon }) {
+  const normal = variant === "default";
   return (
-    <svg className="vini-cinema__nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-      {menu === "Nama" && <><circle cx="12" cy="8" r="3.5" /><path d="M5 20v-2.5A5.5 5.5 0 0 1 10.5 12h3A5.5 5.5 0 0 1 19 17.5V20" /></>}
-      {menu === "Karir" && <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18m-10-1v3h2v-3" /></>}
-      {menu === "Skill" && <><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="9" cy="6" r="2" fill="var(--namina-bg, #08080c)" /><circle cx="16" cy="12" r="2" fill="var(--namina-bg, #08080c)" /><circle cx="8" cy="18" r="2" fill="var(--namina-bg, #08080c)" /></>}
-      {menu === "Karya" && <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8" cy="9" r="1.5" /><path d="m4 17 5-5 4 4 3-3 4 4" /></>}
-      {menu === "Produk" && <><path d="M4 9h16l-1 12H5L4 9Zm4 0V7a4 4 0 0 1 8 0v2" /></>}
+    <svg className={`vini-cinema__nav-icon${normal ? "" : " vini-cinema__nav-icon--custom"}`}
+      width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      {(variant === "person" || (normal && menu === "Nama")) && <><circle cx="12" cy="8" r="3.5" /><path d="M5 20v-2.5A5.5 5.5 0 0 1 10.5 12h3A5.5 5.5 0 0 1 19 17.5V20" /></>}
+      {(variant === "briefcase" || (normal && menu === "Karir")) && <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18m-10-1v3h2v-3" /></>}
+      {(variant === "sliders" || (normal && menu === "Skill")) && <><path d="M4 6h16M4 12h16M4 18h16" /><circle cx="9" cy="6" r="2" fill="var(--namina-bg, #08080c)" /><circle cx="16" cy="12" r="2" fill="var(--namina-bg, #08080c)" /><circle cx="8" cy="18" r="2" fill="var(--namina-bg, #08080c)" /></>}
+      {(variant === "image" || (normal && menu === "Karya")) && <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8" cy="9" r="1.5" /><path d="m4 17 5-5 4 4 3-3 4 4" /></>}
+      {(variant === "shopping" || (normal && menu === "Produk")) && <><path d="M4 9h16l-1 12H5L4 9Zm4 0V7a4 4 0 0 1 8 0v2" /></>}
+      {variant === "star" && <path d="m12 2.5 2.8 6.2 6.7.7-5 4.5 1.4 6.6-5.9-3.2-5.9 3.2 1.4-6.6-5-4.5 6.7-.7Z" />}
+      {variant === "book" && <><path d="M12 6q-4-3-9-2v14q5-1 9 2 4-3 9-2V4q-5-1-9 2Z" /><path d="M12 6v14" /></>}
+      {variant === "award" && <><circle cx="12" cy="9" r="6" /><path d="m8 14-2 8 6-3 6 3-2-8" /></>}
+      {variant === "sparkles" && <><path d="m12 2 2.3 7.7L22 12l-7.7 2.3L12 22l-2.3-7.7L2 12l7.7-2.3Z" /><path d="m19 2 .7 2.3L22 5l-2.3.7L19 8l-.7-2.3L16 5l2.3-.7Z" /></>}
+      {variant === "globe" && <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c-5 5-5 13 0 18M12 3c5 5 5 13 0 18" /></>}
+      {variant === "heart" && <path d="M20.8 4.9c-2.4-2.3-6.2-1.8-8.8 1.6C9.4 3.1 5.6 2.6 3.2 4.9c-2.8 2.7-2.3 6.9 1 10.2L12 22l7.8-6.9c3.3-3.3 3.8-7.5 1-10.2Z" />}
     </svg>
   );
 }
@@ -90,6 +99,7 @@ export function ViniCinematic({
   editorMenu,
   onEditorMenuChange,
   onEditorAddCard,
+  onEditorAddFact,
 }: {
   content: SiteContent;
   assetUrls: AssetUrls;
@@ -100,6 +110,7 @@ export function ViniCinematic({
   editorMenu?: MenuKey;
   onEditorMenuChange?: (menu: MenuKey) => void;
   onEditorAddCard?: (section: "karya" | "produk") => void;
+  onEditorAddFact?: (section: "nama" | "karir" | "skill") => void;
 }) {
   const emptyOriginal = useMemo(() => blankOriginal(content.identity.displayName), [content.identity.displayName]);
   const original = content.original ?? fallbackOriginal ?? emptyOriginal;
@@ -128,7 +139,9 @@ export function ViniCinematic({
   const resumeAtRef = useRef(0);
   const suppressCardClickRef = useRef(false);
 
-  const activeSection = original[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"];
+  const activeKey = activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk";
+  const activeSection = original[activeKey];
+  const savedSlideSpeed = original.menuSettings?.[activeKey]?.slideSpeed;
   const factColumns = pageSize === 1 ? 1.12 : (customStyle?.factColumns ?? 3);
   const galleryColumns = pageSize === 1 ? 1.12 : (customStyle?.galleryColumns ?? 2);
   const visibleFactColumns = Math.min(factColumns, Math.max(1, original[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"].items.length));
@@ -192,7 +205,7 @@ export function ViniCinematic({
     observer.observe(viewport);
     let frame = 0;
     let previous = performance.now();
-    const speed = activeGallery ? 64 : 68; // px/s: legible cards and visible, gentle movement.
+    const speed = savedSlideSpeed ?? (activeGallery ? 64 : 68); // 0 pauses the loop, 150 is fastest.
     const animate = (now: number) => {
       const delta = Math.min(now - previous, 48) / 1000;
       previous = now;
@@ -213,7 +226,7 @@ export function ViniCinematic({
       observer.disconnect();
       dragRef.current = null;
     };
-  }, [activeMenu, activeFacts.length, activeGallery?.length, visibleFactColumns, visibleGalleryColumns, pageSize]);
+  }, [activeMenu, activeFacts.length, activeGallery?.length, visibleFactColumns, visibleGalleryColumns, pageSize, savedSlideSpeed]);
 
   const onSliderPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -365,7 +378,7 @@ export function ViniCinematic({
           <nav id="vini-navigation" className={`vini-cinema__nav${menuOpen ? " vini-cinema__nav--open" : ""}`} aria-label="Navigasi cerita">
             {menus.map((menu) => (
               <button key={menu} type="button" data-v2-edit={editorMode ? `menu:${menu.toLowerCase()}` : undefined} className={activeMenu === menu ? "is-active" : ""} aria-current={activeMenu === menu ? "page" : undefined} onClick={() => selectMenu(menu)}>
-                <MenuIcon menu={menu} />
+                <MenuIcon menu={menu} variant={original.menuSettings?.[menu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"]?.icon} />
                 <span>{menuTitles[menu]}</span>
               </button>
             ))}
@@ -419,6 +432,11 @@ export function ViniCinematic({
             </section>
           ) : (
             <p className="vini-cinema__empty">Belum ada data {menuTitles[activeMenu].toLowerCase()}.</p>
+          )}
+          {editorMode && !activeGallery && onEditorAddFact && (
+            <button type="button" className="vini-cinema__editor-add" onClick={() => onEditorAddFact(activeKey as "nama" | "karir" | "skill")}>
+              + Tambah data ${menuTitles[activeMenu]}
+            </button>
           )}
           {editorMode && activeGallery && onEditorAddCard && (
             <button type="button" className="vini-cinema__editor-add" onClick={() => onEditorAddCard(activeMenu === "Karya" ? "karya" : "produk")}>
