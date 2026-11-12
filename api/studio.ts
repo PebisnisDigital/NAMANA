@@ -3,6 +3,7 @@ import { createHmac, randomBytes, timingSafeEqual, createHash } from "node:crypt
 import { z } from "zod";
 import { contentSchema, slugSchema } from "../src/domain/content.js";
 import { briefStore } from "./_brief-store.js";
+import { listAdminPublications, findAdminPublication, hasAnyPublication, publishAdminToDatabase, PublicationConflict } from "./_supabase-publisher.js";
 
 type ApiRequest = IncomingMessage & { body?: unknown };
 const SESSION_TTL = 12 * 60 * 60 * 1000;
@@ -176,13 +177,16 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
           send(res, 400, { error: "Isi slug website sebelum menandai selesai." });
           return;
         }
-        const { branch } = githubConfig();
-        const site = await github(`public/clients/${body.websiteSlug}.json?ref=${encodeURIComponent(branch)}`);
-        if (site.status === 404) {
-          send(res, 409, { error: "Website belum dipublikasikan. Terbitkan dahulu sebelum menandai selesai." });
-          return;
+        const existsInDatabase = await hasAnyPublication(body.websiteSlug);
+        if (!existsInDatabase) {
+          const { branch } = githubConfig();
+          const oldSite = await github(`public/clients/${body.websiteSlug}.json?ref=${encodeURIComponent(branch)}`);
+          if (oldSite.status === 404) {
+            send(res, 409, { error: "Website belum dipublikasikan. Terbitkan dahulu." });
+            return;
+          }
+          if (!oldSite.ok) throw new Error("Website lama belum dapat diverifikasi.");
         }
-        if (!site.ok) throw new Error("GitHub belum dapat memverifikasi website.");
       }
       send(res, 200, await briefStore("update", body));
       return;
@@ -190,19 +194,22 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
 
     const { branch } = githubConfig();
     if (action === "list" && req.method === "GET") {
+      const dynamic = await listAdminPublications();
       const response = await github(`public/clients?ref=${encodeURIComponent(branch)}`);
       if (response.status === 404) {
-        send(res, 200, { slugs: ["vini"] });
+        send(res, 200, { slugs: [...new Set(["vini", ...dynamic])] });
         return;
       }
       if (!response.ok) throw new Error(`GitHub menolak permintaan (${response.status}).`);
       const files = (await response.json()) as Array<{ name: string }>;
-      send(res, 200, { slugs: [...new Set(["vini", ...files.filter((file) => file.name.endsWith(".json")).map((file) => file.name.slice(0, -5))])] });
+      send(res, 200, { slugs: [...new Set(["vini", ...dynamic,
+        ...files.filter((file) => file.name.endsWith(".json")).map((file) => file.name.slice(0, -5))])] });
       return;
     }
-
     if (action === "site" && req.method === "GET") {
       const slug = slugSchema.parse(parsedUrl.searchParams.get("slug"));
+      const dynamic = await findAdminPublication(slug);
+      if (dynamic) { send(res, 200, dynamic); return; }
       const response = await github(`public/clients/${slug}.json?ref=${encodeURIComponent(branch)}`);
       if (response.status === 404) {
         send(res, 404, { error: "Belum ada data yang dipublikasikan." });
@@ -250,31 +257,25 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     }
 
     if (action === "publish" && req.method === "POST") {
-      const payload = z.object({ document: documentSchema, sha: z.string().max(100).nullable() }).strict().parse(await readBody(req));
-      const path = `public/clients/${payload.document.slug}.json`;
-      const current = await github(`${path}?ref=${encodeURIComponent(branch)}`);
-      if (current.status !== 404 && !current.ok) throw new Error(`GitHub tidak bisa memeriksa revisi (${current.status}).`);
-      const existing = current.ok ? (await current.json()) as { sha: string } : null;
-      if ((existing?.sha || null) !== payload.sha) {
-        send(res, 409, { error: "Ada revisi baru di GitHub. Muat ulang sebelum menerbitkan." });
-        return;
-      }
-      const response = await github(path, {
-        method: "PUT",
-        body: JSON.stringify({
-          message: `Update NAMINA ${payload.document.slug} via Studio`,
-          branch,
-          content: Buffer.from(`${JSON.stringify(payload.document, null, 2)}\n`).toString("base64"),
-          ...(existing ? { sha: existing.sha } : {}),
-        }),
+      const payload = z.object({ document: documentSchema, sha: z.string().max(100).nullable() })
+        .strict().parse(await readBody(req));
+      // GitHub is read only: check the legacy file SHA when first migrating a site.
+      const sha = await publishAdminToDatabase(payload.document, payload.sha, async () => {
+        const old = await github(`public/clients/${payload.document.slug}.json?ref=${encodeURIComponent(branch)}`);
+        if (old.status === 404) return null;
+        if (!old.ok) throw new Error(`Website lama belum bisa diperiksa (${old.status}).`);
+        const current = await old.json() as { sha: string };
+        return current.sha;
       });
-      if (!response.ok) throw new Error(`Publikasi GitHub gagal (${response.status}).`);
-      const result = (await response.json()) as { content: { sha: string } };
-      send(res, 200, { ok: true, sha: result.content.sha });
+      send(res, 200, { ok: true, sha, mode: "database" });
       return;
     }
     send(res, 405, { error: "Aksi tidak didukung." });
   } catch (error) {
+    if (error instanceof PublicationConflict) {
+      send(res, 409, { error: error.message });
+      return;
+    }
     if (error instanceof z.ZodError) {
       send(res, 400, { error: error.issues[0]?.message || "Data tidak valid." });
       return;
