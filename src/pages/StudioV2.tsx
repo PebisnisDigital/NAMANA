@@ -83,6 +83,10 @@ export function StudioV2() {
   const [menu, setMenu] = useState<Menu>("Nama");
   const [selected, setSelected] = useState("name");
   const [showDesign, setShowDesign] = useState(false);
+  const [screen, setScreen] = useState<"desktop" | "mobile">("desktop");
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [popupCoordinates, setPopupCoordinates] = useState({ left: 24, top: 120 });
   const [ready, setReady] = useState(false);
   const [working, setWorking] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -117,6 +121,7 @@ export function StudioV2() {
     setMenu("Nama");
     setSelected("name");
     setShowDesign(false);
+    setPopupOpen(false);
     setApproved(false);
     try {
       let client: SiteDocument;
@@ -185,6 +190,7 @@ export function StudioV2() {
     setMenu(next);
     setSelected(next === "Nama" ? "name" : "menu-title");
     setShowDesign(false);
+    setPopupOpen(false);
     sendFrame({ type: "NAMINA_V2_MENU", menu: next });
   };
   const addCard = (section: GalleryKey) => {
@@ -204,8 +210,9 @@ export function StudioV2() {
     setMenu(nextMenu);
     setSelected("card:" + section + ":" + id);
     setShowDesign(false);
+    setPopupOpen(true);
+    setPopupCoordinates({ left: Math.max(12, window.innerWidth - 414), top: 116 });
     sendFrame({ type: "NAMINA_V2_MENU", menu: nextMenu });
-    if (window.innerWidth < 1080) inspectorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
@@ -217,9 +224,25 @@ export function StudioV2() {
         setReady(true);
       }
       if (value.type === "NAMINA_V2_SELECT" && typeof value.key === "string") {
-        setSelected(value.key);
+        const key = value.key;
+        setSelected(key);
         setShowDesign(false);
-        if (window.innerWidth < 1080) inspectorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        const isInlineText = ["name", "profession", "intro", "description", "subtitle", "menu-title"].includes(key) || key.startsWith("menu:");
+        setPopupOpen(!isInlineText);
+        if (!isInlineText && value.rect && typeof value.rect === "object") {
+          const rect = value.rect as { left?: number; top?: number; width?: number; height?: number };
+          const frame = frameRef.current?.getBoundingClientRect();
+          if (frame) {
+            const width = 370;
+            const x = frame.left + (rect.left || 0) + (rect.width || 0) + 12;
+            const roomRight = x + width + 18 < window.innerWidth;
+            const left = roomRight ? x : Math.max(12, frame.left + (rect.left || 0) - width - 12);
+            setPopupCoordinates({
+              left: Math.min(Math.max(12, left), Math.max(12, window.innerWidth - width - 12)),
+              top: Math.max(88, Math.min(frame.top + (rect.top || 0), window.innerHeight - 390)),
+            });
+          }
+        }
       }
       if (value.type === "NAMINA_V2_MENU_CHANGED" && typeof value.menu === "string" && menuList.includes(value.menu as Menu)) {
         setMenu(value.menu as Menu);
@@ -239,6 +262,12 @@ export function StudioV2() {
           else if (key === "description") current[currentKey].description = text;
           else if (key === "subtitle") current[currentKey].subtitle = text;
           else if (key === "menu-title") current.menuTitles = { ...current.menuTitles, [currentKey]: text };
+          else if (key.startsWith("menu:")) {
+            const target = key.slice(5) as MenuKey;
+            if (["nama", "karir", "skill", "karya", "produk"].includes(target)) {
+              current.menuTitles = { ...current.menuTitles, [target]: text };
+            }
+          }
         });
       }
     };
@@ -255,7 +284,7 @@ export function StudioV2() {
     setSlug(normalized);
     setSha(null);
     setMenu("Nama"); setSelected("name");
-    setApproved(false); setShowDesign(false); setPublished(null);
+    setApproved(false); setShowDesign(false); setPopupOpen(false); setPublished(null);
     setMediaPreviews({});
     setNewSlug("");
     setMessage("Draft klien baru siap. Ketuk teks pada layar HP untuk mulai mengedit.");
@@ -372,6 +401,7 @@ export function StudioV2() {
       delete next.media.cards[card.id];
     });
     setSelected("menu-title");
+    setPopupOpen(false);
   };
   const addFact = () => {
     if (!site || !["Nama", "Karir", "Skill"].includes(menu)) return;
@@ -398,7 +428,7 @@ export function StudioV2() {
   };
   const logout = async () => {
     await studioApi("logout", { method: "POST", body: "{}" }).catch(() => {});
-    setSession({ configured: true, authenticated: false }); setSite(null); setLoadedOnce(false);
+    setSession({ configured: true, authenticated: false }); setSite(null); setLoadedOnce(false); setPopupOpen(false);
   };
 
   if (!session) return <main className="studio-v2__gate"><p>{error || "Memeriksa akses Studio V2…"}</p></main>;
@@ -536,6 +566,7 @@ export function StudioV2() {
             next.content.original![factSection].items.splice(factIndex, 1);
           });
           setSelected("description");
+          setPopupOpen(false);
         }}>Hapus data ini</button>
         <button type="button" onClick={addFact}>+ Tambah data</button>
       </div>
