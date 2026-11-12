@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { contentSchema, slugSchema, type AssetUrls, type SiteContent } from "../domain/content";
-import { originalProfileTabs } from "./originalProfileTabs";
-import { blankOriginal, viniOriginal } from "./originalSeed";
+import { contentSchema, slugSchema, type AssetUrls, type SiteContent } from "../domain/content.js";
+import { originalProfileTabs } from "./originalProfileTabs.js";
+import { blankOriginal, viniOriginal } from "./originalSeed.js";
 
 const mediaUrl = z.string().max(2000).refine((value) => {
   if (!value) return true;

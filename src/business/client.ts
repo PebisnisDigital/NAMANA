@@ -26,4 +26,5 @@ export type BusinessSiteRow = {
   document: unknown;
   created_at: string;
   updated_at: string;
+  published_sha: string | null;
 };
