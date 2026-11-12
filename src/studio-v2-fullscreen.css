@@ -478,3 +478,41 @@
     min-height: calc(100svh - 167px);
   }
 }
+
+
+/* Reusable seeded demo action in Admin and Mitra inspector. */
+.studio-v2--fullscreen .studio-v2__template-reset {
+  display: grid;
+  gap: 9px;
+  padding: 15px;
+  margin: 0 0 15px;
+  border: 1px solid #a95560;
+  border-radius: 13px;
+  background: #351d25;
+  color: #ffe7e0;
+}
+.studio-v2--fullscreen .studio-v2__template-reset strong {
+  font-size: 13px;
+  font-weight: 850;
+}
+.studio-v2--fullscreen .studio-v2__template-reset p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.65;
+  color: #e3b9b9;
+}
+.studio-v2--fullscreen .studio-v2__template-reset button {
+  width: 100%;
+  min-height: 42px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff0ec;
+  background: #ae2939;
+  border: 1px solid #ee6670;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.studio-v2--fullscreen .studio-v2__template-reset button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

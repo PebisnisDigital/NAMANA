@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
-import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import { blankSite, loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
 
@@ -270,17 +270,46 @@ export function StudioV2() {
     return () => window.removeEventListener("message", onMessage);
   }, [menu, site, change]);
 
-  const createClient = () => {
+  const createClient = async () => {
+    if (working) return;
     const normalized = newSlug.toLowerCase().trim();
     const checked = slugSchema.safeParse(normalized);
     if (!checked.success) { setError(checked.error.issues[0]?.message || "Alamat halaman tidak valid."); return; }
     if (slugs.includes(normalized)) { setError("Nama halaman sudah dipakai."); return; }
-    setSite(blankSite(normalized));
-    setSlug(normalized);
-    setSha(null);
-    setMenu("Nama"); setSelected("name");
-    setApproved(false); setShowDesign(false); setPopupOpen(false); setPublished(null);
-    setNewSlug("");
+    setWorking(true);
+    setError("");
+    try {
+      // A fresh, independent copy of the live /vini demo, including its
+      // video, animated-icon data, Karya, and Produk collections.
+      const template = await loadViniTemplate(normalized);
+      setSite(template);
+      setSlug(normalized);
+      setSha(null);
+      setMenu("Nama"); setSelected("name");
+      setApproved(false); setShowDesign(false); setPopupOpen(false); setPublished(null);
+      try { localStorage.setItem(draftKey(normalized), JSON.stringify(template)); }
+      catch { /* Still editable in the active Studio session. */ }
+      setNewSlug("");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Template /vini belum bisa disalin.");
+    } finally { setWorking(false); }
+  };
+
+  const useViniTemplate = async () => {
+    if (!site || slug === "vini" || working) return;
+    if (!window.confirm("Ganti seluruh isi draft /" + slug +
+      " dengan contoh /vini? Nama, video, ikon, karya, produk, dan kontak sekarang akan tertimpa. Website publik tidak berubah sampai Publikasikan.")) return;
+    setWorking(true); setError("");
+    try {
+      const template = await loadViniTemplate(slug);
+      setSite(template);
+      try { localStorage.setItem(draftKey(slug), JSON.stringify(template)); }
+      catch { /* Keep editing in memory. */ }
+      setApproved(false); setPublished(null); setMenu("Nama"); setSelected("name");
+      setShowDesign(false); setPopupOpen(false);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Gagal menyalin template /vini.");
+    } finally { setWorking(false); }
   };
 
   const publish = async () => {
@@ -438,6 +467,11 @@ export function StudioV2() {
       ] as const;
       return <>
         <p className="studio-v2__inspector-hint">Semua pengaturan langsung terlihat pada layar HP. Tidak mengubah template asli klien lain.</p>
+        {slug !== "vini" && <div className="studio-v2__template-reset">
+          <strong>Mulai dari contoh /vini</strong>
+          <p>Salin ulang data, video, slide ikon, karya, dan produk jika draft klien masih kosong. Konten saat ini akan diganti, tetapi website yang sudah tayang tidak berubah sampai dipublikasikan.</p>
+          <button className="studio-v2__ghost" type="button" disabled={working} onClick={() => void useViniTemplate()}>Isi Template /vini</button>
+        </div>}
         <div className="studio-v2__colors">
           {colorFields.map(([field, label]) => <label key={field}>
             <span>{label}</span><input type="color" value={style[field]} onChange={(event) => updateStyle(field, event.target.value)} />
@@ -642,7 +676,7 @@ export function StudioV2() {
           <summary title="Buat website baru">+ Klien</summary>
           <div><input aria-label="Nama link klien baru" placeholder="nama-klien"
             value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
-            <button type="button" onClick={createClient}>Buat</button>
+            <button type="button" disabled={working} onClick={() => void createClient()}>{working ? "Menyiapkan…" : "Buat dari /vini"}</button>
           </div>
         </details>
       </div>
