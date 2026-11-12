@@ -508,6 +508,11 @@ export function StaticStudio() {
               <p className="studio-app__preview-hint">Preview ini belum dipublikasikan. <a href={"/" + document.slug} target="_blank" rel="noreferrer">Lihat website yang saat ini terbit ↗</a></p>
             </section>
             <section className="studio-app__card studio-eight__design">
+              <label className="studio-app__field"><span>Nama tombol kontak</span>
+                <input type="text" maxLength={40} value={document.content.original?.contactLabel ?? "Japri Saya!"}
+                  onChange={(event) => change((next) => { next.content.original!.contactLabel = event.target.value; })} />
+                <small>Teks tombol WhatsApp di website klien. Nomornya tetap diatur pada tahap 1.</small>
+              </label>
               <div className="studio-app__card-heading">
                 <span className="studio-app__card-icon" aria-hidden="true">✧</span>
                 <div><h2>Ubah desain</h2><p>Warna, jenis font, ukuran huruf, layout, tombol dan efek.</p></div>
