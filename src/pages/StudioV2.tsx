@@ -718,7 +718,7 @@ export function StudioV2() {
       <div className={"studio-v2__site-frame" + (screen === "mobile" ? " studio-v2__site-frame--phone" : "")}>
         {screen === "mobile" && <div className="studio-v2__phone-notch" aria-hidden="true" />}
         <iframe ref={frameRef} title={screen === "desktop" ? "Website klien — live editor tampilan PC" : "Website klien — live editor tampilan HP"}
-          src="/studio-v2-canvas" loading="eager" onLoad={() => setReady(true)} />
+          src="/studio-v2-canvas" loading="eager" allow="autoplay; fullscreen" onLoad={() => setReady(true)} />
       </div>
       {!site && <div className="studio-v2__canvas-wait">{working ? "Membuka website klien…" : "Pilih atau buat website klien terlebih dahulu."}</div>}
       <div className="studio-v2__canvas-indicator">
