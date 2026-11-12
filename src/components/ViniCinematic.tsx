@@ -4,6 +4,7 @@ import type { AssetUrls, OriginalProfile, SiteContent, OriginalMenuIcon } from "
 import { blankOriginal } from "../static/originalSeed";
 import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
 import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
+import { videoSourceForViewport } from "./videoSource";
 import "./ViniCinematic.css";
 
 function getPageSize() {
@@ -182,15 +183,7 @@ export function ViniCinematic({
       owner: content.identity.displayName,
     })) : null;
   const visibleGalleryColumns = Math.min(galleryColumns, Math.max(1, activeGallery?.length ?? 1));
-  const mobileVideoId = content.background.mobileVideoAssetId;
-  const desktopVideoId = content.background.desktopVideoAssetId;
-  // A missing/empty mobile URL must inherit the PC video, rather than
-  // rendering a blank video area in the phone preview.
-  const desktopVideoSrc = desktopVideoId ? assetUrls[desktopVideoId] : "";
-  const mobileVideoSrc = mobileVideoId ? assetUrls[mobileVideoId] : "";
-  const videoSrc = pageSize === 1
-    ? (mobileVideoSrc || desktopVideoSrc)
-    : (desktopVideoSrc || mobileVideoSrc);
+  const videoSrc = videoSourceForViewport(content.background, assetUrls, pageSize === 1);
   const activeVideoSrc = usingFallbackVideo ? "/videos/hero.mp4" : videoSrc;
   const showLoader = !previewMode && (videoSrc ? !introElapsed || (!videoReady && !videoFailed && !introTimedOut) : !introElapsed);
 
