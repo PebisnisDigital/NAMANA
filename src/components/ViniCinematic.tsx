@@ -134,6 +134,7 @@ export function ViniCinematic({
   const [videoNeedsInteraction, setVideoNeedsInteraction] = useState(false);
   const [videoPreviewTimedOut, setVideoPreviewTimedOut] = useState(false);
   const [videoFailureReason, setVideoFailureReason] = useState("");
+  const [phoneVideoHealth, setPhoneVideoHealth] = useState({ width: 0, height: 0, time: 0, paused: true, ready: 0, error: 0 });
   const [usingFallbackVideo, setUsingFallbackVideo] = useState(false);
   const [introElapsed, setIntroElapsed] = useState(false);
   const [introTimedOut, setIntroTimedOut] = useState(false);
@@ -338,6 +339,33 @@ export function ViniCinematic({
     return () => window.clearTimeout(timeout);
   }, [videoReady, videoFailed, usingFallbackVideo, videoSrc, fallbackOriginal]);
 
+  // Playback can report "playing" while the mobile crop shows only a dark
+  // part of a landscape frame. Keep lightweight, editor-only diagnostics
+  // visible so partners can distinguish missing media from a cropped video.
+  useEffect(() => {
+    if (!editorMode || pageSize !== 1 || !videoSrc) return;
+    const inspect = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      const next = {
+        width: video.videoWidth,
+        height: video.videoHeight,
+        time: Math.floor(video.currentTime),
+        paused: video.paused,
+        ready: video.readyState,
+        error: video.error?.code ?? 0,
+      };
+      setPhoneVideoHealth((before) =>
+        before.width === next.width && before.height === next.height &&
+        before.time === next.time && before.paused === next.paused &&
+        before.ready === next.ready && before.error === next.error
+          ? before : next);
+    };
+    inspect();
+    const timer = window.setInterval(inspect, 1200);
+    return () => window.clearInterval(timer);
+  }, [editorMode, pageSize, videoSrc, activeVideoSrc]);
+
   const selectMenu = (menu: MenuKey) => {
     setActiveMenu(menu);
     setMenuOpen(false);
@@ -391,7 +419,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.layoutPreset ? ` vini-cinema--layout-${customStyle.layoutPreset}` : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
+    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.layoutPreset ? ` vini-cinema--layout-${customStyle.layoutPreset}` : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}${editorMode && pageSize === 1 && phoneVideoHealth.height > phoneVideoHealth.width ? " vini-cinema--studio-portrait-video" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
@@ -431,6 +459,18 @@ export function ViniCinematic({
         <div className="vini-cinema__scrim" />
       </div>
       {editorMode && <button type="button" data-v2-edit="video" className="vini-cinema__editor-video">✎ Ganti Video</button>}
+      {editorMode && pageSize === 1 && videoSrc && (
+        <div className="vini-cinema__editor-video-health" role="status" aria-live="off">
+          {phoneVideoHealth.error
+            ? "Video gagal dibaca (kode " + phoneVideoHealth.error + ")"
+            : !phoneVideoHealth.width
+            ? "Memuat video..."
+            : phoneVideoHealth.paused
+            ? "Video dijeda · " + phoneVideoHealth.width + "×" + phoneVideoHealth.height
+            : "Video berjalan " + phoneVideoHealth.time + " dtk · " +
+              phoneVideoHealth.width + "×" + phoneVideoHealth.height}
+        </div>
+      )}
       {editorMode && videoSrc && !videoReady &&
         (videoFailed || videoNeedsInteraction || videoPreviewTimedOut) && (
           <div className="vini-cinema__editor-video-retry" role="status">
