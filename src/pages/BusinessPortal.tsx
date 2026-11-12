@@ -51,7 +51,7 @@ export function BusinessPortal() {
       setWorkspace(currentWorkspace);
       const response = await businessClient
         .from("namina_business_sites")
-        .select("id,workspace_id,slug,document,created_at,updated_at")
+        .select("id,workspace_id,slug,document,created_at,updated_at,published_sha")
         .eq("workspace_id", currentWorkspace.id).order("created_at", { ascending: false });
       if (response.error) throw response.error;
       setSites((response.data || []) as BusinessSiteRow[]);
@@ -171,11 +171,12 @@ export function BusinessPortal() {
             <div><small>Biaya Paket Bisnis</small><strong>Rp87.000</strong><span>Perpanjangan via WhatsApp</span></div>
           </div>
           <section className="business__section">
-            <div className="business__section-head"><h2>Website klienku</h2><span>Draft privat</span></div>
+            <div className="business__section-head"><h2>Website klienku</h2><span>Website dan draft pribadi</span></div>
             {sites.length ? <div className="business__sites">{sites.map((item) =>
               <div className="business__site" key={item.id}>
-                <div><strong>/{item.slug}</strong><small>Draft · belum diterbitkan</small></div>
+                <div><strong>/{item.slug}</strong><small>{item.published_sha?"Sudah terbit":"Draft · belum diterbitkan"}</small></div>
                 <a href={"/studio?site=" + encodeURIComponent(item.id)}>Edit Website</a>
+                {item.published_sha&&<a href={"/"+item.slug} target="_blank" rel="noopener noreferrer">Lihat Web ↗</a>}
               </div>,
             )}</div> : <p className="business__empty">Belum ada website. Buat draft pertama untuk mencoba Studio mitra.</p>}
           </section>
