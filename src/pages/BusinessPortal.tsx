@@ -24,7 +24,7 @@ export function BusinessPortal() {
   const [newSlug, setNewSlug] = useState("");
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
-  const canManage = !!workspace && workspace.subscription_status === "active" && !!workspace.current_period_end && new Date(workspace.current_period_end).getTime() > Date.now();
+  const canCreate = !!workspace && workspace.subscription_status === "active" && !!workspace.current_period_end && new Date(workspace.current_period_end).getTime() > Date.now();
 
   async function refresh(current: User) {
     if (!businessClient) return;
@@ -105,7 +105,7 @@ export function BusinessPortal() {
     if (!checked.success) { setError("Nama link harus terdiri dari 3–48 karakter, huruf kecil, angka, atau tanda hubung."); return; }
     if (sites.some((site) => site.slug === slug)) { setError("Nama link sudah ada di workspace."); return; }
     if (sites.length >= workspace.max_sites) { setError("Kuota website penuh."); return; }
-    if (!canManage) {
+    if (!canCreate) {
       setError("Paket Bisnis belum aktif atau masa langganan sudah berakhir."); return;
     }
     setBusy(true);
@@ -129,7 +129,7 @@ export function BusinessPortal() {
 
   return <main className="business">
     <header className="business__header">
-      <Link href="/" className="business__logo">NAMINA<span>BUSINESS</span></Link>
+      <Link href="/studio" className="business__logo">NAMINA<span>STUDIO MITRA</span></Link>
       <nav>
         {user && <button type="button" onClick={() => void signOut()}>Keluar</button>}
       </nav>
@@ -166,28 +166,37 @@ export function BusinessPortal() {
         <p className="business__lead">Kelola draft website klien melalui Studio visual pribadi. Data mitra lain tidak dapat diakses dari akun ini.</p>
         {workspace && <>
           <div className="business__stats">
-            <div><small>Status langganan</small><strong>{workspace.subscription_status === "active" && !canManage ? "Perlu diperpanjang" : statusText[workspace.subscription_status]}</strong><span>{workspace.subscription_status === "pending" ? "Menunggu aktivasi admin. Belum ada pembayaran." : "Paket Bisnis NAMINA"}</span></div>
+            <div><small>Status langganan</small><strong>{workspace.subscription_status === "active" && !canCreate ? "Perlu diperpanjang" : statusText[workspace.subscription_status]}</strong><span>{workspace.subscription_status === "pending" ? "Menunggu aktivasi admin. Belum ada pembayaran." : "Paket Bisnis NAMINA"}</span></div>
             <div><small>Website draft</small><strong>{sites.length} / {workspace.max_sites}</strong><span>Kuota awal Paket Bisnis</span></div>
-            <div><small>Biaya langganan</small><strong>Rp87.000</strong><span>Per bulan · checkout belum aktif</span></div>
+            <div><small>Biaya Paket Bisnis</small><strong>Rp87.000</strong><span>Perpanjangan via WhatsApp</span></div>
           </div>
           <section className="business__section">
             <div className="business__section-head"><h2>Website klienku</h2><span>Draft privat</span></div>
             {sites.length ? <div className="business__sites">{sites.map((item) =>
               <div className="business__site" key={item.id}>
                 <div><strong>/{item.slug}</strong><small>Draft · belum diterbitkan</small></div>
-                <a href={"/mitra/studio?id=" + encodeURIComponent(item.id)}>Edit visual</a>
+                <a href={"/studio?site=" + encodeURIComponent(item.id)}>Edit Website</a>
               </div>,
             )}</div> : <p className="business__empty">Belum ada website. Buat draft pertama untuk mencoba Studio mitra.</p>}
           </section>
+          {!canCreate && <section className="business__section">
+            <h2>Perpanjang Paket Bisnis</h2>
+            <p className="business__fineprint">Website yang sudah ada tetap dapat diedit. Untuk membuat website baru lagi, hubungi admin NAMINA melalui WhatsApp.</p>
+            <a className="business__primary" href={"https://wa.me/62881022445869?text=" +
+              encodeURIComponent("Halo Teh Vini, saya " + (workspace.display_name || user.email || "mitra NAMINA") +
+              ". Mau perpanjang Paket Bisnis NAMINA Rp87.000 untuk 30 hari.")} target="_blank" rel="noopener noreferrer">
+              Perpanjang via WA
+            </a>
+          </section>}
           <section className="business__section">
             <h2>+ Buat website baru</h2>
             <form className="business__create" onSubmit={(event) => void createSite(event)}>
               <label>Nama link website klien
                 <input required maxLength={48} value={newSlug} placeholder="contoh: klien-siti" onChange={(event) => setNewSlug(event.target.value)} />
               </label>
-              <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !canManage}>Buat Draft</button>
+              <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !canCreate}>Buat Draft</button>
             </form>
-            <p className="business__fineprint">{canManage ? "Draft mitra tetap privat, belum dipublikasikan. " : "Untuk mulai membuat website, tunggu aktivasi Paket Bisnis oleh admin. "}Link publik dan pembayaran otomatis belum dibuka pada Sprint 1.</p>
+            <p className="business__fineprint">{canCreate ? "Kuota pembuatan website masih aktif. " : "Masa tambah website sudah habis atau belum aktif. Website lama tetap bisa diedit. "}Semua perpanjangan dilakukan melalui WhatsApp, bukan pembayaran di website.</p>
           </section>
         </>}
       </>}
