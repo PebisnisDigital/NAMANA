@@ -4,6 +4,7 @@ import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
 import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
+import "../studio-v2-fullscreen.css";
 
 type Session = { authenticated: boolean; configured: boolean };
 type SiteFile = { document: SiteDocument; sha: string };
