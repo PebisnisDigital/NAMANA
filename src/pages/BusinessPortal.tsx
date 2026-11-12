@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { Link } from "./BusinessUi";
 import { businessClient, type BusinessSiteRow, type BusinessWorkspace } from "../business/client";
-import { blankSite, siteDocumentSchema } from "../static/sites";
+import { loadViniTemplate, siteDocumentSchema } from "../static/sites";
 import { slugSchema } from "../domain/content";
 import "../business.css";
 
@@ -110,13 +110,13 @@ export function BusinessPortal() {
     }
     setBusy(true);
     try {
-      const draft = siteDocumentSchema.parse(blankSite(slug));
+      const draft = siteDocumentSchema.parse(await loadViniTemplate(slug));
       const response = await businessClient.from("namina_business_sites").insert({
         workspace_id: workspace.id, slug, document: draft,
       }).select("id").single();
       if (response.error) throw response.error;
       setNewSlug("");
-      setFeedback("Draft website berhasil dibuat. Hanya akun mitra ini yang bisa membukanya.");
+      setFeedback("Website baru sudah berisi contoh lengkap /vini. Ganti nama, profesi, ikon, video, karya, produk, dan kontak sebelum dipublikasikan.");
       if (user) await refresh(user);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Gagal membuat website."); }
     finally { setBusy(false); }
@@ -191,11 +191,12 @@ export function BusinessPortal() {
           </section>}
           <section className="business__section">
             <h2>+ Buat website baru</h2>
+            <p className="business__fineprint">Setiap website baru otomatis terisi contoh /vini: video, slide ikon Nama/Karir/Skill, Karya, dan Produk. Tinggal ganti dengan data klien.</p>
             <form className="business__create" onSubmit={(event) => void createSite(event)}>
               <label>Nama link website klien
                 <input required maxLength={48} value={newSlug} placeholder="contoh: klien-siti" onChange={(event) => setNewSlug(event.target.value)} />
               </label>
-              <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !canCreate}>Buat Draft</button>
+              <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !canCreate}>Buat dari Template Vini</button>
             </form>
             <p className="business__fineprint">{canCreate ? "Kuota pembuatan website masih aktif. " : "Masa tambah website sudah habis atau belum aktif. Website lama tetap bisa diedit. "}Semua perpanjangan dilakukan melalui WhatsApp, bukan pembayaran di website.</p>
           </section>
