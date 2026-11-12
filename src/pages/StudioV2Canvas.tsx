@@ -141,7 +141,7 @@ export function StudioV2Canvas() {
         aria-label="Edit teks langsung pada website"
         autoFocus
         rows={inline.multiline ? 4 : 2}
-        maxLength={inline.key === "name" ? 60 : inline.key === "profession" ? 70 : inline.key === "description" ? 400 : 120}
+        maxLength={inline.key === "name" ? 60 : inline.key === "profession" ? 70 : inline.key === "description" ? 400 : inline.key === "subtitle" ? 100 : (inline.key === "menu-title" || inline.key.startsWith("menu:")) ? 24 : 120}
         value={inline.value}
         style={{ fontSize: inline.fontSize, minHeight: Math.max(52, Math.min(150, inline.height + 15)) }}
         onChange={(event) => {
