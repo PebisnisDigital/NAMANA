@@ -127,6 +127,10 @@ export const originalStyleSchema = z.object({
 }).strict();
 export type OriginalStyle = z.infer<typeof originalStyleSchema>;
 export const originalProfileSchema = z.object({
+  // Display labels are separate from stable section keys; existing profiles keep defaults.
+  menuTitles: z.object({
+    nama: text(24), karir: text(24), skill: text(24), karya: text(24), produk: text(24),
+  }).partial().strict().optional(),
   contactUrl: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan URL WhatsApp HTTPS yang valid."),
   style: originalStyleSchema.optional(),
   nama: originalFactSectionSchema,
