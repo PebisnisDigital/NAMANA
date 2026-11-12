@@ -107,7 +107,6 @@ export function StudioV2() {
   const [uploading, setUploading] = useState(false);
   const [approved, setApproved] = useState(false);
   const [published, setPublished] = useState<PublishStatus>(null);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [mediaPreviews, setMediaPreviews] = useState<Record<string, string>>({});
   const [loadedOnce, setLoadedOnce] = useState(false);
@@ -129,7 +128,7 @@ export function StudioV2() {
   useEffect(() => () => { previewUrls.current.forEach((url) => URL.revokeObjectURL(url)); }, []);
 
   const openClient = useCallback(async (nextSlug: string) => {
-    setWorking(true); setError(""); setMessage("");
+    setWorking(true); setError("");
     setPublished(null);
     setSite(null); setMediaPreviews({});
     setSlug(nextSlug);
@@ -155,7 +154,6 @@ export function StudioV2() {
           const parsed = siteDocumentSchema.safeParse(JSON.parse(draft));
           if (parsed.success && parsed.data.slug === nextSlug) {
             client = parsed.data;
-            setMessage("Draft Studio V2 sebelumnya dipulihkan.");
           }
         }
       } catch { /* Invalid local draft should not block editing. */ }
@@ -183,7 +181,6 @@ export function StudioV2() {
       return next;
     });
     setApproved(false);
-    setMessage("Draft tersimpan di browser. Website publik belum berubah.");
     setError("");
   }, []);
 
@@ -299,7 +296,6 @@ export function StudioV2() {
     setApproved(false); setShowDesign(false); setPopupOpen(false); setPublished(null);
     setMediaPreviews({});
     setNewSlug("");
-    setMessage("Draft klien baru siap. Ketuk teks pada layar HP untuk mulai mengedit.");
   };
 
   const uploadCardImage = async (id: string, file: File) => {
@@ -318,7 +314,6 @@ export function StudioV2() {
       previewUrls.current.push(preview);
       setMediaPreviews((previous) => ({ ...previous, [response.url]: preview }));
       change((next) => { next.media.cards[id] = response.url; });
-      setMessage("Foto terunggah. Kartu sudah berubah di preview; publish saat final.");
     } catch (cause) { setError((cause as Error).message); }
     finally { setUploading(false); }
   };
@@ -340,7 +335,6 @@ export function StudioV2() {
       localStorage.removeItem(draftKey(site.slug));
       setApproved(false);
       setPublished("deploying");
-      setMessage("Publikasi dikirim ke GitHub. Menunggu Vercel menayangkan website klien.");
       await refreshList();
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(false); }
@@ -741,9 +735,6 @@ export function StudioV2() {
     {error && <p className="studio-v2__floating-message studio-v2__floating-message--error" role="alert">{error}
       <button type="button" onClick={() => setError("")}>×</button>
     </p>}
-    {message && !error && <p className="studio-v2__floating-message" role="status">{message}
-      <button type="button" onClick={() => setMessage("")}>×</button>
-    </p>}
 
     <div className={"studio-v2__site-workspace studio-v2__site-workspace--" + screen}>
       <div className={"studio-v2__site-frame" + (screen === "mobile" ? " studio-v2__site-frame--phone" : "")}>
@@ -789,8 +780,8 @@ export function StudioV2() {
     {published && <div className="studio-v2__modal-backdrop">
       <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-modal-title">
         <div className="studio-v2__modal-mark">{published === "live" ? "✓" : "↗"}</div>
-        <h2 id="v2-modal-title">{published === "live" ? "Website berhasil dipublikasikan!" : published === "deploying" ? "Website sedang diterbitkan" : "Menunggu verifikasi Vercel"}</h2>
-        <p>{published === "live" ? "Halaman klien sudah tersedia dan siap dibagikan." : published === "deploying" ? "Perubahan tersimpan di GitHub. Sistem sedang memeriksa hasil deployment." : "Perubahan berhasil dikirim tetapi versi produksi belum terkonfirmasi."}</p>
+        <h2 id="v2-modal-title">{published === "live" ? "Website berhasil dipublikasikan!" : published === "deploying" ? "Website sedang diterbitkan" : "Website belum terkonfirmasi"}</h2>
+        <p>{published === "live" ? "Halaman klien sudah tersedia dan siap dibagikan." : published === "deploying" ? "Sedang menyiapkan website. Link akan siap dibagikan setelah proses selesai." : "Website belum dapat dipastikan tayang. Coba periksa kembali dalam beberapa saat."}</p>
         <strong>{"https://namina.biz.id/" + slug}</strong>
         {published === "live" && <div className="studio-v2__modal-actions">
           <a href={"/" + slug} target="_blank" rel="noreferrer">Buka Website ↗</a>
