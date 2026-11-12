@@ -316,3 +316,132 @@
     max-height: none;
   }
 }
+
+
+/* Mobile Studio V2 toolbar — two deliberate rows instead of overflowing controls.
+   Row 1: NAMINA, current client, new client. Row 2: PC/HP, design, publish. */
+@media (max-width: 680px) {
+  .studio-v2--fullscreen .studio-v2__workbar {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 8px 10px;
+    padding: 10px 12px;
+    min-width: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar-left {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    order: initial;
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo {
+    flex: 0 0 auto;
+    font-size: 16px;
+  }
+  .studio-v2--fullscreen .studio-v2__client-switch {
+    flex: 1 1 auto;
+    display: block;
+    min-width: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__client-switch select {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 40px;
+    font-size: 12px;
+    text-overflow: ellipsis;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar-create {
+    display: block;
+    flex: 0 0 auto;
+    margin: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar-create summary {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar-create[open] > div {
+    left: auto;
+    right: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__device-switch {
+    grid-column: 1;
+    grid-row: 2;
+    order: initial;
+    justify-self: start;
+    flex: none;
+    margin: 0;
+    min-width: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__device-switch button {
+    min-width: 47px;
+    padding-inline: 8px;
+  }
+  .studio-v2--fullscreen .studio-v2__device-switch button span {
+    display: inline;
+    font-size: 10px;
+    margin-left: 3px;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar-right {
+    grid-column: 2;
+    grid-row: 2;
+    order: initial;
+    flex: none;
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+    margin: 0;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__design-trigger {
+    min-width: 41px;
+    padding: 8px;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__publish-trigger {
+    min-height: 40px;
+    min-width: 105px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .studio-v2--fullscreen .studio-v2__site-workspace--desktop {
+    height: calc(100svh - 118px);
+    min-height: 550px;
+  }
+  .studio-v2--fullscreen .studio-v2__site-workspace--mobile {
+    min-height: calc(100svh - 118px);
+  }
+  .studio-v2--fullscreen .studio-v2__floating-message {
+    top: 125px;
+  }
+}
+@media (max-width: 360px) {
+  .studio-v2--fullscreen .studio-v2__workbar {
+    gap: 7px;
+    padding-inline: 9px;
+  }
+  .studio-v2--fullscreen .studio-v2__workbar-left { gap: 6px; }
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo { font-size: 14px; }
+  .studio-v2--fullscreen .studio-v2__workbar-create summary { padding-inline: 7px; }
+  .studio-v2--fullscreen .studio-v2__workbar-right { gap: 5px; }
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__publish-trigger {
+    min-width: 96px;
+    padding-inline: 8px;
+    font-size: 10px;
+  }
+  .studio-v2--fullscreen .studio-v2__device-switch button {
+    min-width: 42px;
+    padding-inline: 6px;
+  }
+}
