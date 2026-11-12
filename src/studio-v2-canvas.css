@@ -25,3 +25,60 @@ html:has(.studio-v2-canvas), body:has(.studio-v2-canvas), #root:has(.studio-v2-c
 .studio-v2-canvas__inline label { display: block; margin-bottom: 8px; color: #fff1e6; font: 700 11px Montserrat, sans-serif; }
 .studio-v2-canvas__inline textarea { display: block; box-sizing: border-box; width: 100%; min-height: 82px; padding: 9px; border: 1px solid #97616b; border-radius: 8px; background: #0e0c0d; color: #fff; font: 500 12px Montserrat, sans-serif; resize: vertical; }
 .studio-v2-canvas__inline button { margin-top: 9px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #d4313f; color: white; font: 800 12px Montserrat, sans-serif; cursor: pointer; }
+
+
+/* Selection and in-place editing in the exact original client website. */
+.studio-v2-canvas .vini-cinema__editor-video {
+  position:fixed;z-index:35;right:clamp(14px,2.5vw,40px);bottom:20px;
+  padding:11px 15px;border-radius:12px;
+  border:1px solid #f2757f;background:#a92130e8;color:#fff4ed;
+  font:800 12px "Montserrat",sans-serif;cursor:pointer;
+  box-shadow:0 9px 29px #0009;backdrop-filter:blur(9px)
+}
+.studio-v2-canvas .vini-cinema__editor-video:hover { background:#dc3543; }
+.studio-v2-canvas .vini-cinema__editor-add {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:43px;margin:15px 0 22px;padding:11px 16px;
+  color:#fff5ef;background:#ad2a36;border:1px dashed #ec7480;
+  border-radius:12px;font:800 12px "Montserrat",sans-serif
+}
+.studio-v2-canvas .vini-cinema [data-v2-edit] {cursor:text;}
+.studio-v2-canvas .vini-cinema [data-v2-edit^="card:"],
+.studio-v2-canvas .vini-cinema [data-v2-edit^="fact:"],
+.studio-v2-canvas .vini-cinema [data-v2-edit="video"] { cursor:pointer; }
+.studio-v2-canvas .studio-v2-canvas__inline {
+  position:fixed;z-index:1000;max-height:65svh;
+  padding:0 9px 9px;border:2px solid #ff4b5b;border-radius:13px;
+  background:#171016f5;box-shadow:0 20px 70px #000b;
+  backdrop-filter:blur(10px)
+}
+.studio-v2-canvas .studio-v2-canvas__inline-heading {
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:36px;margin-bottom:5px;gap:9px
+}
+.studio-v2-canvas .studio-v2-canvas__inline-heading span {
+  font:800 9px "Montserrat",sans-serif;letter-spacing:.11em;color:#ffa6b0
+}
+.studio-v2-canvas .studio-v2-canvas__inline-heading button {
+  flex:0 0 30px;width:30px;height:28px;border:0;border-radius:8px;
+  background:#d02d3a;color:#fff;font:800 13px "Montserrat",sans-serif;cursor:pointer
+}
+.studio-v2-canvas .studio-v2-canvas__inline textarea {
+  display:block;width:100%;min-height:52px;max-height:37svh;
+  padding:7px;border:1px solid #955b66;border-radius:8px;
+  color:#fff5ef;background:#110e13;
+  font-family:"Montserrat",sans-serif;font-weight:700;
+  line-height:1.22;resize:vertical;box-sizing:border-box
+}
+.studio-v2-canvas .studio-v2-canvas__inline small {
+  display:block;padding:6px 0 0;color:#c8b2b3;
+  font:500 9px "Montserrat",sans-serif
+}
+@media(max-width:700px){
+  .studio-v2-canvas .vini-cinema__editor-video {
+    bottom:14px;right:13px;padding:9px 11px;font-size:10px
+  }
+  .studio-v2-canvas .vini-cinema__editor-add {
+    margin:10px 0 21px;padding:10px 13px;font-size:11px
+  }
+}
