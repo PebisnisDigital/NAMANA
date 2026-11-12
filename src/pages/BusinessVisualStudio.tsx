@@ -51,13 +51,14 @@ export function BusinessVisualStudio() {
   }, [dirty]);
 
   useEffect(()=>{
-    const id=new URLSearchParams(window.location.search).get("id");
+    const params=new URLSearchParams(window.location.search);
+    const id=params.get("site") || params.get("id");
     if(!id || !/^[0-9a-f-]{36}$/i.test(id)){setError("Website draft tidak ditemukan.");setLoading(false);return;}
     if(!businessClient){setError("Koneksi akun belum dikonfigurasi.");setLoading(false);return;}
     let active=true;
     void (async()=>{
       const auth=await businessClient.auth.getUser();
-      if(!auth.data.user){window.location.assign("/mitra");return;}
+      if(!auth.data.user){window.location.assign("/studio");return;}
       const result=await businessClient.from("namina_business_sites")
         .select("id,document").eq("id",id).single();
       if(!active)return;
@@ -266,12 +267,12 @@ export function BusinessVisualStudio() {
   }
 
   if(loading)return <main className="business business__loading">Memuat Studio Mitra…</main>;
-  if(error&&!site)return <main className="business business__loading"><p>{error}</p><a href="/mitra">Kembali ke dashboard</a></main>;
+  if(error&&!site)return <main className="business business__loading"><p>{error}</p><a href="/studio">Kembali ke dashboard</a></main>;
 
   return <main className="studio-v2 studio-v2--fullscreen business__visual-editor">
     <header className="studio-v2__workbar">
       <div className="studio-v2__workbar-left">
-        <a className="studio-v2__logo" href="/mitra">NAMINA<span>MITRA STUDIO</span></a>
+        <a className="studio-v2__logo" href="/studio">NAMINA<span>MITRA STUDIO</span></a>
         <span className="business__private">DRAFT PRIVAT</span>
         <strong className="business__current-slug">/{site?.slug||"…"}</strong>
       </div>
@@ -284,7 +285,7 @@ export function BusinessVisualStudio() {
         <button type="button" className="studio-v2__publish-trigger" disabled={!site||!dirty||working} onClick={()=>void save()}>
           {working?"Menyimpan…":"Simpan Draft"}
         </button>
-        <a href="/mitra" className="studio-v2__v1-link">Dashboard</a>
+        <a href="/studio" className="studio-v2__v1-link">Daftar Klien</a>
       </div>
     </header>
     {error&&<div className="business__editor-alert" role="alert">{error}</div>}
