@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
-import { slugSchema, type OriginalStyle } from "../domain/content";
+import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
 import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
@@ -187,14 +187,6 @@ export function StudioV2() {
   useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_MENU", menu }); }, [menu, ready, sendFrame]);
   useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_SELECT", key: selected }); }, [selected, ready, sendFrame]);
 
-  const chooseMenu = (next: Menu) => {
-    setMenu(next);
-    setSelected(next === "Nama" ? "name" : "menu-title");
-    setShowDesign(false);
-    setPopupOpen(false);
-    sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
-    sendFrame({ type: "NAMINA_V2_MENU", menu: next });
-  };
   const addCard = (section: GalleryKey) => {
     if (!site) return;
     if (site.content.original![section].items.length >= 20) {
@@ -230,7 +222,7 @@ export function StudioV2() {
         const key = value.key;
         setSelected(key);
         setShowDesign(false);
-        const isInlineText = ["name", "profession", "intro", "description", "subtitle", "menu-title"].includes(key) || key.startsWith("menu:");
+        const isInlineText = ["name", "profession", "intro", "description", "subtitle", "menu-title"].includes(key);
         setPopupOpen(!isInlineText);
         if (!isInlineText && value.rect && typeof value.rect === "object") {
           const rect = value.rect as { left?: number; top?: number; width?: number; height?: number };
@@ -252,6 +244,9 @@ export function StudioV2() {
       }
       if (value.type === "NAMINA_V2_ADD_CARD" && (value.section === "karya" || value.section === "produk")) {
         addCard(value.section);
+      }
+      if (value.type === "NAMINA_V2_ADD_FACT" && (value.section === "nama" || value.section === "karir" || value.section === "skill")) {
+        addFact(value.section);
       }
       if (value.type === "NAMINA_V2_UPDATE" && typeof value.key === "string" && typeof value.value === "string") {
         const key = value.key;
@@ -406,18 +401,38 @@ export function StudioV2() {
     setSelected("menu-title");
     setPopupOpen(false);
   };
-  const addFact = () => {
-    if (!site || !["Nama", "Karir", "Skill"].includes(menu)) return;
-    const section = menuKey as FactKey;
-    const originalItems = site.content.original![section].items;
-    if (originalItems.length >= 30) return;
-    const id = crypto.randomUUID();
+  const addFact = (sectionOverride?: FactKey) => {
+    if (!site) return;
+    const section = sectionOverride || (menu.toLowerCase() as FactKey);
+    if (!["nama", "karir", "skill"].includes(section)) return;
+    const items = site.content.original![section].items;
+    if (items.length >= 30) {
+      setError("Maksimal 30 kartu data per menu.");
+      return;
+    }
+    const index = items.length;
     change((next) => {
       next.content.original![section].items.push({
-        id, label: "Data baru", value: "Isi keterangan", icon: 8121295,
+        id: crypto.randomUUID(), label: "Data baru", value: "Klik untuk mengedit", icon: 8121295,
       });
     });
-    setSelected("fact:" + section + ":" + originalItems.length);
+    setMenu((section.charAt(0).toUpperCase() + section.slice(1)) as Menu);
+    setSelected("fact:" + section + ":" + index);
+    setShowDesign(false);
+    setPopupOpen(true);
+    setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 116 });
+    sendFrame({ type: "NAMINA_V2_MENU", menu: section.charAt(0).toUpperCase() + section.slice(1) });
+  };
+
+  const moveSlide = (section: MenuKey, index: number, direction: -1 | 1) => {
+    change((next) => {
+      // Move the existing object, preserving its UUID, image mapping and links.
+      const items: Array<{ id: string }> = next.content.original![section].items;
+      const destination = index + direction;
+      if (index < 0 || destination < 0 || destination >= items.length) return;
+      const [slide] = items.splice(index, 1);
+      if (slide) items.splice(destination, 0, slide);
+    });
   };
 
   const login = async (event: React.FormEvent) => {
