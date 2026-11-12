@@ -2,6 +2,7 @@ import { z } from "zod";
 import { contentSchema, slugSchema, type AssetUrls, type SiteContent } from "../domain/content.js";
 import { originalProfileTabs } from "./originalProfileTabs.js";
 import { viniOriginal } from "./originalSeed.js";
+import { originalStyleDefaults } from "./originalStyle.js";
 
 const mediaUrl = z.string().max(2000).refine((value) => {
   if (!value) return true;
@@ -113,6 +114,8 @@ export function cloneViniTemplate(slug: string, source: SiteDocument = viniSeed)
   }
   const original = site.content.original;
   if (original) {
+    // Keep the /vini dark cinematic appearance even if the network copy is unavailable.
+    original.style ??= { ...originalStyleDefaults, backgroundColor: "#000000", textColor: "#ffc799" };
     for (const key of ["nama", "karir", "skill"] as const) {
       original[key].items = original[key].items.map((item) => ({
         ...item, id: crypto.randomUUID(),
