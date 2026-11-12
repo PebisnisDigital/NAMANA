@@ -1094,3 +1094,15 @@
   .vini-cinema--layout-center .vini-cinema__intro > p { margin-inline: auto; }
   .vini-cinema--layout-compact .vini-cinema__intro { min-height: 200px; }
 }
+
+
+/* Custom menu icons become visible in the desktop navigation; defaults stay unchanged. */
+@media (min-width: 851px) {
+  .vini-cinema__nav .vini-cinema__nav-icon--custom {
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    vertical-align: -3px;
+    margin-right: 5px;
+  }
+}
