@@ -111,7 +111,7 @@ export function StudioV2() {
 
   const openClient = useCallback(async (nextSlug: string) => {
     setWorking(true); setError(""); setMessage("");
-    setPublished(null); setReady(false);
+    setPublished(null);
     setSite(null); setMediaPreviews({});
     setSlug(nextSlug);
     setMenu("Nama");
