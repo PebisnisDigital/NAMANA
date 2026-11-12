@@ -11,6 +11,7 @@ import { originalStyleDefaults } from "../static/originalStyle";
 import { StudioMediaEditor, type MediaPrompts } from "./StudioMediaEditor";
 import "../studio-static.css";
 import "../studio-app.css";
+import "../studio-namina.css";
 
 type Session = { authenticated: boolean; configured: boolean };
 type StudioResponse = { slugs: string[] };
