@@ -43,6 +43,12 @@ export function BusinessVisualStudio() {
   const card = gallerySection ? original?.[gallerySection].items.find((x)=>x.id===parts[2]) : null;
   const send = useCallback((message:Record<string,unknown>) =>
     frame.current?.contentWindow?.postMessage(message,window.location.origin),[]);
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 
   useEffect(()=>{
     const id=new URLSearchParams(window.location.search).get("id");
