@@ -6,6 +6,10 @@ type GalleryKey = "karya" | "produk";
 type EditProps = {
   site: SiteDocument;
   change: (update: (next: SiteDocument) => void) => void;
+  section: SectionKey | GalleryKey;
+  onUpload: (id: string, file: File) => void;
+  uploading: boolean;
+  previews: Record<string, string>;
 };
 
 const icons = [
@@ -30,8 +34,27 @@ function TextField({ label, value, onChange, placeholder, multiline = false, max
   </label>;
 }
 
-export function OriginalStudioEditor({ site, change }: EditProps) {
-  const [activeTab, setActiveTab] = useState<"dasar" | SectionKey | GalleryKey>("dasar");
+
+function whatsappInput(value: string) {
+  if (!value) return "";
+  try {
+    const parsed = new URL(value);
+    const digits = parsed.hostname === "wa.me"
+      ? parsed.pathname.replace(/\D/g, "")
+      : parsed.hostname === "api.whatsapp.com" ? parsed.searchParams.get("phone")?.replace(/\D/g, "") || "" : "";
+    return digits.startsWith("62") ? "0" + digits.slice(2) : digits;
+  } catch { return ""; }
+}
+
+function whatsappLink(value: string) {
+  const digits = value.replace(/\D/g, "");
+  if (!digits) return "";
+  const international = digits.startsWith("0") ? "62" + digits.slice(1) : digits.startsWith("8") ? "62" + digits : digits;
+  return "https://wa.me/" + international;
+}
+export function OriginalStudioEditor({ site, change, section, onUpload, uploading, previews }: EditProps) {
+  const activeTab = section;
+  const [waNumber, setWaNumber] = useState(() => whatsappInput(site.content.original?.contactUrl || ""));
   const [selectedGallery, setSelectedGallery] = useState<string | null>(null);
   const original = site.content.original!;
   const menuLabels = {
@@ -84,26 +107,29 @@ export function OriginalStudioEditor({ site, change }: EditProps) {
   });
 
   return <div className="studio-original">
-    <nav className="studio-original__tabs" aria-label="Pilih menu untuk diedit">
-      {([ ["dasar", "Dasar"], ["nama", menuLabels.nama], ["karir", menuLabels.karir], ["skill", menuLabels.skill], ["karya", menuLabels.karya], ["produk", menuLabels.produk] ] as const).map(([key, label]) =>
-        <button type="button" key={key} className={activeTab === key ? "is-active" : ""}
-          aria-pressed={activeTab === key}
-          onClick={() => { setActiveTab(key); setSelectedGallery(null); }}>{label}</button>)}
-    </nav>
-    {activeTab === "dasar" && <>
-    <div className="studio-original__heading"><h2>Identitas profil</h2><span>Informasi utama</span></div>
-    <section className="studio-group">
-      <div className="studio-original__fields-2"><TextField label="Nama di judul" maxLength={60} value={site.content.identity.displayName} onChange={(value) => change((next) => {
-        const previous = next.content.identity.displayName;
-        next.content.identity.displayName = value;
-        const first = next.content.original!.nama.items.find((item) => item.label === "Nama" && item.value === previous);
-        if (first) first.value = value;
-      })} />
-      <TextField label="Profesi atau tagline" maxLength={70} value={site.content.identity.profession} onChange={(value) => change((next) => { next.content.identity.profession = value; })} /></div>
-      <TextField label="Link tombol Japri Saya !" value={original.contactUrl} placeholder="https://wa.me/62..." onChange={(value) => change((next) => { next.content.original!.contactUrl = value; })} />
-    </section>
-    </>}
 
+    {section === "nama" && <section className="studio-group studio-original__basics">
+      <div className="studio-original__heading"><h2>Profil utama</h2><span>Ditampilkan pada halaman depan</span></div>
+      <div className="studio-original__fields-2">
+        <TextField label="Nama yang ditampilkan" maxLength={60} value={site.content.identity.displayName} onChange={(value) => change((next) => {
+          const previous = next.content.identity.displayName;
+          next.content.identity.displayName = value;
+          const same = next.content.original!.nama.items.find((item) => item.label === "Nama" && item.value === previous);
+          if (same) same.value = value;
+        })} />
+        <TextField label="Profesi atau tagline" maxLength={70} value={site.content.identity.profession} onChange={(value) => change((next) => { next.content.identity.profession = value; })} />
+      </div>
+      <label className="studio-original__field">
+        <span>Nomor WhatsApp tombol "Japri Saya!"</span>
+        <input inputMode="tel" type="tel" placeholder="Contoh: 081234567890" value={waNumber} onChange={(event) => {
+          const raw = event.target.value.replace(/[^+0-9]/g, "").slice(0, 18);
+          setWaNumber(raw);
+          change((next) => { next.content.original!.contactUrl = whatsappLink(raw); });
+        }} />
+        <small>Masukkan nomor saja. Link chat WhatsApp dibuat otomatis tanpa perlu mengetik https://wa.me/.</small>
+      </label>
+      {original.contactUrl.startsWith("https://wa.me/") && <a className="studio-original__wa-preview" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Tes tombol WhatsApp ↗</a>}
+    </section>}
     {(["nama", "karir", "skill"] as const).filter((section) => section === activeTab).map((section) => <section className="studio-group studio-original__chapter" key={section}>
       <div className="studio-original__heading"><h2>Menu {menuLabels[section]}</h2><span>{original[section].items.length} data</span></div>
       <div className="studio-original__copy">
@@ -160,6 +186,25 @@ export function OriginalStudioEditor({ site, change }: EditProps) {
           <TextField label="Judul" maxLength={80} value={item.title} onChange={(value) => updateGallery(section, item.id, "title", value)} />
           <TextField label="Detail popup" multiline maxLength={1200} value={item.description} onChange={(value) => updateGallery(section, item.id, "description", value)} />
           <TextField label="URL tombol pada popup" value={item.link} placeholder="https://contoh.com" onChange={(value) => updateGallery(section, item.id, "link", value)} />
+          <div className="studio-media__asset">
+            <strong>Foto untuk kartu ini (rasio 19:6)</strong>
+            {site.media.cards[item.id]
+              ? <img className="studio-media__image" src={previews[site.media.cards[item.id]] || site.media.cards[item.id]} alt={"Preview foto " + item.title} width={570} height={180} />
+              : <div className="studio-media__placeholder">Belum ada foto</div>}
+            <label className="studio-original__field">
+              <span>URL foto (opsional)</span>
+              <input type="url" placeholder="https://.../foto.webp" value={site.media.cards[item.id] || ""} onChange={(event) => change((next) => { next.media.cards[item.id] = event.target.value; })} />
+            </label>
+            <label className="studio-media__upload">
+              <span>+ Unggah foto kartu</span>
+              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} onChange={(event) => {
+                const file = event.currentTarget.files?.[0];
+                if (file) onUpload(item.id, file);
+                event.currentTarget.value = "";
+              }} />
+            </label>
+            <small>JPG, PNG atau WebP • maks. 1,3 MB</small>
+          </div>
         </div>;
       })}
       <button type="button" className="studio-original__add" disabled={original[section].items.length >= 20} onClick={() => addGallery(section)}>+ Tambah {section}</button>
