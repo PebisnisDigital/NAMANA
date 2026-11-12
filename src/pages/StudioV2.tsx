@@ -192,6 +192,7 @@ export function StudioV2() {
     setSelected(next === "Nama" ? "name" : "menu-title");
     setShowDesign(false);
     setPopupOpen(false);
+    sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
     sendFrame({ type: "NAMINA_V2_MENU", menu: next });
   };
   const addCard = (section: GalleryKey) => {
@@ -213,6 +214,7 @@ export function StudioV2() {
     setShowDesign(false);
     setPopupOpen(true);
     setPopupCoordinates({ left: Math.max(12, window.innerWidth - 414), top: 116 });
+    sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
     sendFrame({ type: "NAMINA_V2_MENU", menu: nextMenu });
   };
 
@@ -629,9 +631,9 @@ export function StudioV2() {
       </div>
       <div className="studio-v2__device-switch" role="group" aria-label="Pilih tampilan website">
         <button type="button" aria-pressed={screen === "desktop"} className={screen === "desktop" ? "is-active" : ""}
-          onClick={() => { setScreen("desktop"); setPopupOpen(false); }}>▣ <span>PC</span></button>
+          onClick={() => { setScreen("desktop"); setPopupOpen(false); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>▣ <span>PC</span></button>
         <button type="button" aria-pressed={screen === "mobile"} className={screen === "mobile" ? "is-active" : ""}
-          onClick={() => { setScreen("mobile"); setPopupOpen(false); }}>▯ <span>HP</span></button>
+          onClick={() => { setScreen("mobile"); setPopupOpen(false); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>▯ <span>HP</span></button>
       </div>
       <div className="studio-v2__workbar-right">
         <span className="studio-v2__autosave"><i /> Draft otomatis</span>
