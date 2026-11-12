@@ -116,8 +116,8 @@ export function BusinessPortal() {
       }).select("id").single();
       if (response.error) throw response.error;
       setNewSlug("");
-      setFeedback("Website baru sudah berisi contoh lengkap /vini. Ganti nama, profesi, ikon, video, karya, produk, dan kontak sebelum dipublikasikan.");
-      if (user) await refresh(user);
+      // Open the fully populated preview immediately after creating the private site.
+      window.location.assign("/studio?site=" + encodeURIComponent(response.data.id));
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Gagal membuat website."); }
     finally { setBusy(false); }
   }
