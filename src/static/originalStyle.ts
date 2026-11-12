@@ -1,4 +1,4 @@
-import type { OriginalStyle } from "../domain/content";
+import type { OriginalStyle } from "../domain/content.js";
 
 export const originalStyleDefaults: OriginalStyle = {
   backgroundColor: "#08080c",
