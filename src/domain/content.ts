@@ -129,10 +129,29 @@ export const originalStyleSchema = z.object({
   shadow: z.enum(["none", "soft", "strong"]),
 }).strict();
 export type OriginalStyle = z.infer<typeof originalStyleSchema>;
+
+// Per-menu appearance and slide controls. Optional so existing client sites remain unchanged.
+export const originalMenuIconSchema = z.enum([
+  "default", "person", "briefcase", "sliders", "image", "shopping",
+  "star", "book", "award", "sparkles", "globe", "heart",
+]);
+export type OriginalMenuIcon = z.infer<typeof originalMenuIconSchema>;
+const originalMenuSettingsSchema = z.object({
+  icon: originalMenuIconSchema.optional(),
+  slideSpeed: z.number().int().min(0).max(150).optional(),
+}).strict();
+
 export const originalProfileSchema = z.object({
   // Display labels are separate from stable section keys; existing profiles keep defaults.
   menuTitles: z.object({
     nama: text(24), karir: text(24), skill: text(24), karya: text(24), produk: text(24),
+  }).partial().strict().optional(),
+  menuSettings: z.object({
+    nama: originalMenuSettingsSchema,
+    karir: originalMenuSettingsSchema,
+    skill: originalMenuSettingsSchema,
+    karya: originalMenuSettingsSchema,
+    produk: originalMenuSettingsSchema,
   }).partial().strict().optional(),
   contactUrl: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan URL WhatsApp HTTPS yang valid."),
   contactLabel: text(40).optional(),
