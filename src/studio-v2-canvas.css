@@ -105,3 +105,54 @@ html:has(.studio-v2-canvas), body:has(.studio-v2-canvas), #root:has(.studio-v2-c
     margin:10px 0 21px;padding:10px 13px;font-size:11px
   }
 }
+
+
+/* An iframe can briefly reject muted autoplay after switching PC -> HP.
+   Give the editor an actual visible recovery action inside the video row. */
+.studio-v2-canvas .vini-cinema__editor-video-retry {
+  position: absolute;
+  z-index: 9;
+  top: 178px;
+  right: clamp(14px, 2.5vw, 40px);
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  width: max-content;
+  max-width: min(90vw, 270px);
+  padding: 13px 14px;
+  border: 1px solid #a95f70;
+  border-radius: 13px;
+  background: #1d141ae8;
+  color: #fff0eb;
+  font: 700 11px Montserrat, system-ui, sans-serif;
+  text-align: center;
+  box-shadow: 0 12px 35px #000a;
+}
+.studio-v2-canvas .vini-cinema__editor-video-retry button {
+  min-height: 38px;
+  padding: 9px 14px;
+  border: 1px solid #fa6473;
+  border-radius: 10px;
+  background: #b92b3b;
+  color: #fff;
+  font: 800 12px Montserrat, system-ui, sans-serif;
+  cursor: pointer;
+}
+.studio-v2-canvas .vini-cinema__editor-video-retry button:hover {
+  background: #d63848;
+}
+@media(max-width:700px) {
+  .studio-v2-canvas .vini-cinema__editor-video-retry {
+    position: relative;
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    justify-self: center;
+    top: auto;
+    right: auto;
+    width: min(90%, 270px);
+    margin: 74px 0 0;
+    padding: 11px 12px;
+    font-size: 10px;
+  }
+}

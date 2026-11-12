@@ -4,6 +4,7 @@ import type { AssetUrls, OriginalProfile, SiteContent, OriginalMenuIcon } from "
 import { blankOriginal } from "../static/originalSeed";
 import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
 import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
+import { videoSourceForViewport } from "./videoSource";
 import "./ViniCinematic.css";
 
 function getPageSize() {
@@ -130,6 +131,8 @@ export function ViniCinematic({
   const [menuOpen, setMenuOpen] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [videoNeedsInteraction, setVideoNeedsInteraction] = useState(false);
+  const [videoPreviewTimedOut, setVideoPreviewTimedOut] = useState(false);
   const [usingFallbackVideo, setUsingFallbackVideo] = useState(false);
   const [introElapsed, setIntroElapsed] = useState(false);
   const [introTimedOut, setIntroTimedOut] = useState(false);
@@ -180,11 +183,7 @@ export function ViniCinematic({
       owner: content.identity.displayName,
     })) : null;
   const visibleGalleryColumns = Math.min(galleryColumns, Math.max(1, activeGallery?.length ?? 1));
-  const mobileVideoId = content.background.mobileVideoAssetId;
-  const desktopVideoId = content.background.desktopVideoAssetId;
-  const videoSrc = assetUrls[
-    (pageSize === 1 && mobileVideoId) || desktopVideoId || ""
-  ];
+  const videoSrc = videoSourceForViewport(content.background, assetUrls, pageSize === 1);
   const activeVideoSrc = usingFallbackVideo ? "/videos/hero.mp4" : videoSrc;
   const showLoader = !previewMode && (videoSrc ? !introElapsed || (!videoReady && !videoFailed && !introTimedOut) : !introElapsed);
 
@@ -278,26 +277,44 @@ export function ViniCinematic({
     };
   }, [introStartedAt]);
 
-  useEffect(() => {
+  // Preview PC/HP are the same-origin iframe at different widths. Explicitly
+  // retry muted inline playback when the viewport switches to phone mode.
+  const ensureVideoPlaying = () => {
     const video = videoRef.current;
-    if (!video || videoFailed) return;
+    if (!video || !pageVisible || videoFailed) return;
     video.defaultMuted = true;
     video.muted = true;
     video.playsInline = true;
-    if (!pageVisible) {
-      video.pause();
-    } else {
-      void video.play().catch(() => {
-        // Some browsers block playback even for muted inline video.
-      });
-    }
-  }, [pageVisible, videoFailed, activeVideoSrc]);
+    if (!video.paused) return;
+    void video.play().catch(() => {
+      // A browser can prevent autoplay inside a resized iframe. Offer a direct
+      // user-click playback recovery instead of leaving an unexplained black box.
+      if (editorMode) setVideoNeedsInteraction(true);
+    });
+  };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || videoFailed) return;
+    if (!pageVisible) video.pause();
+    else ensureVideoPlaying();
+  }, [pageVisible, videoFailed, activeVideoSrc, pageSize, editorMode]);
 
   useEffect(() => {
     setVideoReady(false);
     setVideoFailed(false);
     setUsingFallbackVideo(false);
-  }, [videoSrc]);
+    setVideoNeedsInteraction(false);
+    setVideoPreviewTimedOut(false);
+  }, [videoSrc, pageSize]);
+
+  // In edit mode previewMode hides the loading intro. Detect stalled playback
+  // and display an accessible "Putar Video" control right inside the hero.
+  useEffect(() => {
+    if (!editorMode || !videoSrc || videoReady || videoFailed) return;
+    const timeout = window.setTimeout(() => setVideoPreviewTimedOut(true), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [editorMode, videoSrc, videoReady, videoFailed, pageSize]);
 
   useEffect(() => {
     if (videoReady || videoFailed || usingFallbackVideo || !videoSrc || !fallbackOriginal) return;
@@ -322,10 +339,18 @@ export function ViniCinematic({
   const retryVideo = () => {
     setVideoFailed(false);
     setVideoReady(false);
+    setVideoNeedsInteraction(false);
+    setVideoPreviewTimedOut(false);
     const video = videoRef.current;
     if (!video) return;
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
     video.load();
-    void video.play().catch(() => setVideoFailed(true));
+    void video.play().catch(() => {
+      if (editorMode) setVideoNeedsInteraction(true);
+      else setVideoFailed(true);
+    });
   };
 
   const handleVideoError = () => {
@@ -342,6 +367,7 @@ export function ViniCinematic({
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
+            key={pageSize + ":" + activeVideoSrc}
             ref={videoRef}
             className="vini-cinema__video"
             src={activeVideoSrc}
@@ -352,7 +378,13 @@ export function ViniCinematic({
             loop
             playsInline
             preload="auto"
-            onPlaying={() => setVideoReady(true)}
+            onLoadedData={ensureVideoPlaying}
+            onCanPlay={ensureVideoPlaying}
+            onPlaying={() => {
+              setVideoReady(true);
+              setVideoNeedsInteraction(false);
+              setVideoPreviewTimedOut(false);
+            }}
             onError={handleVideoError}
             style={{ objectPosition: `${pageSize === 1 ? (content.background.mobileFocalX ?? content.background.focalX) : content.background.focalX}% ${content.background.focalY}%` }}
           />
@@ -360,6 +392,13 @@ export function ViniCinematic({
         <div className="vini-cinema__scrim" />
       </div>
       {editorMode && <button type="button" data-v2-edit="video" className="vini-cinema__editor-video">✎ Ganti Video</button>}
+      {editorMode && videoSrc && !videoReady &&
+        (videoFailed || videoNeedsInteraction || videoPreviewTimedOut) && (
+          <div className="vini-cinema__editor-video-retry" role="status">
+            <span>{videoFailed ? "Video belum bisa dimuat." : "Preview video belum bergerak."}</span>
+            <button type="button" onClick={retryVideo}>▶ Putar Video</button>
+          </div>
+        )}
 
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
@@ -461,7 +500,7 @@ export function ViniCinematic({
         </div>
       )}
 
-      {videoFailed && !showLoader && (
+      {videoFailed && !showLoader && !editorMode && (
         <div className="vini-cinema__video-status" role="status">
           <span>Video belum bisa diputar.</span>
           <button type="button" onClick={retryVideo}>Coba lagi</button>

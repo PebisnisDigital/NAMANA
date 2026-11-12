@@ -622,7 +622,7 @@ export function StudioV2() {
       <Field label="URL video HP (opsional)" type="url" value={site.media.mobileVideo}
         onChange={(value) => change((next) => { next.media.mobileVideo = value; })} />
       <a href="https://www.dropbox.com/home" className="studio-v2__test-link" target="_blank" rel="noopener noreferrer">Upload video ke Dropbox ↗</a>
-      <p className="studio-v2__inspector-hint">Upload video dilakukan di Dropbox. Tempel tautan berbagi yang bisa dibuka publik, idealnya menggunakan parameter raw=1.</p>
+      <p className="studio-v2__inspector-hint">Link video HP boleh kosong jika sama dengan video PC. Preview otomatis memakai video utama. Gunakan URL Dropbox publik dengan raw=1; jika autoplay terhalang, tekan Putar Video di preview.</p>
     </>;
     if (fact && factSection) return <>
       <Field label="Nama data" value={fact.label} maxLength={40} onChange={(value) => updateFact("label", value)} />
@@ -718,7 +718,7 @@ export function StudioV2() {
       <div className={"studio-v2__site-frame" + (screen === "mobile" ? " studio-v2__site-frame--phone" : "")}>
         {screen === "mobile" && <div className="studio-v2__phone-notch" aria-hidden="true" />}
         <iframe ref={frameRef} title={screen === "desktop" ? "Website klien — live editor tampilan PC" : "Website klien — live editor tampilan HP"}
-          src="/studio-v2-canvas" loading="eager" onLoad={() => setReady(true)} />
+          src="/studio-v2-canvas" loading="eager" allow="autoplay; fullscreen" onLoad={() => setReady(true)} />
       </div>
       {!site && <div className="studio-v2__canvas-wait">{working ? "Membuka website klien…" : "Pilih atau buat website klien terlebih dahulu."}</div>}
       <div className="studio-v2__canvas-indicator">
