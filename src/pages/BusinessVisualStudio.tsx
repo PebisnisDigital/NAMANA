@@ -33,7 +33,6 @@ export function BusinessVisualStudio() {
   const [dirty,setDirty] = useState(false);
   const [error,setError] = useState("");
   const [feedback,setFeedback] = useState("");
-  const section = menu.toLowerCase() as MenuKey;
   const original = site?.content.original;
   const style = { ...originalStyleDefaults,...original?.style };
   const parts = selected.split(":");
