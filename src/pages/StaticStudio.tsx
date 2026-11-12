@@ -24,6 +24,14 @@ async function callApi<T>(action: string, init?: RequestInit): Promise<T> {
 }
 
 const draftKey = (slug: string) => `namana:studio:draft:${slug}`;
+const menuFields = [
+  { key: "nama", label: "Nama", description: "Identitas dan biodata" },
+  { key: "karir", label: "Karir", description: "Pengalaman dan perjalanan" },
+  { key: "skill", label: "Skill", description: "Keahlian dan kemampuan" },
+  { key: "karya", label: "Karya", description: "Portofolio dan pencapaian" },
+  { key: "produk", label: "Produk", description: "Produk dan bisnis" },
+] as const;
+type StudioStep = "data" | "menu" | "publish";
 
 function ensureOriginal(site: SiteDocument): SiteDocument {
   if (!site.content.original) {
@@ -65,6 +73,8 @@ export function StaticStudio() {
   const [uploading, setUploading] = useState(false);
   const [localMediaPreviews, setLocalMediaPreviews] = useState<Record<string, string>>({});
   const [isPreview, setIsPreview] = useState(false);
+  const [step, setStep] = useState<StudioStep>("data");
+  const [approved, setApproved] = useState(false);
   const [showBriefs, setShowBriefs] = useState(false);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState("");
@@ -112,6 +122,8 @@ export function StaticStudio() {
       setDocument(ensureOriginal(site));
       setSha(remoteSha);
       setIsPreview(false);
+      setStep("data");
+      setApproved(false);
     } catch (cause) {
       setDocument(null);
       setError((cause as Error).message);
@@ -136,11 +148,12 @@ export function StaticStudio() {
       return next;
     });
     setError("");
-    setMessage("Draft tersimpan di browser ini.");
+    setApproved(false);
+    setMessage("Draft tersimpan di browser ini. Belum dipublikasikan.");
   };
 
   const publish = async () => {
-    if (!document) return;
+    if (!document || step !== "publish" || !approved) return;
     const checked = siteDocumentSchema.safeParse(prepareSite(document));
     if (!checked.success) {
       setError(checked.error.issues[0]?.message || "Periksa data sebelum terbit.");
@@ -155,13 +168,35 @@ export function StaticStudio() {
       setSha(result.sha);
       setDocument(checked.data);
       localStorage.removeItem(draftKey(document.slug));
-      setMessage("Perubahan dikirim ke GitHub. Vercel sedang menerbitkan website.");
+      setMessage("Publikasi dikirim ke GitHub. Vercel akan memperbarui website setelah deployment selesai.");
+      setApproved(false);
       await loadSlugs();
     } catch (cause) {
       setError((cause as Error).message);
     } finally {
       setWorking(false);
     }
+  };
+
+  const goToFinal = () => {
+    if (!document) return;
+    const names = menuFields.map(({ key, label }) => (document.content.original?.menuTitles?.[key] ?? label).trim());
+    if (names.some((name) => !name || name.length > 24)) {
+      setError("Nama menu harus diisi dan maksimal 24 karakter.");
+      return;
+    }
+    if (new Set(names.map((name) => name.toLocaleLowerCase("id"))).size !== names.length) {
+      setError("Nama tiap menu harus berbeda agar pengunjung tidak bingung.");
+      return;
+    }
+    const checked = siteDocumentSchema.safeParse(prepareSite(document));
+    if (!checked.success) {
+      setError(checked.error.issues[0]?.message || "Periksa data sebelum lanjut.");
+      return;
+    }
+    setError("");
+    setApproved(false);
+    setStep("publish");
   };
 
   const createSite = () => {
@@ -174,8 +209,10 @@ export function StaticStudio() {
     setSha(null);
     setNewSlug("");
     setIsPreview(false);
+    setStep("data");
+    setApproved(false);
     setError("");
-    setMessage("Klien baru memakai template Original. Isi data, lalu publikasikan.");
+    setMessage("Draft klien baru siap. Mulai dengan isi data, lalu tinjau nama menu.");
   };
 
   const prepareFromBrief = (brief: BriefRecord, chosenSlug: string) => {
@@ -206,6 +243,8 @@ export function StaticStudio() {
     setActiveSlug(suggested);
     setSha(null);
     setIsPreview(false);
+    setStep("data");
+    setApproved(false);
     setMessage(`Draft /${suggested} siap dengan template Original. Lengkapi Karya, Produk, dan video sebelum publikasi.`);
     setError("");
     return true;
@@ -249,7 +288,7 @@ export function StaticStudio() {
       uploadedPreviewUrls.current.push(previewUrl);
       setLocalMediaPreviews((previews) => ({ ...previews, [result.url]: previewUrl }));
       change((next) => { next.media.cards[id] = result.url; });
-      setMessage("Gambar terunggah. Klik Publikasikan untuk memperbarui website.");
+      setMessage("Gambar terunggah ke media. Data tetap draft sampai tahap publikasi final.");
     } catch (cause) { setError((cause as Error).message); }
     finally { setUploading(false); }
   };
@@ -303,17 +342,73 @@ export function StaticStudio() {
             </div>
           </details>
         </section>
-        {document && <OriginalStudioEditor key={document.slug} site={document} change={change} uploading={uploading} onUpload={(id, file) => void uploadGallery(id, file)} previews={localMediaPreviews} />}
+
+        <nav className="studio-steps" aria-label="Tahapan pembuatan website">
+          <span className={step === "data" ? "is-current" : ""}>01 Isi Data</span>
+          <span className={step === "menu" ? "is-current" : ""}>02 Atur Menu</span>
+          <span className={step === "publish" ? "is-current" : ""}>03 Publikasi</span>
+        </nav>
+        {document && step === "data" && <OriginalStudioEditor key={document.slug} site={document} change={change} uploading={uploading} onUpload={(id, file) => void uploadGallery(id, file)} previews={localMediaPreviews} />}
+        {document && step === "menu" && <section className="studio-review">
+          <h2>Tahap 2 — Atur nama menu</h2>
+          <p>Ubah nama yang terlihat di website. Isi data tetap tersimpan di kategori masing-masing. Lihat hasilnya langsung di sebelah kanan.</p>
+          {menuFields.map(({ key, label, description }) => (
+            <label className="studio-review__field" key={key} htmlFor={`studio-menu-${key}`}>
+              <span>{label} <small>{description}</small></span>
+              <input
+                id={`studio-menu-${key}`}
+                type="text"
+                maxLength={24}
+                value={document.content.original?.menuTitles?.[key] ?? label}
+                onChange={(event) => {
+                  const title = event.target.value;
+                  change((next) => { next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [key]: title }; });
+                }}
+              />
+            </label>
+          ))}
+          <p className="studio-review__hint">Periksa tulisan menu, video, animasi, dan kartu. Bila ada data yang salah, kembali ke tahap 1.</p>
+        </section>}
+        {document && step === "publish" && <section className="studio-review">
+          <h2>Tahap 3 — Publikasi final</h2>
+          <p>Ini langkah terakhir. Setelah dikonfirmasi, data akan dikirim ke GitHub dan ditayangkan melalui Vercel.</p>
+          <div className="studio-review__summary">
+            <strong>Alamat website</strong>
+            <code>{`https://namina.biz.id/${document.slug}`}</code>
+          </div>
+          <ul className="studio-review__menu-list">
+            {menuFields.map(({ key, label }) => (
+              <li key={key}>
+                <span>{document.content.original?.menuTitles?.[key]?.trim() || label}</span>
+                <span>{document.content.original?.[key].items.length ?? 0} item</span>
+              </li>
+            ))}
+          </ul>
+          <label className="studio-review__confirm">
+            <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} />
+            <span>Saya sudah memeriksa data, nama menu, tampilan, dan tautan. Website siap dipublikasikan.</span>
+          </label>
+        </section>}
       </aside>
       <section className="studio-main" aria-label="Pratinjau website">
         <div className="studio-main__toolbar">
           <div><strong>{document ? `/${document.slug}` : "Belum ada website"}</strong>
-            <span>{isPreview ? "Pratinjau lebar" : "Pratinjau langsung"}</span>
+            <span>{step === "data" ? "Tahap 1 — Isi data" : step === "menu" ? "Tahap 2 — Atur nama menu" : "Tahap 3 — Tinjauan final"}</span>
           </div>
-          <button type="button" aria-pressed={isPreview} onClick={() => setIsPreview((value) => !value)}>{isPreview ? "Kembali edit" : "Perbesar preview"}</button>
-          <button type="button" className="studio-publish" disabled={!document || working || uploading} onClick={() => void publish()}>
-            {working ? "Memproses…" : "Publikasikan"}
-          </button>
+          <div className="studio-main__actions">
+            <button type="button" aria-pressed={isPreview} onClick={() => setIsPreview((value) => !value)}>{isPreview ? "Tutup layar lebar" : "Perbesar"}</button>
+            {step === "data" && <button type="button" className="studio-next" disabled={!document || working || uploading} onClick={() => { setStep("menu"); setIsPreview(false); setError(""); }}>Lanjut: Atur Menu</button>}
+            {step === "menu" && <>
+              <button type="button" onClick={() => { setStep("data"); setError(""); }}>Kembali edit</button>
+              <button type="button" className="studio-next" disabled={!document || working || uploading} onClick={goToFinal}>Tinjau Final</button>
+            </>}
+            {step === "publish" && <>
+              <button type="button" onClick={() => { setStep("menu"); setApproved(false); }}>Kembali tinjau</button>
+              <button type="button" className="studio-publish" disabled={!document || working || uploading || !approved} onClick={() => void publish()}>
+                {working ? "Memproses…" : "Publikasikan"}
+              </button>
+            </>}
+          </div>
         </div>
         {error && <p role="alert" className="studio-alert studio-alert--error">{error}</p>}
         {message && <p role="status" className="studio-alert">{message}</p>}
