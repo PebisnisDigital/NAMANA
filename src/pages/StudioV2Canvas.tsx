@@ -42,7 +42,6 @@ export function StudioV2Canvas() {
       }
       if (message.type === "NAMINA_V2_MENU" && typeof message.menu === "string" && menus.includes(message.menu as VisualMenu)) {
         setActiveMenu(message.menu as VisualMenu);
-        setInline(null);
       }
       if (message.type === "NAMINA_V2_SELECT" && typeof message.key === "string") setSelected(message.key);
       if (message.type === "NAMINA_V2_CLOSE_EDITOR") setInline(null);
