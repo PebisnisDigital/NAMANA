@@ -59,3 +59,12 @@
   .business__visual-editor .studio-v2__workbar .studio-v2__logo span{display:inline}
   .business__visual-editor .studio-v2__site-workspace{min-height:calc(100svh - 125px)}
 }
+
+.business__admin-list{display:grid;gap:0}
+.business__admin-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:17px 0;border-top:1px solid #4c3740}
+.business__admin-row>div{display:grid;gap:7px;min-width:0}
+.business__admin-row strong{font-size:14px;overflow-wrap:anywhere}
+.business__admin-row small{font-size:11px;color:#c5b0af;line-height:1.5}
+.business__admin-row label{display:grid;gap:8px;color:#eed4d2;font-size:11px;font-weight:700;flex:0 0 176px}
+.business__admin-row select{min-height:43px;border:1px solid #905664;border-radius:10px;padding:9px 10px;color:#fdf0e8;background:#302128;font:700 12px Montserrat,system-ui}
+@media(max-width:560px){.business__admin-row{flex-wrap:wrap}.business__admin-row label{flex:1 1 100%}}
