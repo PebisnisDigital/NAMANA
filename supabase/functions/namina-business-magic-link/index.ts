@@ -120,6 +120,12 @@ Deno.serve(async (request) => {
     if (!userId || !hashedToken) {
       return response(origin, { error: "Data akses mitra tidak lengkap." }, 502);
     }
+    // Never hand a partner a token that would sign into a privileged admin account.
+    const recipientRole = await admin.from("namana_roles").select("role")
+      .eq("user_id", userId).maybeSingle();
+    if (recipientRole.error || recipientRole.data?.role === "superadmin") {
+      return response(origin, { error: "Akun admin tidak boleh menerima link mitra. Gunakan email khusus mitra." }, 403);
+    }
 
     if (action === "create") {
       const existing = await admin.from("namina_business_workspaces")
