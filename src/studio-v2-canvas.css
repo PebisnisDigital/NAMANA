@@ -239,3 +239,93 @@ html:has(.studio-v2-canvas), body:has(.studio-v2-canvas), #root:has(.studio-v2-c
     pointer-events: none;
   }
 }
+
+
+/*
+ * Phone editing: keep the actual <video> in normal flow, outside the
+ * dark overlapping profile gradient. The regular public template retains
+ * its full cinematic background layout. This eliminates the stacking
+ * ambiguity from grid-row 2 + negative profile margin + scrim.
+ *
+ * Important: place these rules last. Previous editor rules attempted
+ * object-fit adjustments but left the media absolutely positioned behind
+ * the overlapping profile/main stacking context.
+ */
+@media (max-width: 700px) {
+  .studio-v2-canvas .vini-cinema {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto !important;
+    align-content: start;
+    overflow-x: clip;
+  }
+
+  .studio-v2-canvas .vini-cinema__stage {
+    grid-column: 1;
+    grid-row: 2;
+    position: relative !important;
+    inset: auto !important;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    overflow: hidden;
+    background: #26161e !important;
+    isolation: isolate;
+    pointer-events: none;
+  }
+
+  .studio-v2-canvas .vini-cinema__stage video.vini-cinema__video {
+    position: relative !important;
+    inset: auto !important;
+    display: block !important;
+    flex: 0 0 auto;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: 16 / 9;
+    z-index: 3 !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    background: #26161e !important;
+  }
+
+  .studio-v2-canvas .vini-cinema--studio-portrait-video .vini-cinema__stage video.vini-cinema__video {
+    width: auto !important;
+    max-width: 100% !important;
+    max-height: min(59svh, 520px) !important;
+    aspect-ratio: 9 / 16;
+  }
+
+  .studio-v2-canvas .vini-cinema__stage .vini-cinema__scrim {
+    display: none !important;
+  }
+
+  .studio-v2-canvas .vini-cinema__main,
+  .studio-v2-canvas .vini-cinema--gallery .vini-cinema__main {
+    grid-row: 3;
+    z-index: 1;
+    margin: 0 !important;
+    padding-top: 13px !important;
+    transform: none !important;
+    background: var(--namina-bg, #08080c) !important;
+  }
+
+  .studio-v2-canvas .vini-cinema__editor-video,
+  .studio-v2-canvas .vini-cinema__editor-video-health {
+    z-index: 10;
+  }
+
+  .studio-v2-canvas .vini-cinema__editor-video-retry {
+    margin-top: 65px;
+  }
+}
