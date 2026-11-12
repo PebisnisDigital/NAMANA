@@ -95,6 +95,13 @@ export function ViniCinematic({
 }) {
   const emptyOriginal = useMemo(() => blankOriginal(content.identity.displayName), [content.identity.displayName]);
   const original = content.original ?? fallbackOriginal ?? emptyOriginal;
+  const menuTitles: Record<MenuKey, string> = {
+    Nama: original.menuTitles?.nama?.trim() || "Nama",
+    Karir: original.menuTitles?.karir?.trim() || "Karir",
+    Skill: original.menuTitles?.skill?.trim() || "Skill",
+    Karya: original.menuTitles?.karya?.trim() || "Karya",
+    Produk: original.menuTitles?.produk?.trim() || "Produk",
+  };
   const customStyle = original.style;
   const [pageSize, setPageSize] = useState(getPageSize);
   const [activeMenu, setActiveMenu] = useState<MenuKey>("Nama");
@@ -330,7 +337,7 @@ export function ViniCinematic({
 
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
-          <button className="vini-cinema__brand" type="button" onClick={() => selectMenu("Nama")} aria-label="NAMINA, kembali ke Nama">
+          <button className="vini-cinema__brand" type="button" onClick={() => selectMenu("Nama")} aria-label={`NAMINA, kembali ke ${menuTitles.Nama}`}>
             <NaminaLogo variant="compact" />
           </button>
           <button
@@ -346,7 +353,7 @@ export function ViniCinematic({
             {menus.map((menu) => (
               <button key={menu} type="button" className={activeMenu === menu ? "is-active" : ""} aria-current={activeMenu === menu ? "page" : undefined} onClick={() => selectMenu(menu)}>
                 <MenuIcon menu={menu} />
-                <span>{menu}</span>
+                <span>{menuTitles[menu]}</span>
               </button>
             ))}
           </nav>
@@ -363,14 +370,14 @@ export function ViniCinematic({
               </>
             ) : (
               <>
-                <h1 className="vini-cinema__section-title">{activeMenu}<span>{activeSection.subtitle}</span></h1>
+                <h1 className="vini-cinema__section-title">{menuTitles[activeMenu]}<span>{activeSection.subtitle}</span></h1>
                 <IntroDescription text={activeSection.description} />
               </>
             )}
           </div>
 
           {activeGallery ? activeGallery.length ? (
-            <section ref={sliderRef} tabIndex={0} className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${activeMenu}, bergerak otomatis, dapat digeser`} aria-roledescription="carousel" key={activeMenu} onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
+            <section ref={sliderRef} tabIndex={0} className="vini-cinema__gallery-viewport" aria-label={`Slider gambar ${menuTitles[activeMenu]}, bergerak otomatis, dapat digeser`} aria-roledescription="carousel" key={activeMenu} onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
               <div
                 className="vini-cinema__gallery-track"
                 style={{ width: `${activeGallery.length * 300 / visibleGalleryColumns}%`, "--gallery-slots": activeGallery.length * 3 } as CSSProperties}
@@ -385,9 +392,9 @@ export function ViniCinematic({
               </div>
             </section>
           ) : (
-            <p className="vini-cinema__empty">Belum ada {activeMenu.toLowerCase()} yang ditampilkan.</p>
+            <p className="vini-cinema__empty">Belum ada {menuTitles[activeMenu].toLowerCase()} yang ditampilkan.</p>
           ) : activeFacts.length ? (
-            <section ref={sliderRef} tabIndex={0} className="vini-cinema__highlights" aria-label={`Data ${activeMenu}, bergeser otomatis ke kiri, dapat digeser`} aria-roledescription="carousel" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
+            <section ref={sliderRef} tabIndex={0} className="vini-cinema__highlights" aria-label={`Data ${menuTitles[activeMenu]}, bergeser otomatis ke kiri, dapat digeser`} aria-roledescription="carousel" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
               <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 300 / visibleFactColumns}%`, "--slot-count": activeFacts.length * 3 } as CSSProperties}>
                 {[...activeFacts, ...activeFacts, ...activeFacts].map((item, index) => (
                   <div key={`${item.label}-${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index < activeFacts.length || index >= activeFacts.length * 2}>
@@ -398,7 +405,7 @@ export function ViniCinematic({
               </div>
             </section>
           ) : (
-            <p className="vini-cinema__empty">Belum ada data {activeMenu.toLowerCase()}.</p>
+            <p className="vini-cinema__empty">Belum ada data {menuTitles[activeMenu].toLowerCase()}.</p>
           )}
         </div>
       </div>
