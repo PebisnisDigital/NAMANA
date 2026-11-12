@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { businessClient } from "../business/client";
+import { PublishSuccessModal } from "../components/PublishSuccessModal";
 import { loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, type SiteDocument } from "../static/sites";
 import { originalStyleDefaults } from "../static/originalStyle";
 import type { OriginalMenuIcon, OriginalStyle } from "../domain/content";
@@ -26,6 +27,7 @@ export function BusinessVisualStudio() {
   const [site,setSite] = useState<SiteDocument | null>(null);
   const [rowId,setRowId] = useState("");
   const [publishedSha,setPublishedSha] = useState<string | null>(null);
+  const [publishedLink,setPublishedLink] = useState<string | null>(null);
   const [menu,setMenu] = useState<Menu>("Nama");
   const [selected,setSelected] = useState("name");
   const [popup,setPopup] = useState(false);
@@ -192,7 +194,9 @@ export function BusinessVisualStudio() {
         const revision=Number(live.data);
         if(!Number.isInteger(revision)||revision<1)throw new Error("Publikasi belum terkonfirmasi.");
         setPublishedSha("db:"+revision);
-        setFeedback("Website sudah tayang di namina.biz.id/"+site.slug+". Tidak perlu deploy Vercel.");
+        setPopup(false);
+        setDesign(false);
+        setPublishedLink("https://namina.biz.id/" + site.slug);
       }else{
         setFeedback("Draft berhasil disimpan. Versi publik belum berubah.");
       }
@@ -348,9 +352,10 @@ export function BusinessVisualStudio() {
         {mobile&&<div className="studio-v2__phone-notch" aria-hidden="true"/>}
         <iframe ref={frame} src="/studio-v2-canvas" title="Editor website pribadi" onLoad={()=>setReady(true)}/>
       </div>
-      <div className="studio-v2__canvas-indicator"><span>{dirty?"Ada perubahan belum disimpan":"Draft tersimpan"}</span><span>·</span><span>{publishedSha?"Website telah terbit":"Belum dipublikasikan"}</span>{publishedSha&&<a href={"/"+site?.slug} target="_blank" rel="noreferrer">Buka website ↗</a>}</div>
+      <div className="studio-v2__canvas-indicator"><span>{dirty?"Ada perubahan belum disimpan":"Draft tersimpan"}</span><span>·</span><span>{publishedSha?"Website telah terbit":"Belum dipublikasikan"}</span></div>
     </div>
     {immersive&&<button type="button" className="studio-v2__immersive-exit" onClick={()=>setImmersive(false)}>↙ Kembali ke Studio</button>}
+    {publishedLink && <PublishSuccessModal url={publishedLink} onClose={() => setPublishedLink(null)} />}
     {popup&&site&&<div className="studio-v2__inline-popover" style={{left:popupPosition.left,top:popupPosition.top}}>
       <div className="studio-v2__inline-popover-header"><div><small>STUDIO MITRA</small><strong>{design?"Desain":selected.startsWith("menu:")?"Pengaturan menu":"Edit elemen"}</strong></div>
         <button type="button" onClick={()=>{setPopup(false);setDesign(false)}} aria-label="Tutup">×</button>
