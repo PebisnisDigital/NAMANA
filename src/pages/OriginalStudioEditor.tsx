@@ -142,7 +142,6 @@ export function OriginalStudioEditor({ site, change }: EditProps) {
           onClick={() => setSelectedGallery(item.id)}>{index + 1}. {item.title}</button>)}
       </div>
       {original[section].items.filter((item) => item.id === (selectedGallery && original[section].items.some((entry) => entry.id === selectedGallery) ? selectedGallery : original[section].items[0]?.id)).map((item) => {
-        const url = site.media.cards[item.id] || "";
         return <div className="studio-original__item studio-original__gallery-edit" key={item.id}>
           <div className="studio-original__item-head"><strong>Edit {section}: {item.title}</strong><button type="button" onClick={() => { removeGallery(section, item.id); setSelectedGallery(null); }}>Hapus kartu</button></div>
           <TextField label="Judul" maxLength={80} value={item.title} onChange={(value) => updateGallery(section, item.id, "title", value)} />
