@@ -5,6 +5,7 @@ import { originalStyleDefaults } from "../static/originalStyle";
 import { blankSite, loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
+import "../studio-v2-immersive.css";
 
 type Session = { authenticated: boolean; configured: boolean };
 type SiteFile = { document: SiteDocument; sha: string };
@@ -89,6 +90,7 @@ export function StudioV2() {
   const [selected, setSelected] = useState("name");
   const [showDesign, setShowDesign] = useState(false);
   const [screen, setScreen] = useState<"desktop" | "mobile">("desktop");
+  const [immersive, setImmersive] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [popupCoordinates, setPopupCoordinates] = useState({ left: 24, top: 120 });
@@ -98,6 +100,13 @@ export function StudioV2() {
   const [published, setPublished] = useState<PublishStatus>(null);
   const [error, setError] = useState("");
   const [loadedOnce, setLoadedOnce] = useState(false);
+
+  useEffect(() => {
+    if (!immersive) return;
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setImmersive(false); };
+    window.addEventListener("keydown", escape);
+    return () => window.removeEventListener("keydown", escape);
+  }, [immersive]);
 
   const menuKey = menu.toLowerCase() as MenuKey;
   const original = site?.content.original;
@@ -659,7 +668,7 @@ export function StudioV2() {
     </div>;
   }
 
-  return <main className="studio-v2 studio-v2--fullscreen">
+  return <main className={"studio-v2 studio-v2--fullscreen" + (immersive ? " studio-v2--immersive" : "")}>
     <header className="studio-v2__workbar">
       <div className="studio-v2__workbar-left">
         <a href="/" className="studio-v2__logo" aria-label="NAMINA beranda">NAMINA<span>STUDIO</span></a>
@@ -685,6 +694,8 @@ export function StudioV2() {
           onClick={() => { setScreen("desktop"); setPopupOpen(false); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>▣ <span>PC</span></button>
         <button type="button" aria-pressed={screen === "mobile"} className={screen === "mobile" ? "is-active" : ""}
           onClick={() => { setScreen("mobile"); setPopupOpen(false); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>▯ <span>HP</span></button>
+        <button type="button" className="studio-v2__immersive-trigger" title="Edit website dalam layar penuh" aria-label="Edit layar penuh"
+          onClick={() => { setImmersive(true); setPopupOpen(false); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>⛶ <span>Layar Penuh</span></button>
       </div>
       <div className="studio-v2__workbar-right">
         <span className="studio-v2__autosave"><i /> Draft otomatis</span>
@@ -717,6 +728,7 @@ export function StudioV2() {
       </div>
     </div>
 
+    {immersive && <button type="button" className="studio-v2__immersive-exit" onClick={() => setImmersive(false)}>↙ Kembali ke Studio</button>}
     {popupOpen && site && <div ref={inspectorRef} className="studio-v2__inline-popover"
       style={{ left: popupCoordinates.left, top: popupCoordinates.top }} role="dialog" aria-modal="false" aria-label={"Edit " + labelForSelection()}>
       <div className="studio-v2__inline-popover-header">

@@ -6,6 +6,7 @@ import type { OriginalMenuIcon, OriginalStyle } from "../domain/content";
 import "../business.css";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
+import "../studio-v2-immersive.css";
 
 type MenuKey = "nama" | "karir" | "skill" | "karya" | "produk";
 type GalleryKey = "karya" | "produk";
@@ -30,10 +31,17 @@ export function BusinessVisualStudio() {
   const [popup,setPopup] = useState(false);
   const [design,setDesign] = useState(false);
   const [mobile,setMobile] = useState(false);
+  const [immersive,setImmersive] = useState(false);
   const [popupPosition,setPopupPosition] = useState({left:80,top:96});
   const [dirty,setDirty] = useState(false);
   const [error,setError] = useState("");
   const [feedback,setFeedback] = useState("");
+  // Completion tips should not sit on top of the website navigation forever.
+  useEffect(() => {
+    if (!feedback) return;
+    const timeout = window.setTimeout(() => setFeedback(""), 5200);
+    return () => window.clearTimeout(timeout);
+  }, [feedback]);
   const original = site?.content.original;
   const style = { ...originalStyleDefaults,...original?.style };
   const parts = selected.split(":");
@@ -44,6 +52,12 @@ export function BusinessVisualStudio() {
   const card = gallerySection ? original?.[gallerySection].items.find((x)=>x.id===parts[2]) : null;
   const send = useCallback((message:Record<string,unknown>) =>
     frame.current?.contentWindow?.postMessage(message,window.location.origin),[]);
+  useEffect(() => {
+    if (!immersive) return;
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setImmersive(false); };
+    window.addEventListener("keydown", escape);
+    return () => window.removeEventListener("keydown", escape);
+  }, [immersive]);
   useEffect(() => {
     if (!dirty) return;
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
@@ -304,7 +318,7 @@ export function BusinessVisualStudio() {
   if(loading)return <main className="business business__loading">Memuat Studio Mitra…</main>;
   if(error&&!site)return <main className="business business__loading"><p>{error}</p><a href="/studio">Kembali ke dashboard</a></main>;
 
-  return <main className="studio-v2 studio-v2--fullscreen business__visual-editor">
+  return <main className={"studio-v2 studio-v2--fullscreen business__visual-editor" + (immersive ? " studio-v2--immersive" : "")}>
     <header className="studio-v2__workbar">
       <div className="studio-v2__workbar-left">
         <a className="studio-v2__logo" href="/studio">NAMINA<span>MITRA STUDIO</span></a>
@@ -314,6 +328,7 @@ export function BusinessVisualStudio() {
       <div className="studio-v2__device-switch" role="group" aria-label="Tampilan">
         <button className={!mobile?"is-active":""} onClick={()=>setMobile(false)} type="button">PC</button>
         <button className={mobile?"is-active":""} onClick={()=>setMobile(true)} type="button">HP</button>
+        <button className="studio-v2__immersive-trigger" type="button" onClick={()=>{setImmersive(true);setPopup(false)}} title="Edit website langsung dalam layar penuh" aria-label="Edit layar penuh">⛶ <span>Layar Penuh</span></button>
       </div>
       <div className="studio-v2__workbar-right">
         <button type="button" className="studio-v2__design-trigger" onClick={()=>{setPopup(true);setDesign(true);send({type:"NAMINA_V2_CLOSE_EDITOR"})}}>Desain</button>
@@ -335,6 +350,7 @@ export function BusinessVisualStudio() {
       </div>
       <div className="studio-v2__canvas-indicator"><span>{dirty?"Ada perubahan belum disimpan":"Draft tersimpan"}</span><span>·</span><span>{publishedSha?"Website telah terbit":"Belum dipublikasikan"}</span>{publishedSha&&<a href={"/"+site?.slug} target="_blank" rel="noreferrer">Buka website ↗</a>}</div>
     </div>
+    {immersive&&<button type="button" className="studio-v2__immersive-exit" onClick={()=>setImmersive(false)}>↙ Kembali ke Studio</button>}
     {popup&&site&&<div className="studio-v2__inline-popover" style={{left:popupPosition.left,top:popupPosition.top}}>
       <div className="studio-v2__inline-popover-header"><div><small>STUDIO MITRA</small><strong>{design?"Desain":selected.startsWith("menu:")?"Pengaturan menu":"Edit elemen"}</strong></div>
         <button type="button" onClick={()=>{setPopup(false);setDesign(false)}} aria-label="Tutup">×</button>
