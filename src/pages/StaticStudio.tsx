@@ -10,6 +10,7 @@ import { OriginalStyleEditor } from "./OriginalStyleEditor";
 import { originalStyleDefaults } from "../static/originalStyle";
 import { StudioMediaEditor, type MediaPrompts } from "./StudioMediaEditor";
 import "../studio-static.css";
+import "../studio-app.css";
 
 type Session = { authenticated: boolean; configured: boolean };
 type StudioResponse = { slugs: string[] };
@@ -325,12 +326,12 @@ export function StaticStudio() {
     finally { setUploading(false); }
   };
 
-  if (!session) return <main className="studio-gate">
+  if (!session) return <main className="studio-gate studio-gate--app">
     {error ? <div className="studio-gate__card" role="alert"><h1>Studio tidak dapat dihubungi</h1><p>{error}</p><button type="button" onClick={() => location.reload()}>Coba lagi</button></div>
       : <p role="status">Memeriksa akses Studio…</p>}
   </main>;
 
-  if (!session.configured || !session.authenticated) return <main className="studio-gate"><div className="studio-gate__card">
+  if (!session.configured || !session.authenticated) return <main className="studio-gate studio-gate--app"><div className="studio-gate__card">
     <a className="studio-wordmark" href="/">NAMINA</a>
     <h1>{session.configured ? "Masuk Studio" : "Studio menunggu konfigurasi"}</h1>
     {session.configured ? <form onSubmit={login}>
