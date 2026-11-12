@@ -663,7 +663,7 @@ export function StudioV2() {
           setSelected("description");
           setPopupOpen(false);
         }}>Hapus data ini</button>
-        <button type="button" onClick={addFact}>+ Tambah data</button>
+        <button type="button" onClick={() => addFact(factSection || undefined)}>+ Tambah data</button>
       </div>
     </>;
     if (card && gallerySection) {
