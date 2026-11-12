@@ -623,7 +623,7 @@ export function StudioV2() {
         onChange={(value) => change((next) => { next.media.mobileVideo = value; })} />
       <a href="https://www.dropbox.com/home" className="studio-v2__test-link" target="_blank" rel="noopener noreferrer">Upload video ke Dropbox ↗</a>
       <p className="studio-v2__inspector-hint">Link video HP boleh kosong jika sama dengan PC. Jika video tidak muncul, gunakan Tes Link Video untuk memastikan file MP4 dapat dibuka dari hosting.</p>
-      {(site.media.mobileVideo || site.media.desktopVideo).startsWith("https://") && <a className="studio-v2__test-link" href={site.media.mobileVideo || site.media.desktopVideo} target="_blank" rel="noopener noreferrer">Tes Link Video ↗</a>
+      {(site.media.mobileVideo || site.media.desktopVideo).startsWith("https://") && <a className="studio-v2__test-link" href={site.media.mobileVideo || site.media.desktopVideo} target="_blank" rel="noopener noreferrer">Tes Link Video ↗</a>}
     </>;
     if (fact && factSection) return <>
       <Field label="Nama data" value={fact.label} maxLength={40} onChange={(value) => updateFact("label", value)} />
