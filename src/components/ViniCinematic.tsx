@@ -346,6 +346,7 @@ export function ViniCinematic({
         )}
         <div className="vini-cinema__scrim" />
       </div>
+      {editorMode && <button type="button" data-v2-edit="video" className="vini-cinema__editor-video">✎ Ganti Video</button>}
 
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
