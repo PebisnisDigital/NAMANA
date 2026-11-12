@@ -24,6 +24,7 @@ export function BusinessVisualStudio() {
   const [ready,setReady] = useState(false);
   const [site,setSite] = useState<SiteDocument | null>(null);
   const [rowId,setRowId] = useState("");
+  const [publishedSha,setPublishedSha] = useState<string | null>(null);
   const [menu,setMenu] = useState<Menu>("Nama");
   const [selected,setSelected] = useState("name");
   const [popup,setPopup] = useState(false);
@@ -60,11 +61,12 @@ export function BusinessVisualStudio() {
       const auth=await businessClient.auth.getUser();
       if(!auth.data.user){window.location.assign("/studio");return;}
       const result=await businessClient.from("namina_business_sites")
-        .select("id,document").eq("id",id).single();
+        .select("id,document,published_sha").eq("id",id).single();
       if(!active)return;
       if(result.error)throw result.error;
       const parsed=siteDocumentSchema.parse(result.data.document);
       setRowId(result.data.id);
+      setPublishedSha(result.data.published_sha || null);
       setSite(parsed);
     })().catch((e:Error)=>{if(active)setError(e.message)}).finally(()=>{if(active)setLoading(false)});
     return()=>{active=false};
@@ -156,22 +158,33 @@ export function BusinessVisualStudio() {
     return()=>window.removeEventListener("message",listener);
   },[menu,site,change]);
 
-  async function save(){
+  async function save(publish = false) {
     if(!businessClient || !site || !rowId)return;
     const parsed=siteDocumentSchema.safeParse(prepareSite(site));
     if(!parsed.success){setError("Konten tidak valid: "+parsed.error.issues[0]?.message);return;}
-    setWorking(true);setError("");
+    if(publish && !window.confirm("Website akan tampil publik. Sudah periksa foto, video, teks, dan link?"))return;
+    setWorking(true);setError("");setFeedback("");
     try{
+      // First save the latest verified draft, then publish that exact database row.
+      // These requests are authorized by the workspace owner and RLS.
       const result=await businessClient.from("namina_business_sites")
         .update({document:parsed.data,updated_at:new Date().toISOString()})
         .eq("id",rowId).select("id").single();
       if(result.error)throw result.error;
       setDirty(false);
-      setFeedback("Draft privat berhasil disimpan. Website publik tidak berubah.");
+      if(publish){
+        const live=await businessClient.rpc("namina_business_publish_site",{p_site_id:rowId});
+        if(live.error)throw live.error;
+        const revision=Number(live.data);
+        if(!Number.isInteger(revision)||revision<1)throw new Error("Publikasi belum terkonfirmasi.");
+        setPublishedSha("db:"+revision);
+        setFeedback("Website sudah tayang di namina.biz.id/"+site.slug+". Tidak perlu deploy Vercel.");
+      }else{
+        setFeedback("Draft berhasil disimpan. Versi publik belum berubah.");
+      }
     }catch(cause){setError(cause instanceof Error?cause.message:"Tidak bisa menyimpan.");}
     finally{setWorking(false)}
   }
-
   const field=(label:string,value:string,update:(v:string)=>void,multiline=false)=>
     <label className="studio-v2__field"><span>{label}</span>
       {multiline?<textarea rows={4} value={value} onChange={e=>update(e.target.value)}/>:
@@ -282,8 +295,11 @@ export function BusinessVisualStudio() {
       </div>
       <div className="studio-v2__workbar-right">
         <button type="button" className="studio-v2__design-trigger" onClick={()=>{setPopup(true);setDesign(true);send({type:"NAMINA_V2_CLOSE_EDITOR"})}}>Desain</button>
-        <button type="button" className="studio-v2__publish-trigger" disabled={!site||!dirty||working} onClick={()=>void save()}>
-          {working?"Menyimpan…":"Simpan Draft"}
+        <button type="button" className="studio-v2__publish-trigger" disabled={!site||!dirty||working} onClick={()=>void save(false)}>
+          {working?"Memproses…":"Simpan Draft"}
+        </button>
+        <button type="button" className="studio-v2__publish-trigger" disabled={!site||working} onClick={()=>void save(true)}>
+          Publikasikan
         </button>
         <a href="/studio" className="studio-v2__v1-link">Daftar Klien</a>
       </div>
@@ -295,7 +311,7 @@ export function BusinessVisualStudio() {
         {mobile&&<div className="studio-v2__phone-notch" aria-hidden="true"/>}
         <iframe ref={frame} src="/studio-v2-canvas" title="Editor website pribadi" onLoad={()=>setReady(true)}/>
       </div>
-      <div className="studio-v2__canvas-indicator"><span>{dirty?"Ada perubahan belum disimpan":"Draft tersimpan"}</span><span>·</span><span>Belum dipublikasikan</span></div>
+      <div className="studio-v2__canvas-indicator"><span>{dirty?"Ada perubahan belum disimpan":"Draft tersimpan"}</span><span>·</span><span>{publishedSha?"Website telah terbit":"Belum dipublikasikan"}</span>{publishedSha&&<a href={"/"+site?.slug} target="_blank" rel="noreferrer">Buka website ↗</a>}</div>
     </div>
     {popup&&site&&<div className="studio-v2__inline-popover" style={{left:popupPosition.left,top:popupPosition.top}}>
       <div className="studio-v2__inline-popover-header"><div><small>STUDIO MITRA</small><strong>{design?"Desain":selected.startsWith("menu:")?"Pengaturan menu":"Edit elemen"}</strong></div>
