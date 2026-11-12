@@ -26,6 +26,7 @@ export function BusinessPortal() {
   const [newSlug, setNewSlug] = useState("");
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
+  const canManage = !!workspace && workspace.subscription_status === "active" && !!workspace.current_period_end && new Date(workspace.current_period_end).getTime() > Date.now();
 
   async function refresh(current: User) {
     if (!businessClient) return;
@@ -122,8 +123,8 @@ export function BusinessPortal() {
     if (!checked.success) { setError("Nama link harus terdiri dari 3–48 karakter, huruf kecil, angka, atau tanda hubung."); return; }
     if (sites.some((site) => site.slug === slug)) { setError("Nama link sudah ada di workspace."); return; }
     if (sites.length >= workspace.max_sites) { setError("Kuota website penuh."); return; }
-    if (!["pending","active"].includes(workspace.subscription_status)) {
-      setError("Akses membuat website sedang dijeda."); return;
+    if (!canManage) {
+      setError("Paket Bisnis belum aktif atau masa langganan sudah berakhir."); return;
     }
     setBusy(true);
     try {
@@ -183,7 +184,7 @@ export function BusinessPortal() {
         <p className="business__lead">Kelola draft website klien melalui Studio visual pribadi. Data mitra lain tidak dapat diakses dari akun ini.</p>
         {workspace && <>
           <div className="business__stats">
-            <div><small>Status langganan</small><strong>{statusText[workspace.subscription_status]}</strong><span>{workspace.subscription_status === "pending" ? "Belum ada pembayaran yang diproses" : "Paket Bisnis NAMINA"}</span></div>
+            <div><small>Status langganan</small><strong>{workspace.subscription_status === "active" && !canManage ? "Perlu diperpanjang" : statusText[workspace.subscription_status]}</strong><span>{workspace.subscription_status === "pending" ? "Menunggu aktivasi admin. Belum ada pembayaran." : "Paket Bisnis NAMINA"}</span></div>
             <div><small>Website draft</small><strong>{sites.length} / {workspace.max_sites}</strong><span>Kuota awal Paket Bisnis</span></div>
             <div><small>Biaya langganan</small><strong>Rp87.000</strong><span>Per bulan · checkout belum aktif</span></div>
           </div>
@@ -202,9 +203,9 @@ export function BusinessPortal() {
               <label>Nama link website klien
                 <input required maxLength={48} value={newSlug} placeholder="contoh: klien-siti" onChange={(event) => setNewSlug(event.target.value)} />
               </label>
-              <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !["pending","active"].includes(workspace.subscription_status)}>Buat Draft</button>
+              <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !canManage}>Buat Draft</button>
             </form>
-            <p className="business__fineprint">Draft mitra masih privat. Link publik, penagihan, dan aktivasi otomatis belum dibuka pada Sprint 1.</p>
+            <p className="business__fineprint">{canManage ? "Draft mitra tetap privat, belum dipublikasikan. " : "Untuk mulai membuat website, tunggu aktivasi Paket Bisnis oleh admin. "}Link publik dan pembayaran otomatis belum dibuka pada Sprint 1.</p>
           </section>
         </>}
       </>}
