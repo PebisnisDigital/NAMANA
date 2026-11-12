@@ -1,0 +1,218 @@
+/* Studio V2 / fullscreen on-site editor. Does not affect the 8-step V1 generator. */
+.studio-v2--fullscreen{
+  --v2-red:#e73743;--v2-ivory:#f5f0e8;--v2-muted:#bba8a9;--v2-border:#64414b;
+  display:flex;flex-direction:column;min-height:100svh;width:100%;background:#08080b;
+  color:var(--v2-ivory);overflow:hidden
+}
+.studio-v2--fullscreen .studio-v2__workbar{
+  position:sticky;top:0;z-index:80;flex:0 0 auto;min-height:68px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 22px;border-bottom:1px solid #493039;
+  background:#100d11f6;backdrop-filter:blur(16px)
+}
+.studio-v2--fullscreen .studio-v2__workbar-left,
+.studio-v2--fullscreen .studio-v2__workbar-right{
+  display:flex;align-items:center;gap:11px;min-width:0
+}
+.studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo{
+  flex:0 0 auto;letter-spacing:-.06em;font-weight:850;font-size:20px;white-space:nowrap
+}
+.studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo span{
+  font-size:9px;color:#ffbac0;background:#4d262e;border-radius:99px;padding:6px 8px;letter-spacing:.08em
+}
+.studio-v2--fullscreen .studio-v2__workbar-divider{width:1px;height:31px;background:#66414b}
+.studio-v2--fullscreen .studio-v2__client-switch select{
+  min-height:40px;max-width:200px;min-width:107px;padding:8px 12px;border:1px solid #67454d;
+  background:#2a1e24;color:#ffe7e2;border-radius:11px;font-weight:700;font-size:12px
+}
+.studio-v2--fullscreen .studio-v2__workbar button,
+.studio-v2--fullscreen .studio-v2__workbar-create summary{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:40px;border:1px solid #66444d;border-radius:11px;
+  color:#fce5e1;background:#2a2025;padding:9px 13px;
+  font-size:12px;font-weight:750;text-decoration:none;white-space:nowrap
+}
+.studio-v2--fullscreen .studio-v2__workbar-create summary{background:#3c262d}
+.studio-v2--fullscreen .studio-v2__workbar-create > div{z-index:100}
+.studio-v2--fullscreen .studio-v2__workbar-create > div input{min-width:155px}
+.studio-v2--fullscreen .studio-v2__sr-only{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0
+}
+.studio-v2--fullscreen .studio-v2__device-switch{
+  display:flex;align-items:center;gap:4px;padding:4px;
+  background:#281d22;border:1px solid #54343f;border-radius:13px
+}
+.studio-v2--fullscreen .studio-v2__device-switch button{
+  border:0;border-radius:9px;min-width:62px;min-height:34px;padding:8px 13px;
+  color:#bca7aa;background:transparent;font-size:14px;font-weight:800
+}
+.studio-v2--fullscreen .studio-v2__device-switch button span{font-size:11px;margin-left:4px}
+.studio-v2--fullscreen .studio-v2__device-switch button.is-active{
+  color:#fff;background:#b82d3b;box-shadow:0 4px 12px #0004
+}
+.studio-v2--fullscreen .studio-v2__autosave{
+  display:inline-flex;align-items:center;gap:7px;color:#c8b5b4;white-space:nowrap;
+  font-size:10px;font-weight:650
+}
+.studio-v2--fullscreen .studio-v2__autosave i{
+  display:inline-block;width:7px;height:7px;background:#e64d5c;border-radius:50%;
+  box-shadow:0 0 0 3px #e64d5c22
+}
+.studio-v2--fullscreen .studio-v2__workbar .studio-v2__design-trigger{border-color:#b35b69;color:#ffcfce}
+.studio-v2--fullscreen .studio-v2__workbar .studio-v2__publish-trigger{
+  color:#fff;border-color:#e85562;background:#d03241;font-size:12px;font-weight:850
+}
+.studio-v2--fullscreen .studio-v2__workbar .studio-v2__publish-trigger:hover{background:#ee4451}
+.studio-v2--fullscreen .studio-v2__v1-link{
+  display:inline-flex;align-items:center;justify-content:center;min-height:39px;
+  border:1px solid #62434b;border-radius:10px;padding:8px 12px;
+  color:#e2cacc;text-decoration:none;font-size:11px;font-weight:800
+}
+.studio-v2--fullscreen .studio-v2__elementbar{
+  position:relative;z-index:35;display:flex;flex:0 0 auto;align-items:center;gap:12px;
+  min-height:54px;padding:7px 22px;background:#191215;border-bottom:1px solid #3e2f36
+}
+.studio-v2--fullscreen .studio-v2__edit-hint{
+  color:#e2a9b0;font-size:11px;font-weight:750;white-space:nowrap
+}
+.studio-v2--fullscreen .studio-v2__elementbar-menus,
+.studio-v2--fullscreen .studio-v2__elementbar-tools{
+  display:flex;align-items:center;gap:5px;min-width:0;overflow-x:auto;scrollbar-width:none
+}
+.studio-v2--fullscreen .studio-v2__elementbar-menus{flex:1}
+.studio-v2--fullscreen .studio-v2__elementbar-tools{justify-content:flex-end}
+.studio-v2--fullscreen .studio-v2__elementbar button{
+  color:#ddc5c6;background:transparent;border:1px solid transparent;
+  border-radius:9px;padding:8px 10px;white-space:nowrap;font-size:11px;font-weight:750;min-height:35px
+}
+.studio-v2--fullscreen .studio-v2__elementbar-menus button.is-active{
+  background:#46252d;color:#ffebeb;border-color:#a74350
+}
+.studio-v2--fullscreen .studio-v2__elementbar-tools button{
+  color:#ffced1;background:#3a222a;border-color:#5f3b45
+}
+.studio-v2--fullscreen .studio-v2__elementbar-tools button:hover{background:#5c2b36}
+.studio-v2--fullscreen .studio-v2__site-workspace{
+  position:relative;flex:1;min-height:570px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:#08080c;overflow:hidden
+}
+.studio-v2--fullscreen .studio-v2__site-workspace--desktop{
+  width:100%;height:calc(100svh - 122px);min-height:560px
+}
+.studio-v2--fullscreen .studio-v2__site-frame{
+  position:relative;flex:1 1 auto;width:100%;height:100%;min-height:0;overflow:hidden;
+  background:#08080c
+}
+.studio-v2--fullscreen .studio-v2__site-frame iframe{
+  display:block;width:100%;height:100%;min-height:560px;border:0;
+  background:#08080c
+}
+.studio-v2--fullscreen .studio-v2__site-workspace--mobile{
+  padding:22px 20px 28px;
+  background:radial-gradient(circle at 50% 20%,#322229 0%,#141013 60%,#0a080b 100%);
+}
+.studio-v2--fullscreen .studio-v2__site-frame--phone{
+  flex:0 0 auto;box-sizing:border-box;width:414px;max-width:100%;height:810px;
+  max-height:calc(100svh - 205px);min-height:560px;
+  padding:11px;border:2px solid #65515b;border-radius:38px;
+  box-shadow:0 0 0 3px #070608,0 30px 85px #000a;
+}
+.studio-v2--fullscreen .studio-v2__site-frame--phone iframe{
+  min-height:0;height:100%;border-radius:27px
+}
+.studio-v2--fullscreen .studio-v2__phone-notch{
+  position:absolute;z-index:5;left:50%;top:11px;width:105px;height:19px;
+  transform:translateX(-50%);border-radius:0 0 15px 15px;background:#08080b;pointer-events:none
+}
+.studio-v2--fullscreen .studio-v2__canvas-indicator{
+  position:absolute;left:14px;bottom:12px;z-index:4;display:flex;align-items:center;gap:8px;
+  max-width:calc(100% - 28px);padding:7px 12px;border-radius:99px;
+  background:#110f13d9;border:1px solid #493840;color:#d9babc;
+  font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.studio-v2--fullscreen .studio-v2__canvas-indicator a{
+  color:#ffb9bc;font-weight:750;text-decoration:none
+}
+.studio-v2--fullscreen .studio-v2__canvas-wait{
+  position:absolute;z-index:4;inset:0;display:grid;place-items:center;
+  background:#100c0eef;color:#f5e1dd;font-size:14px;font-weight:700
+}
+.studio-v2--fullscreen .studio-v2__floating-message{
+  position:fixed;z-index:110;top:135px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:14px;max-width:80vw;padding:11px 14px;
+  border:1px solid #8e525f;border-radius:12px;background:#382027;box-shadow:0 15px 38px #0009;
+  color:#fff0e8;font-size:12px;line-height:1.5
+}
+.studio-v2--fullscreen .studio-v2__floating-message--error{border-color:#fa5b64;background:#512027}
+.studio-v2--fullscreen .studio-v2__floating-message button{
+  min-width:26px;min-height:26px;border:0;background:#5d2c34;color:#fff;border-radius:8px;font-size:17px
+}
+.studio-v2--fullscreen .studio-v2__inline-popover{
+  position:fixed;z-index:95;box-sizing:border-box;width:370px;max-width:calc(100vw - 20px);
+  max-height:min(73svh,640px);display:flex;flex-direction:column;
+  border:1px solid #ce616e;border-radius:17px;background:#20171c;
+  box-shadow:0 20px 65px #000c,0 0 0 3px #ff6c7030;
+  overflow:hidden
+}
+.studio-v2--fullscreen .studio-v2__inline-popover-header{
+  flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;
+  gap:10px;padding:16px 16px 13px;border-bottom:1px solid #5b3c46;
+  background:#321e25
+}
+.studio-v2--fullscreen .studio-v2__inline-popover-header > div{display:grid;gap:4px}
+.studio-v2--fullscreen .studio-v2__inline-popover-header small{color:#fd7886;letter-spacing:.09em;font-size:9px;font-weight:850}
+.studio-v2--fullscreen .studio-v2__inline-popover-header strong{color:#fff0e7;font-size:15px;line-height:1.25}
+.studio-v2--fullscreen .studio-v2__inline-popover-header button{
+  width:33px;height:33px;border:1px solid #9d5561;border-radius:10px;
+  background:#592b35;color:#fff4ed;font-size:20px
+}
+.studio-v2--fullscreen .studio-v2__inline-popover-content{
+  flex:1;min-height:0;overflow-y:auto;padding:17px;scrollbar-width:thin;scrollbar-color:#90555e transparent
+}
+.studio-v2--fullscreen .studio-v2__inline-popover-content .studio-v2__field{margin-bottom:13px}
+.studio-v2--fullscreen .studio-v2__inline-popover-content textarea{min-height:88px}
+.studio-v2--fullscreen .studio-v2__approve{display:flex;align-items:flex-start;gap:10px;margin:16px 0;line-height:1.6;text-align:left}
+.studio-v2--fullscreen .studio-v2__approve input{flex:0 0 19px;width:19px;height:19px;margin-top:1px}
+.studio-v2--fullscreen .studio-v2__publish-button{min-height:49px;width:100%;border-radius:11px;background:#d12d3a;border:1px solid #eb5966;color:#fff;font-weight:850}
+.studio-v2--fullscreen .studio-v2__modal{max-height:90svh;overflow:auto}
+@media(max-width:1250px){
+  .studio-v2--fullscreen .studio-v2__autosave{display:none}
+  .studio-v2--fullscreen .studio-v2__edit-hint{display:none}
+}
+@media(max-width:900px){
+  .studio-v2--fullscreen .studio-v2__workbar{padding:10px 12px;gap:6px}
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo{font-size:17px}
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo span{font-size:8px}
+  .studio-v2--fullscreen .studio-v2__device-switch button{min-width:42px;padding-inline:8px}
+  .studio-v2--fullscreen .studio-v2__device-switch button span{display:none}
+  .studio-v2--fullscreen .studio-v2__elementbar{padding-inline:11px;gap:6px}
+  .studio-v2--fullscreen .studio-v2__elementbar-tools button{font-size:10px}
+}
+@media(max-width:680px){
+  .studio-v2--fullscreen .studio-v2__workbar{flex-wrap:wrap}
+  .studio-v2--fullscreen .studio-v2__workbar-left{flex:1;order:1}
+  .studio-v2--fullscreen .studio-v2__device-switch{order:3;flex:0 0 auto}
+  .studio-v2--fullscreen .studio-v2__workbar-right{order:2;margin-left:auto}
+  .studio-v2--fullscreen .studio-v2__workbar-create{display:none}
+  .studio-v2--fullscreen .studio-v2__client-switch select{max-width:117px;min-width:90px}
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__logo span{display:none}
+  .studio-v2--fullscreen .studio-v2__workbar-divider{display:none}
+  .studio-v2--fullscreen .studio-v2__workbar-right{gap:5px}
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__design-trigger span{display:none}
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__exit{display:none}
+  .studio-v2--fullscreen .studio-v2__workbar .studio-v2__publish-trigger{padding-inline:9px;font-size:10px}
+  .studio-v2--fullscreen .studio-v2__v1-link{display:none}
+  .studio-v2--fullscreen .studio-v2__device-switch{order:4;margin-left:0}
+  .studio-v2--fullscreen .studio-v2__elementbar{min-height:51px}
+  .studio-v2--fullscreen .studio-v2__elementbar-menus{flex:1 1 40%}
+  .studio-v2--fullscreen .studio-v2__elementbar-tools{flex:1 1 40%;justify-content:flex-end}
+  .studio-v2--fullscreen .studio-v2__site-workspace{min-height:600px}
+  .studio-v2--fullscreen .studio-v2__site-workspace--mobile{padding-inline:6px}
+  .studio-v2--fullscreen .studio-v2__site-frame--phone{width:min(100%,414px);max-height:none;height:760px}
+  .studio-v2--fullscreen .studio-v2__inline-popover{
+    top:auto!important;left:8px!important;right:8px!important;bottom:8px;
+    width:auto;max-width:none;max-height:64svh
+  }
+  .studio-v2--fullscreen .studio-v2__floating-message{max-width:96vw;min-width:280px}
+}
