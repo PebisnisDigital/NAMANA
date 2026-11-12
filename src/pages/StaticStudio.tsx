@@ -428,6 +428,7 @@ export function StaticStudio() {
       <div className="studio-app__topbar-inner">
         <a className="studio-app__brand" href="/" aria-label="NAMINA, kembali ke beranda">NAMINA<span>STUDIO</span></a>
         <div className="studio-app__top-actions">
+          <a className="studio-app__v2-link" href="/studio-v2">Studio V2 ✦</a>
           <button type="button" onClick={() => setShowBriefs((value) => !value)}>{showBriefs ? "Kembali edit" : "Brief klien"}</button>
           <button type="button" className="studio-app__logout" onClick={() => void logout()}>Keluar</button>
         </div>
