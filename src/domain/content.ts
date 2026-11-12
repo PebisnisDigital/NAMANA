@@ -24,6 +24,14 @@ export const reservedSlugs = new Set([
   "gaya",
   "templates",
   "formulir",
+  "mitra",
+  "daftar",
+  "bisnis",
+  "langganan",
+  "studio-v1",
+  "studio-v2",
+  "studio-v2-canvas",
+  "generator",
 ]);
 export const slugSchema = z
   .string()
