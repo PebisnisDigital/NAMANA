@@ -156,3 +156,42 @@ html:has(.studio-v2-canvas), body:has(.studio-v2-canvas), #root:has(.studio-v2-c
     font-size: 10px;
   }
 }
+
+/* Keep the real video above its stage background in the phone preview.
+   Scrim is decorative and must never paint an opaque black layer over video. */
+@media (max-width: 700px) {
+  .studio-v2-canvas .vini-cinema__stage:has(video) {
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .studio-v2-canvas .vini-cinema__stage video.vini-cinema__video {
+    z-index: 1;
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: none;
+    background: transparent;
+  }
+  .studio-v2-canvas .vini-cinema__stage .vini-cinema__scrim {
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 50%,
+      color-mix(in srgb, var(--namina-bg, #08080c) 40%, transparent) 76%,
+      var(--namina-bg, #08080c) 100%
+    );
+  }
+  .studio-v2-canvas .vini-cinema__editor-video-retry {
+    z-index: 15;
+    margin-top: 86px;
+  }
+}
+.studio-v2-canvas .vini-cinema__editor-video-retry small {
+  font: 500 10px/1.5 Montserrat, system-ui, sans-serif;
+  color: #efd2d1;
+}

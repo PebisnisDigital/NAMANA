@@ -284,7 +284,8 @@ export function BusinessVisualStudio() {
     if(selected==="video")return <>
       {field("Link video desktop / Dropbox",site.media.desktopVideo,v=>change(next=>{next.media.desktopVideo=v}))}
       {field("Link video HP",site.media.mobileVideo,v=>change(next=>{next.media.mobileVideo=v}))}
-      <p className="studio-v2__inspector-hint">Jika video HP sama dengan PC, kolom HP boleh dikosongkan: preview otomatis menggunakan video PC. Gunakan URL publik MP4 (Dropbox raw=1). Jika browser menahan autoplay, tekan Putar Video pada preview.</p>
+      <p className="studio-v2__inspector-hint">Jika video HP sama dengan PC, kolom HP boleh dikosongkan. Jika area video hitam, klik Tes Link Video untuk memeriksa akses MP4 dari hosting.</p>
+      {(site.media.mobileVideo || site.media.desktopVideo).startsWith("https://") && <a className="studio-v2__test-link" href={site.media.mobileVideo || site.media.desktopVideo} target="_blank" rel="noopener noreferrer">Tes Link Video ↗</a>}
     </>;
     if(fact&&factSection)return <>
       {field("Judul data",fact.label,v=>change(next=>{next.content.original![factSection].items[factIndex].label=v}))}
