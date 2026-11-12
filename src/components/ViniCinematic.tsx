@@ -419,7 +419,7 @@ export function ViniCinematic({
   };
 
   return (
-    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.layoutPreset ? ` vini-cinema--layout-${customStyle.layoutPreset}` : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}`}>
+    <main style={styleVariables} className={`vini-cinema${showLoader ? " vini-cinema--loading" : ""}${activeGallery ? " vini-cinema--gallery" : ""}${customStyle ? " vini-cinema--styled" : ""}${customStyle?.layoutPreset ? ` vini-cinema--layout-${customStyle.layoutPreset}` : ""}${customStyle?.buttonVariant === "outline" ? " vini-cinema--button-outline" : ""}${editorMode && pageSize === 1 && phoneVideoHealth.height > phoneVideoHealth.width ? " vini-cinema--studio-portrait-video" : ""}`}>
       <div className="vini-cinema__stage" aria-hidden="true">
         {videoSrc && (
           <video
