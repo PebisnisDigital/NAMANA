@@ -239,3 +239,8 @@
   .studio-root.studio-app--namina .studio-eight__step > strong { font-size: 9px; }
   .studio-eight__modal { padding: 24px 18px; }
 }
+
+/* Non-disruptive shortcut: visual Studio V2 lives on its own route. */
+.studio-root.studio-app--namina .studio-app__v2-link { display:inline-flex; align-items:center; min-height:39px; border:1px solid #b3505b; border-radius:11px; background:#4c262d; color:#ffe4e2; padding:9px 12px; text-decoration:none; font-size:11px; font-weight:800; }
+.studio-root.studio-app--namina .studio-app__v2-link:hover { background:#6e2935; }
+@media(max-width:400px){.studio-root.studio-app--namina .studio-app__v2-link{font-size:10px;padding-inline:8px;}}

@@ -1,0 +1,27 @@
+html:has(.studio-v2-canvas), body:has(.studio-v2-canvas), #root:has(.studio-v2-canvas) { margin: 0; width: 100%; min-height: 100%; background: #090a0a; }
+.studio-v2-canvas { position: relative; width: 100%; min-height: 100svh; overflow-x: hidden; background: #08080c; }
+.studio-v2-canvas__loading { display: grid; min-height: 100svh; place-items: center; color: #ead2d0; font: 700 13px Montserrat, sans-serif; }
+.studio-v2-canvas .vini-cinema [data-v2-edit] { cursor: pointer; transition: outline-color .12s, background-color .12s; }
+.studio-v2-canvas .vini-cinema [data-v2-edit]:hover {
+  outline: 2px dashed #ff6670;
+  outline-offset: 4px;
+}
+.studio-v2-canvas .vini-cinema .studio-v2-canvas__chosen {
+  outline: 2px solid #ff4856 !important;
+  outline-offset: 4px;
+}
+.studio-v2-canvas .vini-cinema__editor-add {
+  display: block;
+  margin: 12px 0 23px;
+  padding: 10px 13px;
+  color: #fff4ee;
+  background: #b82833;
+  border: 1px solid #f46270;
+  border-radius: 12px;
+  font: 750 12px Montserrat, sans-serif;
+  cursor: pointer;
+}
+.studio-v2-canvas__inline { padding: 12px; border: 2px solid #f04a53; border-radius: 14px; background: #23181b; box-shadow: 0 20px 60px #000b; }
+.studio-v2-canvas__inline label { display: block; margin-bottom: 8px; color: #fff1e6; font: 700 11px Montserrat, sans-serif; }
+.studio-v2-canvas__inline textarea { display: block; box-sizing: border-box; width: 100%; min-height: 82px; padding: 9px; border: 1px solid #97616b; border-radius: 8px; background: #0e0c0d; color: #fff; font: 500 12px Montserrat, sans-serif; resize: vertical; }
+.studio-v2-canvas__inline button { margin-top: 9px; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #d4313f; color: white; font: 800 12px Montserrat, sans-serif; cursor: pointer; }

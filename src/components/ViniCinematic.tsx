@@ -42,9 +42,9 @@ function MenuIcon({ menu }: { menu: MenuKey }) {
   );
 }
 
-function IntroDescription({ text }: { text: string }) {
+function IntroDescription({ text, editorTarget }: { text: string; editorTarget?: string }) {
   return (
-    <p>
+    <p data-v2-edit={editorTarget}>
       {text.split(/(?<=\.)\s+/).map((sentence, index) => (
         <span className="vini-cinema__description-sentence" key={index}>{sentence}</span>
       ))}
@@ -86,12 +86,20 @@ export function ViniCinematic({
   introStartedAt,
   fallbackOriginal,
   previewMode = false,
+  editorMode = false,
+  editorMenu,
+  onEditorMenuChange,
+  onEditorAddCard,
 }: {
   content: SiteContent;
   assetUrls: AssetUrls;
   introStartedAt?: number;
   fallbackOriginal?: OriginalProfile;
   previewMode?: boolean;
+  editorMode?: boolean;
+  editorMenu?: MenuKey;
+  onEditorMenuChange?: (menu: MenuKey) => void;
+  onEditorAddCard?: (section: "karya" | "produk") => void;
 }) {
   const emptyOriginal = useMemo(() => blankOriginal(content.identity.displayName), [content.identity.displayName]);
   const original = content.original ?? fallbackOriginal ?? emptyOriginal;
@@ -104,7 +112,8 @@ export function ViniCinematic({
   };
   const customStyle = original.style;
   const [pageSize, setPageSize] = useState(getPageSize);
-  const [activeMenu, setActiveMenu] = useState<MenuKey>("Nama");
+  const [activeMenu, setActiveMenu] = useState<MenuKey>(editorMenu ?? "Nama");
+  useEffect(() => { if (editorMenu) setActiveMenu(editorMenu); }, [editorMenu]);
   const [selectedCard, setSelectedCard] = useState<VisualCard | null>(null);
   const [pageVisible, setPageVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -286,7 +295,8 @@ export function ViniCinematic({
   const selectMenu = (menu: MenuKey) => {
     setActiveMenu(menu);
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    onEditorMenuChange?.(menu);
+    if (!editorMode) window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -353,27 +363,27 @@ export function ViniCinematic({
           </button>
           <nav id="vini-navigation" className={`vini-cinema__nav${menuOpen ? " vini-cinema__nav--open" : ""}`} aria-label="Navigasi cerita">
             {menus.map((menu) => (
-              <button key={menu} type="button" className={activeMenu === menu ? "is-active" : ""} aria-current={activeMenu === menu ? "page" : undefined} onClick={() => selectMenu(menu)}>
+              <button key={menu} type="button" data-v2-edit={editorMode ? `menu:${menu.toLowerCase()}` : undefined} className={activeMenu === menu ? "is-active" : ""} aria-current={activeMenu === menu ? "page" : undefined} onClick={() => selectMenu(menu)}>
                 <MenuIcon menu={menu} />
                 <span>{menuTitles[menu]}</span>
               </button>
             ))}
           </nav>
-          {original.contactUrl && <a className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">{original.contactLabel?.trim() || "Japri Saya!"}</a>}
+          {original.contactUrl && <a data-v2-edit={editorMode ? "contact" : undefined} className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">{original.contactLabel?.trim() || "Japri Saya!"}</a>}
         </header>
 
         <div className="vini-cinema__main">
           <div className="vini-cinema__intro">
-            <span className="vini-cinema__hello">{activeSection.intro}</span>
+            <span data-v2-edit={editorMode ? "intro" : undefined} className="vini-cinema__hello">{activeSection.intro}</span>
             {activeMenu === "Nama" ? (
               <>
-                <h1>{content.identity.displayName}<span>{content.identity.profession}</span></h1>
-                <IntroDescription text={activeSection.description} />
+                <h1 data-v2-edit={editorMode ? "name" : undefined}>{content.identity.displayName}<span data-v2-edit={editorMode ? "profession" : undefined}>{content.identity.profession}</span></h1>
+                <IntroDescription text={activeSection.description} editorTarget={editorMode ? "description" : undefined} />
               </>
             ) : (
               <>
-                <h1 className="vini-cinema__section-title">{menuTitles[activeMenu]}<span>{activeSection.subtitle}</span></h1>
-                <IntroDescription text={activeSection.description} />
+                <h1 data-v2-edit={editorMode ? "menu-title" : undefined} className="vini-cinema__section-title">{menuTitles[activeMenu]}<span data-v2-edit={editorMode ? "subtitle" : undefined}>{activeSection.subtitle}</span></h1>
+                <IntroDescription text={activeSection.description} editorTarget={editorMode ? "description" : undefined} />
               </>
             )}
           </div>
@@ -386,7 +396,7 @@ export function ViniCinematic({
               >
                 {[...activeGallery, ...activeGallery, ...activeGallery].map((card, index) => (
                   <div className="vini-cinema__gallery-slide" key={`${card.id}-${index}`} aria-hidden={index < activeGallery.length || index >= activeGallery.length * 2}>
-                    <button type="button" className="vini-cinema__visual-card" onClick={(event) => { if (suppressCardClickRef.current) { suppressCardClickRef.current = false; event.preventDefault(); return; } setSelectedCard(card); }} tabIndex={index >= activeGallery.length && index < activeGallery.length * 2 ? 0 : -1} aria-label={`Lihat detail ${card.title}`}>
+                    <button type="button" data-v2-edit={editorMode ? `card:${activeMenu.toLowerCase()}:${card.id}` : undefined} className="vini-cinema__visual-card" onClick={(event) => { if (suppressCardClickRef.current) { suppressCardClickRef.current = false; event.preventDefault(); return; } setSelectedCard(card); }} tabIndex={index >= activeGallery.length && index < activeGallery.length * 2 ? 0 : -1} aria-label={`Lihat detail ${card.title}`}>
                       <CardArtwork card={card} />
                     </button>
                   </div>
@@ -399,7 +409,7 @@ export function ViniCinematic({
             <section ref={sliderRef} tabIndex={0} className="vini-cinema__highlights" aria-label={`Data ${menuTitles[activeMenu]}, bergeser otomatis ke kiri, dapat digeser`} aria-roledescription="carousel" onPointerDown={onSliderPointerDown} onPointerMove={onSliderPointerMove} onPointerUp={onSliderPointerEnd} onPointerCancel={onSliderPointerEnd} onWheel={onSliderWheel} onKeyDown={onSliderKeyDown}>
               <div key={activeMenu} className="vini-cinema__highlight-track" style={{ width: `${activeFacts.length * 300 / visibleFactColumns}%`, "--slot-count": activeFacts.length * 3 } as CSSProperties}>
                 {[...activeFacts, ...activeFacts, ...activeFacts].map((item, index) => (
-                  <div key={`${item.label}-${item.value}-${index}`} className="vini-cinema__highlight" aria-hidden={index < activeFacts.length || index >= activeFacts.length * 2}>
+                  <div key={`${item.label}-${item.value}-${index}`} data-v2-edit={editorMode ? `fact:${activeMenu.toLowerCase()}:${index % activeFacts.length}` : undefined} className="vini-cinema__highlight" aria-hidden={index < activeFacts.length || index >= activeFacts.length * 2}>
                     <img src={`/animated-icons/${item.icon}.webp`} width={40} height={40} alt="" decoding="async" />
                     <span>{item.label}<strong>{item.value}</strong></span>
                   </div>
@@ -408,6 +418,11 @@ export function ViniCinematic({
             </section>
           ) : (
             <p className="vini-cinema__empty">Belum ada data {menuTitles[activeMenu].toLowerCase()}.</p>
+          )}
+          {editorMode && activeGallery && onEditorAddCard && (
+            <button type="button" className="vini-cinema__editor-add" onClick={() => onEditorAddCard(activeMenu === "Karya" ? "karya" : "produk")}>
+              + Tambah kartu {menuTitles[activeMenu]}
+            </button>
           )}
         </div>
       </div>
