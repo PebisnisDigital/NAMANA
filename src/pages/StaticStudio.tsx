@@ -6,6 +6,9 @@ import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, typ
 import { BriefInbox } from "./BriefInbox";
 import type { BriefRecord } from "../domain/brief";
 import { OriginalStudioEditor } from "./OriginalStudioEditor";
+import { OriginalStyleEditor } from "./OriginalStyleEditor";
+import { originalStyleDefaults } from "../static/originalStyle";
+import { StudioMediaEditor, type MediaPrompts } from "./StudioMediaEditor";
 import "../studio-static.css";
 
 type Session = { authenticated: boolean; configured: boolean };
@@ -31,7 +34,24 @@ const menuFields = [
   { key: "karya", label: "Karya", description: "Portofolio dan pencapaian" },
   { key: "produk", label: "Produk", description: "Produk dan bisnis" },
 ] as const;
-type StudioStep = "data" | "menu" | "publish";
+type StudioStep = "input" | "media" | "result";
+const promptKey = (slug: string) => `namina:studio:media-prompts:${slug}`;
+const emptyPrompts: MediaPrompts = { image: "", video: "" };
+function savedPrompts(slug: string): MediaPrompts {
+  try {
+    const raw = localStorage.getItem(promptKey(slug));
+    if (!raw) return { ...emptyPrompts };
+    const value: unknown = JSON.parse(raw);
+    if (!value || typeof value !== "object") return { ...emptyPrompts };
+    const prompts = value as Record<string, unknown>;
+    return {
+      image: typeof prompts.image === "string" ? prompts.image.slice(0, 7000) : "",
+      video: typeof prompts.video === "string" ? prompts.video.slice(0, 7000) : "",
+    };
+  } catch {
+    return { ...emptyPrompts };
+  }
+}
 
 function ensureOriginal(site: SiteDocument): SiteDocument {
   if (!site.content.original) {
@@ -73,7 +93,8 @@ export function StaticStudio() {
   const [uploading, setUploading] = useState(false);
   const [localMediaPreviews, setLocalMediaPreviews] = useState<Record<string, string>>({});
   const [isPreview, setIsPreview] = useState(false);
-  const [step, setStep] = useState<StudioStep>("data");
+  const [step, setStep] = useState<StudioStep>("input");
+  const [mediaPrompts, setMediaPrompts] = useState<MediaPrompts>({ ...emptyPrompts });
   const [approved, setApproved] = useState(false);
   const [showBriefs, setShowBriefs] = useState(false);
   const [working, setWorking] = useState(false);
@@ -120,9 +141,10 @@ export function StaticStudio() {
         }
       }
       setDocument(ensureOriginal(site));
+      setMediaPrompts(savedPrompts(slug));
       setSha(remoteSha);
       setIsPreview(false);
-      setStep("data");
+      setStep("input");
       setApproved(false);
     } catch (cause) {
       setDocument(null);
@@ -153,7 +175,7 @@ export function StaticStudio() {
   };
 
   const publish = async () => {
-    if (!document || step !== "publish" || !approved) return;
+    if (!document || step !== "result" || !approved) return;
     const checked = siteDocumentSchema.safeParse(prepareSite(document));
     if (!checked.success) {
       setError(checked.error.issues[0]?.message || "Periksa data sebelum terbit.");
@@ -196,7 +218,15 @@ export function StaticStudio() {
     }
     setError("");
     setApproved(false);
-    setStep("publish");
+    setStep("result");
+  };
+
+  const changePrompt = (field: keyof MediaPrompts, value: string) => {
+    setMediaPrompts((current) => {
+      const next = { ...current, [field]: value.slice(0, 7000) };
+      try { localStorage.setItem(promptKey(activeSlug), JSON.stringify(next)); } catch { /* Browser storage may be disabled. */ }
+      return next;
+    });
   };
 
   const createSite = () => {
@@ -205,14 +235,15 @@ export function StaticStudio() {
     if (!parsed.success) return setError(parsed.error.issues[0]?.message || "Slug belum valid.");
     if (slugs.includes(slug)) return setError("Nama halaman sudah terpakai.");
     setDocument(blankSite(slug));
+    setMediaPrompts(savedPrompts(slug));
     setActiveSlug(slug);
     setSha(null);
     setNewSlug("");
     setIsPreview(false);
-    setStep("data");
+    setStep("input");
     setApproved(false);
     setError("");
-    setMessage("Draft klien baru siap. Mulai dengan isi data, lalu tinjau nama menu.");
+    setMessage("Draft baru siap. Isi data, tambahkan media, lalu lihat hasil web.");
   };
 
   const prepareFromBrief = (brief: BriefRecord, chosenSlug: string) => {
@@ -239,13 +270,14 @@ export function StaticStudio() {
     next.content.original!.karir.items = textList(brief.details.experience).map((value) => ({ id: crypto.randomUUID(), label: "Karir", value, icon: 8121304 }));
     next.content.original!.skill.items = textList(brief.details.skills).map((value) => ({ id: crypto.randomUUID(), label: "Skill", value, icon: 8121272 }));
     setDocument(next);
+    setMediaPrompts(savedPrompts(suggested));
     setShowBriefs(false);
     setActiveSlug(suggested);
     setSha(null);
     setIsPreview(false);
-    setStep("data");
+    setStep("input");
     setApproved(false);
-    setMessage(`Draft /${suggested} siap dengan template Original. Lengkapi Karya, Produk, dan video sebelum publikasi.`);
+    setMessage(`Draft /${suggested} siap. Lengkapi konten dan media sebelum publikasi.`);
     setError("");
     return true;
   };
@@ -315,109 +347,127 @@ export function StaticStudio() {
     Object.entries(resolveMedia(prepared)).map(([id, url]) => [id, localMediaPreviews[url] || url]),
   ) : {};
 
-  return <main className="studio-root">
-    <header className="studio-header">
-      <a className="studio-wordmark" href="/">NAMINA</a>
-      <strong>Studio <span className="studio-header__separator">/</span> Original</strong>
-      <div className="studio-header__actions">
-        <button type="button" aria-pressed={showBriefs} onClick={() => setShowBriefs((value) => !value)}>{showBriefs ? "Kembali edit" : "Formulir klien"}</button>
-        {document && <a href={`/${document.slug}`} target="_blank" rel="noreferrer">Buka website</a>}
-        <button type="button" onClick={() => void logout()}>Keluar</button>
+
+  return <main className="studio-root studio-app">
+    <header className="studio-app__topbar">
+      <div className="studio-app__topbar-inner">
+        <a className="studio-app__brand" href="/" aria-label="NAMINA, kembali ke beranda">NAMINA<span>STUDIO</span></a>
+        <div className="studio-app__top-actions">
+          <button type="button" onClick={() => setShowBriefs((value) => !value)}>{showBriefs ? "Kembali ke editor" : "Data masuk"}</button>
+          <button type="button" className="studio-app__logout" onClick={() => void logout()}>Keluar</button>
+        </div>
       </div>
     </header>
-    {showBriefs ? <div className="studio-brief-view"><BriefInbox onPrepare={prepareFromBrief} /></div> : <div className={`studio-workspace${isPreview ? " studio-workspace--preview" : ""}`}>
-      <aside className="studio-sidebar" aria-label="Editor klien">
-        <section className="studio-client">
-          <h1>Editor website <span>Original</span></h1>
-          <label htmlFor="site-picker">Pilih klien</label>
-          <select id="site-picker" value={slugs.includes(activeSlug) ? activeSlug : ""} onChange={(event) => void openSite(event.target.value)}>
-            {!slugs.includes(activeSlug) && <option value="">Klien baru (draft)</option>}
-            {slugs.map((slug) => <option key={slug} value={slug}>/{slug}</option>)}
-          </select>
-          <details className="studio-client__new" key={activeSlug}><summary>+ Buat website klien baru</summary>
-            <div className="studio-inline">
-              <label htmlFor="new-client-slug">Alamat halaman</label>
-              <input id="new-client-slug" placeholder="nama-klien" value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
-              <button type="button" onClick={createSite}>Buat</button>
+    <div className="studio-app__shell">
+      {showBriefs ? <section className="studio-app__briefs"><BriefInbox onPrepare={prepareFromBrief} /></section> : <>
+        <section className="studio-app__welcome">
+          <p>HALO, SELAMAT DATANG!</p>
+          <h1>Bangun cerita digitalmu.</h1>
+          <span>Isi profil, siapkan media, lihat hasilnya. Semua dari satu tempat.</span>
+        </section>
+        <nav className="studio-app__stepper" aria-label="Tahapan pembuatan website">
+          <button type="button" className={step === "input" ? "is-active" : "is-complete"} onClick={() => { setStep("input"); setApproved(false); }} disabled={!document} aria-current={step === "input" ? "step" : undefined}>
+            <span className="studio-app__step-number">1</span><span>INPUT</span>
+          </button>
+          <span className="studio-app__step-line" aria-hidden="true" />
+          <button type="button" className={step === "media" ? "is-active" : step === "result" ? "is-complete" : ""} onClick={() => { setStep("media"); setApproved(false); }} disabled={!document} aria-current={step === "media" ? "step" : undefined}>
+            <span className="studio-app__step-number">2</span><span>MEDIA</span>
+          </button>
+          <span className="studio-app__step-line" aria-hidden="true" />
+          <button type="button" className={step === "result" ? "is-active" : ""} disabled={step !== "result"} aria-current={step === "result" ? "step" : undefined}>
+            <span className="studio-app__step-number">3</span><span>HASIL WEB</span>
+          </button>
+        </nav>
+        <section className="studio-app__card studio-app__client">
+          <div className="studio-app__card-heading">
+            <span className="studio-app__card-icon" aria-hidden="true">⌂</span>
+            <div><h2>Website yang diedit</h2><p>Pilih profil klien atau buat yang baru.</p></div>
+          </div>
+          <label className="studio-app__field" htmlFor="site-picker">
+            <span>Nama website</span>
+            <select id="site-picker" value={slugs.includes(activeSlug) ? activeSlug : ""} onChange={(event) => { if (event.target.value) void openSite(event.target.value); }}>
+              {!slugs.includes(activeSlug) && <option value="">Klien baru (draft)</option>}
+              {slugs.map((slug) => <option key={slug} value={slug}>/{slug}</option>)}
+            </select>
+          </label>
+          <details className="studio-app__disclosure">
+            <summary>+ Buat website baru</summary>
+            <div className="studio-app__disclosure-body">
+              <label className="studio-app__field" htmlFor="new-client-slug"><span>Nama link klien</span>
+                <input id="new-client-slug" placeholder="contoh: namaklien" value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
+                <small>Huruf kecil, angka dan tanda hubung. Panjang 3–48 karakter.</small>
+              </label>
+              <button className="studio-app__secondary" type="button" onClick={createSite}>Buat draft</button>
             </div>
           </details>
         </section>
-
-        <nav className="studio-steps" aria-label="Tahapan pembuatan website">
-          <span className={step === "data" ? "is-current" : ""}>01 Isi Data</span>
-          <span className={step === "menu" ? "is-current" : ""}>02 Atur Menu</span>
-          <span className={step === "publish" ? "is-current" : ""}>03 Publikasi</span>
-        </nav>
-        {document && step === "data" && <OriginalStudioEditor key={document.slug} site={document} change={change} uploading={uploading} onUpload={(id, file) => void uploadGallery(id, file)} previews={localMediaPreviews} />}
-        {document && step === "menu" && <section className="studio-review">
-          <h2>Tahap 2 — Atur nama menu</h2>
-          <p>Ubah nama yang terlihat di website. Isi data tetap tersimpan di kategori masing-masing. Lihat hasilnya langsung di sebelah kanan.</p>
-          {menuFields.map(({ key, label, description }) => (
-            <label className="studio-review__field" key={key} htmlFor={`studio-menu-${key}`}>
-              <span>{label} <small>{description}</small></span>
-              <input
-                id={`studio-menu-${key}`}
-                type="text"
-                maxLength={24}
-                value={document.content.original?.menuTitles?.[key] ?? label}
-                onChange={(event) => {
-                  const title = event.target.value;
-                  change((next) => { next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [key]: title }; });
-                }}
+        {error && <p className="studio-app__notice studio-app__notice--error" role="alert">{error}</p>}
+        {message && <p className="studio-app__notice" role="status">{message}</p>}
+        {!document ? <section className="studio-app__card"><p className="studio-app__empty">{working ? "Sedang memuat data klien..." : "Pilih klien atau buat website baru untuk mulai mengedit."}</p></section> : <>
+          {step === "input" && <>
+            <section className="studio-app__card studio-app__editor-card">
+              <div className="studio-app__card-heading">
+                <span className="studio-app__card-icon" aria-hidden="true">✎</span>
+                <div><h2>INPUT · Data profil</h2><p>Pilih menu yang mau diisi. Nama menunya juga bisa diganti.</p></div>
+              </div>
+              <OriginalStudioEditor key={document.slug} site={document} change={change} />
+            </section>
+            <details className="studio-app__card studio-app__advanced">
+              <summary><span aria-hidden="true">◈</span><span><strong>Kustomisasi desain</strong><small>Warna, font, ukuran teks, layout dan tombol</small></span><span aria-hidden="true">⌄</span></summary>
+              <OriginalStyleEditor
+                value={{ ...originalStyleDefaults, ...document.content.original?.style }}
+                update={(field, value) => change((next) => { next.content.original!.style = { ...originalStyleDefaults, ...next.content.original!.style, [field]: value }; })}
+                reset={() => change((next) => { delete next.content.original!.style; })}
               />
-            </label>
-          ))}
-          <p className="studio-review__hint">Periksa tulisan menu, video, animasi, dan kartu. Bila ada data yang salah, kembali ke tahap 1.</p>
-        </section>}
-        {document && step === "publish" && <section className="studio-review">
-          <h2>Tahap 3 — Publikasi final</h2>
-          <p>Ini langkah terakhir. Setelah dikonfirmasi, data akan dikirim ke GitHub dan ditayangkan melalui Vercel.</p>
-          <div className="studio-review__summary">
-            <strong>Alamat website</strong>
-            <code>{`https://namina.biz.id/${document.slug}`}</code>
-          </div>
-          <ul className="studio-review__menu-list">
-            {menuFields.map(({ key, label }) => (
-              <li key={key}>
-                <span>{document.content.original?.menuTitles?.[key]?.trim() || label}</span>
-                <span>{document.content.original?.[key].items.length ?? 0} item</span>
-              </li>
-            ))}
-          </ul>
-          <label className="studio-review__confirm">
-            <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} />
-            <span>Saya sudah memeriksa data, nama menu, tampilan, dan tautan. Website siap dipublikasikan.</span>
-          </label>
-        </section>}
-      </aside>
-      <section className="studio-main" aria-label="Pratinjau website">
-        <div className="studio-main__toolbar">
-          <div><strong>{document ? `/${document.slug}` : "Belum ada website"}</strong>
-            <span>{step === "data" ? "Tahap 1 — Isi data" : step === "menu" ? "Tahap 2 — Atur nama menu" : "Tahap 3 — Tinjauan final"}</span>
-          </div>
-          <div className="studio-main__actions">
-            <button type="button" aria-pressed={isPreview} onClick={() => setIsPreview((value) => !value)}>{isPreview ? "Tutup layar lebar" : "Perbesar"}</button>
-            {step === "data" && <button type="button" className="studio-next" disabled={!document || working || uploading} onClick={() => { setStep("menu"); setIsPreview(false); setError(""); }}>Lanjut: Atur Menu</button>}
-            {step === "menu" && <>
-              <button type="button" onClick={() => { setStep("data"); setError(""); }}>Kembali edit</button>
-              <button type="button" className="studio-next" disabled={!document || working || uploading} onClick={goToFinal}>Tinjau Final</button>
-            </>}
-            {step === "publish" && <>
-              <button type="button" onClick={() => { setStep("menu"); setApproved(false); }}>Kembali tinjau</button>
-              <button type="button" className="studio-publish" disabled={!document || working || uploading || !approved} onClick={() => void publish()}>
-                {working ? "Memproses…" : "Publikasikan"}
-              </button>
-            </>}
-          </div>
-        </div>
-        {error && <p role="alert" className="studio-alert studio-alert--error">{error}</p>}
-        {message && <p role="status" className="studio-alert">{message}</p>}
-        <div className="studio-preview studio-preview--original">
-          {working && !document ? <p role="status">Memuat website…</p> : prepared ?
-            <ViniCinematic key={prepared.slug} content={prepared.content} assetUrls={assetUrls} previewMode />
-            : <p>Pilih klien atau buat website baru.</p>}
-        </div>
-      </section>
-    </div>}
+            </details>
+          </>}
+          {step === "media" && <StudioMediaEditor site={document} change={change} prompts={mediaPrompts} onPromptChange={changePrompt} uploading={uploading} previews={localMediaPreviews} onUpload={(id, file) => void uploadGallery(id, file)} />}
+          {step === "result" && <>
+            <section className="studio-app__card studio-app__result">
+              <div className="studio-app__card-heading">
+                <span className="studio-app__card-icon" aria-hidden="true">▣</span>
+                <div><h2>HASIL WEB · Pratinjau</h2><p>Cek hasil sebelum website diterbitkan.</p></div>
+              </div>
+              <div className="studio-app__result-meta">
+                <span>{"/" + document.slug}</span>
+                <button type="button" onClick={() => setIsPreview((value) => !value)}>{isPreview ? "Perkecil preview" : "Perbesar preview"}</button>
+              </div>
+              <div className={"studio-app__preview" + (isPreview ? " studio-app__preview--large" : "")}>
+                {prepared && <ViniCinematic key={prepared.slug} content={prepared.content} assetUrls={assetUrls} previewMode />}
+              </div>
+              <p className="studio-app__preview-hint">Ini pratinjau dari draft. <a href={"/" + document.slug} target="_blank" rel="noreferrer">Buka versi yang sudah terbit</a>.</p>
+            </section>
+            <details className="studio-app__card studio-app__advanced">
+              <summary><span aria-hidden="true">◈</span><span><strong>Masih mau ubah desain?</strong><small>Warna, font dan tata letak bisa diedit di sini</small></span><span aria-hidden="true">⌄</span></summary>
+              <OriginalStyleEditor
+                value={{ ...originalStyleDefaults, ...document.content.original?.style }}
+                update={(field, value) => change((next) => { next.content.original!.style = { ...originalStyleDefaults, ...next.content.original!.style, [field]: value }; })}
+                reset={() => change((next) => { delete next.content.original!.style; })}
+              />
+            </details>
+            <section className="studio-app__card studio-app__publish">
+              <div className="studio-app__card-heading">
+                <span className="studio-app__card-icon" aria-hidden="true">✓</span>
+                <div><h2>Siap dipublikasikan?</h2><p>Pastikan data dan medianya sudah sesuai.</p></div>
+              </div>
+              <div className="studio-app__publish-link"><small>Alamat website</small><strong>{"namina.biz.id/" + document.slug}</strong></div>
+              <ul className="studio-app__publish-list">
+                {menuFields.map(({ key, label }) => <li key={key}><span>{document.content.original?.menuTitles?.[key]?.trim() || label}</span><span>{document.content.original?.[key].items.length ?? 0} isi</span></li>)}
+              </ul>
+              <label className="studio-app__approval">
+                <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} />
+                <span>Data, media, nama menu, dan tampilan sudah final. Saya setuju website ini dipublikasikan.</span>
+              </label>
+            </section>
+          </>}
+        </>}
+        <footer className="studio-app__bottom">
+          {step !== "input" && <button type="button" className="studio-app__back" onClick={() => { setStep(step === "result" ? "media" : "input"); setApproved(false); }}>Kembali</button>}
+          {step === "input" && <button type="button" className="studio-app__primary" disabled={!document || working || uploading} onClick={() => { setStep("media"); setError(""); }}>Lanjut ke MEDIA <span aria-hidden="true">›</span></button>}
+          {step === "media" && <button type="button" className="studio-app__primary" disabled={!document || working || uploading} onClick={goToFinal}>Lihat Hasil Web <span aria-hidden="true">›</span></button>}
+          {step === "result" && <button type="button" className="studio-app__primary" disabled={!document || working || uploading || !approved} onClick={() => void publish()}>{working ? "Menerbitkan..." : "Publish Website"}</button>}
+        </footer>
+      </>}
+    </div>
   </main>;
 }
