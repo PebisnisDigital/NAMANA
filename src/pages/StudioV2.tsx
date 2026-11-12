@@ -83,7 +83,6 @@ export function StudioV2() {
   const [menu, setMenu] = useState<Menu>("Nama");
   const [selected, setSelected] = useState("name");
   const [showDesign, setShowDesign] = useState(false);
-  const [previewMode, setPreviewMode] = useState(false);
   const [ready, setReady] = useState(false);
   const [working, setWorking] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -331,9 +330,6 @@ export function StudioV2() {
   const updateSection = (field: "intro" | "subtitle" | "description", value: string) =>
     change((next) => { next.content.original![menuKey][field] = value; });
 
-  const updateMenuTitle = (value: string) => change((next) => {
-    next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [menuKey]: value };
-  });
   const updateStyle = <K extends keyof OriginalStyle>(field: K, value: OriginalStyle[K]) =>
     change((next) => {
       next.content.original!.style = { ...originalStyleDefaults, ...next.content.original!.style, [field]: value };
