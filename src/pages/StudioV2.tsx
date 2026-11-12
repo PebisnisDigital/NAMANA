@@ -605,82 +605,116 @@ export function StudioV2() {
     </div>;
   }
 
-  return <main className="studio-v2">
-    <header className="studio-v2__header">
-      <div className="studio-v2__header-inner">
-        <a href="/" className="studio-v2__logo">NAMINA<span>VISUAL STUDIO V2</span></a>
-        <div className="studio-v2__header-links">
-          <a href="/studio">Studio V1</a>
-          <button type="button" onClick={() => void logout()}>Keluar</button>
-        </div>
+  return <main className="studio-v2 studio-v2--fullscreen">
+    <header className="studio-v2__workbar">
+      <div className="studio-v2__workbar-left">
+        <a href="/" className="studio-v2__logo" aria-label="NAMINA beranda">NAMINA<span>STUDIO V2</span></a>
+        <span className="studio-v2__workbar-divider" aria-hidden="true" />
+        <label className="studio-v2__client-switch">
+          <span className="studio-v2__sr-only">Pilih website klien</span>
+          <select aria-label="Pilih website klien" value={slugs.includes(slug) ? slug : ""}
+            onChange={(event) => { if (event.target.value) void openClient(event.target.value); }}>
+            {!slugs.includes(slug) && <option value="">/{slug} · draft</option>}
+            {slugs.map((item) => <option key={item} value={item}>/{item}</option>)}
+          </select>
+        </label>
+        <details className="studio-v2__new studio-v2__workbar-create">
+          <summary title="Buat website baru">+ Klien</summary>
+          <div><input aria-label="Nama link klien baru" placeholder="nama-klien"
+            value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
+            <button type="button" onClick={createClient}>Buat</button>
+          </div>
+        </details>
+      </div>
+      <div className="studio-v2__device-switch" role="group" aria-label="Pilih tampilan website">
+        <button type="button" aria-pressed={screen === "desktop"} className={screen === "desktop" ? "is-active" : ""}
+          onClick={() => { setScreen("desktop"); setPopupOpen(false); }}>▣ <span>PC</span></button>
+        <button type="button" aria-pressed={screen === "mobile"} className={screen === "mobile" ? "is-active" : ""}
+          onClick={() => { setScreen("mobile"); setPopupOpen(false); }}>▯ <span>HP</span></button>
+      </div>
+      <div className="studio-v2__workbar-right">
+        <span className="studio-v2__autosave"><i /> Draft otomatis</span>
+        <button type="button" className="studio-v2__design-trigger"
+          onClick={() => { setShowDesign(true); setPopupOpen(true); setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 82 }); sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" }); }}>✦ <span>Desain</span></button>
+        <button type="button" className="studio-v2__publish-trigger" disabled={!site || working || uploading}
+          onClick={() => { setPopupOpen(false); setPublishConfirmOpen(true); }}>Publikasikan</button>
+        <a href="/studio" className="studio-v2__v1-link" title="Buka generator Studio V1">V1</a>
+        <button type="button" className="studio-v2__exit" onClick={() => void logout()} title="Keluar dari Studio">Keluar</button>
       </div>
     </header>
-    <div className="studio-v2__body">
-      <section className="studio-v2__intro">
-        <div><span>EDIT WEBSITE LANGSUNG</span><h1>Klik. Ganti. Jadi.</h1>
-          <p>Ketuk bagian website di layar HP. Edit teks, warna, kartu, foto atau link tanpa pindah formulir.</p></div>
-        <div className="studio-v2__status"><i /> Draft otomatis tersimpan</div>
-      </section>
 
-      <div className="studio-v2__toolbar">
-        <label><span>Website klien</span><select value={slugs.includes(slug) ? slug : ""} onChange={(event) => { if (event.target.value) void openClient(event.target.value); }}>
-          {!slugs.includes(slug) && <option value="">Klien baru · /{slug}</option>}
-          {slugs.map((item) => <option value={item} key={item}>/{item}</option>)}
-        </select></label>
-        <details className="studio-v2__new"><summary>+ Website baru</summary>
-          <div><input aria-label="Slug halaman baru" placeholder="nama-klien" value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
-            <button type="button" onClick={createClient}>Buat</button></div></details>
-        {site && <a className="studio-v2__view" href={"/" + site.slug} target="_blank" rel="noreferrer">Lihat live ↗</a>}
+    <nav className="studio-v2__elementbar" aria-label="Elemen halaman">
+      <span className="studio-v2__edit-hint">✎ Klik teks untuk mengedit</span>
+      <div className="studio-v2__elementbar-menus">
+        {menuList.map((item) => <button key={item} type="button" className={menu === item ? "is-active" : ""}
+          onClick={() => chooseMenu(item)}>{original?.menuTitles?.[item.toLowerCase() as MenuKey]?.trim() || item}</button>)}
       </div>
-      {error && <p className="studio-v2__notice studio-v2__error" role="alert">{error}</p>}
-      {message && <p className="studio-v2__notice" role="status">{message}</p>}
-      <div className="studio-v2__workspace">
-        <section className="studio-v2__canvas-column">
-          <div className="studio-v2__canvas-heading">
-            <strong><span className="studio-v2__live-dot" /> LIVE CANVAS</strong>
-            <span>390 × 780 · Mobile</span>
-          </div>
-          <div className="studio-v2__phone">
-            <div className="studio-v2__notch" aria-hidden="true" />
-            <iframe ref={frameRef} title="Canvas website klien dalam tampilan HP"
-              src="/studio-v2-canvas" loading="eager"
-              onLoad={() => { setReady(true); }} />
-          </div>
-          <p className="studio-v2__canvas-note">Ketuk elemen untuk memilih. <b>Klik dua kali pada teks untuk mengetik langsung di canvas.</b></p>
-          <div className="studio-v2__menus">
-            {menuList.map((item) => <button key={item} type="button" className={menu === item ? "is-active" : ""}
-              onClick={() => chooseMenu(item)}>{original?.menuTitles?.[item.toLowerCase() as MenuKey] || item}</button>)}
-          </div>
-          <div className="studio-v2__shortcuts">
-            <button type="button" onClick={() => addCard("karya")}>+ Tambah Karya</button>
-            <button type="button" onClick={() => addCard("produk")}>+ Tambah Produk</button>
-            <button type="button" onClick={() => { setMenu("Nama"); setSelected("contact"); setShowDesign(false); }}>Edit WhatsApp</button>
-            <button type="button" onClick={() => { setSelected("video"); setShowDesign(false); }}>Ganti Video</button>
-          </div>
-        </section>
-        <aside className="studio-v2__inspector" ref={inspectorRef}>
-          <div className="studio-v2__inspector-top">
-            <div><span>EDIT ELEMEN</span><h2>{labelForSelection()}</h2></div>
-            <button type="button" onClick={() => setShowDesign((previous) => !previous)}>{showDesign ? "Edit konten" : "Warna & Desain"}</button>
-          </div>
-          {site ? <div className="studio-v2__inspector-body">
-            {inspectorContent()}
-            {!showDesign && ["Nama", "Karir", "Skill"].includes(menu) &&
-              <button className="studio-v2__add-data" type="button" onClick={addFact}>+ Tambah kartu data {menu}</button>}
-          </div> : <div className="studio-v2__inspector-body"><p>{working ? "Memuat website klien…" : "Pilih website di bagian atas."}</p></div>}
-          <div className="studio-v2__publish-section">
-            <div className="studio-v2__publish-heading"><strong>Siap tayang?</strong><span>Periksa preview sebelum terbit</span></div>
-            <label className="studio-v2__approve"><input type="checkbox" checked={approved}
-              onChange={(event) => setApproved(event.target.checked)} />
-              <span>Data, foto, tautan, dan desain sudah final.</span>
-            </label>
-            <button className="studio-v2__publish-button" type="button" disabled={!site || working || uploading || !approved}
-              onClick={() => void publish()}>{working ? "Memproses..." : "Publikasikan Website"}</button>
-            <p>Perubahan draft hanya menjadi publik setelah tombol ini ditekan.</p>
-          </div>
-        </aside>
+      <div className="studio-v2__elementbar-tools">
+        <button type="button" onClick={() => addCard("karya")} disabled={!site}>+ Karya</button>
+        <button type="button" onClick={() => addCard("produk")} disabled={!site}>+ Produk</button>
+        {["Nama", "Karir", "Skill"].includes(menu) && <button type="button" onClick={addFact} disabled={!site}>+ Data</button>}
+        <button type="button" onClick={() => {
+          setSelected("contact"); setShowDesign(false); setPopupOpen(true);
+          setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 138 });
+          sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
+        }}>WhatsApp</button>
+        <button type="button" onClick={() => {
+          setSelected("video"); setShowDesign(false); setPopupOpen(true);
+          setPopupCoordinates({ left: Math.max(12, window.innerWidth - 404), top: 138 });
+          sendFrame({ type: "NAMINA_V2_CLOSE_EDITOR" });
+        }}>Video</button>
+      </div>
+    </nav>
+
+    {error && <p className="studio-v2__floating-message studio-v2__floating-message--error" role="alert">{error}
+      <button type="button" onClick={() => setError("")}>×</button>
+    </p>}
+    {message && !error && <p className="studio-v2__floating-message" role="status">{message}
+      <button type="button" onClick={() => setMessage("")}>×</button>
+    </p>}
+
+    <div className={"studio-v2__site-workspace studio-v2__site-workspace--" + screen}>
+      <div className={"studio-v2__site-frame" + (screen === "mobile" ? " studio-v2__site-frame--phone" : "")}>
+        {screen === "mobile" && <div className="studio-v2__phone-notch" aria-hidden="true" />}
+        <iframe ref={frameRef} title={screen === "desktop" ? "Website klien — live editor tampilan PC" : "Website klien — live editor tampilan HP"}
+          src="/studio-v2-canvas" loading="eager" onLoad={() => setReady(true)} />
+      </div>
+      {!site && <div className="studio-v2__canvas-wait">{working ? "Membuka website klien…" : "Pilih atau buat website klien terlebih dahulu."}</div>}
+      <div className="studio-v2__canvas-indicator">
+        <span>{screen === "desktop" ? "PC • Layar penuh" : "HP • Mobile"} </span>
+        <span>•</span>
+        <span>{site ? "namina.biz.id/" + site.slug : "Pilih klien"}</span>
+        {site && <a href={"/" + site.slug} target="_blank" rel="noopener noreferrer">Lihat versi terbit ↗</a>}
       </div>
     </div>
+
+    {popupOpen && site && <div ref={inspectorRef} className="studio-v2__inline-popover"
+      style={{ left: popupCoordinates.left, top: popupCoordinates.top }} role="dialog" aria-modal="false" aria-label={"Edit " + labelForSelection()}>
+      <div className="studio-v2__inline-popover-header">
+        <div><small>{showDesign ? "KUSTOMISASI" : "UBAH LANGSUNG"}</small><strong>{labelForSelection()}</strong></div>
+        <button type="button" onClick={() => { setPopupOpen(false); setShowDesign(false); }} aria-label="Tutup editor">×</button>
+      </div>
+      <div className="studio-v2__inline-popover-content">
+        {inspectorContent()}
+        {!showDesign && ["Nama", "Karir", "Skill"].includes(menu) && <button className="studio-v2__add-data" type="button" onClick={addFact}>+ Tambah data {menu}</button>}
+      </div>
+    </div>}
+
+    {publishConfirmOpen && <div className="studio-v2__modal-backdrop">
+      <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-confirm-title">
+        <div className="studio-v2__modal-mark">✓</div>
+        <h2 id="v2-confirm-title">Siap terbitkan website?</h2>
+        <p>Periksa semua teks, video, kartu, foto, link, dan warna. Draft tidak akan tampil publik sampai kamu menekan Publikasikan.</p>
+        <strong>{"https://namina.biz.id/" + slug}</strong>
+        <label className="studio-v2__approve"><input type="checkbox" checked={approved}
+          onChange={(event) => setApproved(event.target.checked)} />
+          <span>Semua perubahan sudah benar dan siap dipublikasikan.</span>
+        </label>
+        <button type="button" className="studio-v2__publish-button" disabled={!site || working || uploading || !approved}
+          onClick={() => { setPublishConfirmOpen(false); void publish(); }}>{working ? "Memproses…" : "Publikasikan sekarang"}</button>
+        <button type="button" className="studio-v2__modal-close" onClick={() => { setPublishConfirmOpen(false); setApproved(false); }}>Batal</button>
+      </section>
+    </div>}
     {published && <div className="studio-v2__modal-backdrop">
       <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-modal-title">
         <div className="studio-v2__modal-mark">{published === "live" ? "✓" : "↗"}</div>
