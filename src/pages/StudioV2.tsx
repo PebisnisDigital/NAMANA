@@ -730,6 +730,7 @@ export function StudioV2() {
         <a href="/studio-v1" className="studio-v2__v1-link" title="Buka Generator 8 Tahap">V1</a>
         <button type="button" className="studio-v2__exit" onClick={() => void logout()} title="Keluar dari Studio">Keluar</button>
       </div>
+        <a href="/studio/admin" className="studio-v2__admin-link" title="Kelola mitra dan perpanjangan">Admin Mitra</a>
     </header>
 
     {error && <p className="studio-v2__floating-message studio-v2__floating-message--error" role="alert">{error}
