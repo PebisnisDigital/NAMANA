@@ -359,7 +359,7 @@ export function ViniCinematic({
               </button>
             ))}
           </nav>
-          {original.contactUrl && <a className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Japri Saya!</a>}
+          {original.contactUrl && <a className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">{original.contactLabel?.trim() || "Japri Saya!"}</a>}
         </header>
 
         <div className="vini-cinema__main">
