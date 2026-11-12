@@ -4,6 +4,7 @@ import { StaticStudio } from "./pages/StaticStudio";
 import { StudioV2 } from "./pages/StudioV2";
 import { StudioV2Canvas } from "./pages/StudioV2Canvas";
 import { BusinessPortal } from "./pages/BusinessPortal";
+import { BusinessMagicAccess } from "./pages/BusinessMagicAccess";
 import { BusinessAdmin } from "./pages/BusinessAdmin";
 import { BusinessVisualStudio } from "./pages/BusinessVisualStudio";
 import { ClientForm } from "./pages/ClientForm";
@@ -24,6 +25,7 @@ function App() {
   if (path === "/") page = <Landing />;
   else if (path === "/formulir") page = <ClientForm />;
   else if (["/mitra","/daftar"].includes(path)) page = <BusinessPortal />;
+  else if (path === "/akses") page = <BusinessMagicAccess />;
   else if (path === "/mitra/studio") page = <BusinessVisualStudio />;
   else if (path === "/mitra/admin") page = <BusinessAdmin />;
   // Visual Studio is the official editor; the 8-stage generator remains available.
