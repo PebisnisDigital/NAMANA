@@ -46,7 +46,7 @@ export function StudioV2Canvas() {
   }, [selected, data, activeMenu]);
 
   const onCanvasClick = useCallback((event: MouseEvent<HTMLDivElement>) => {
-    const target = event.target instanceof HTMLElement ? event.target.closest<HTMLElement>("[data-v2-edit]") : null;
+    const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-v2-edit]") : null;
     if (!target || !target.dataset.v2Edit) return;
     const key = target.dataset.v2Edit;
     setSelected(key);
@@ -60,7 +60,7 @@ export function StudioV2Canvas() {
   }, []);
 
   const onCanvasDoubleClick = (event: MouseEvent<HTMLDivElement>) => {
-    const target = event.target instanceof HTMLElement ? event.target.closest<HTMLElement>("[data-v2-edit]") : null;
+    const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-v2-edit]") : null;
     const key = target?.dataset.v2Edit;
     if (!key || !target || key.startsWith("menu:") || key.startsWith("card:") || key.startsWith("fact:") || key === "contact") return;
     const rect = target.getBoundingClientRect();
@@ -68,7 +68,16 @@ export function StudioV2Canvas() {
     event.preventDefault();
     event.stopPropagation();
     setSelected(key);
-    setEditingInline({ key, rect, value: target.textContent?.trim() || "" });
+    const original = data?.site.content.original;
+    const section = original?.[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"];
+    const value = key === "name" ? data?.site.content.identity.displayName
+      : key === "profession" ? data?.site.content.identity.profession
+      : key === "intro" ? section?.intro
+      : key === "description" ? section?.description
+      : key === "subtitle" ? section?.subtitle
+      : key === "menu-title" ? original?.menuTitles?.[activeMenu.toLowerCase() as "nama" | "karir" | "skill" | "karya" | "produk"] || activeMenu
+      : target.textContent?.trim() || "";
+    setEditingInline({ key, rect, value: value || "" });
     notifyParent({ type: "NAMINA_V2_SELECT", key });
   };
 
