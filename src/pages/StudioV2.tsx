@@ -1,0 +1,667 @@
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { slugSchema, type OriginalStyle } from "../domain/content";
+import { blankOriginal, viniOriginal } from "../static/originalSeed";
+import { originalStyleDefaults } from "../static/originalStyle";
+import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import "../studio-v2.css";
+
+type Session = { authenticated: boolean; configured: boolean };
+type SiteFile = { document: SiteDocument; sha: string };
+type Menu = "Nama" | "Karir" | "Skill" | "Karya" | "Produk";
+type MenuKey = "nama" | "karir" | "skill" | "karya" | "produk";
+type FactKey = "nama" | "karir" | "skill";
+type GalleryKey = "karya" | "produk";
+type PublishStatus = "deploying" | "live" | "pending" | null;
+
+const menuList: Menu[] = ["Nama", "Karir", "Skill", "Karya", "Produk"];
+const icons = [
+  [8121295, "Profil"], [8121312, "Kalender"], [8121270, "Lokasi"],
+  [8121302, "Rumah"], [8121313, "Pendidikan"], [8121304, "Karir"],
+  [8121299, "Profesi"], [8121309, "Website"], [8121272, "Kreatif"], [8121262, "Digital"],
+] as const;
+
+async function studioApi<T>(action: string, init?: RequestInit): Promise<T> {
+  const response = await fetch("/api/studio?action=" + action, {
+    credentials: "same-origin", ...init,
+    headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+  });
+  const body = await response.json() as { error?: string };
+  if (!response.ok) throw new Error(body.error || "Permintaan Studio gagal (" + response.status + ").");
+  return body as T;
+}
+
+const draftKey = (slug: string) => "namina:studio-v2:draft:" + slug;
+function whatsappNumber(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const digits = (parsed.hostname === "wa.me" ? parsed.pathname : parsed.searchParams.get("phone") || "").replace(/\D/g, "");
+    return digits.startsWith("62") ? "0" + digits.slice(2) : digits;
+  } catch { return ""; }
+}
+function whatsappLink(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  const intl = digits.startsWith("0") ? "62" + digits.slice(1) : digits.startsWith("8") ? "62" + digits : digits;
+  return intl ? "https://wa.me/" + intl : "";
+}
+function defaultSite(site: SiteDocument) {
+  if (!site.content.original) site.content.original = site.slug === "vini"
+    ? structuredClone(viniOriginal)
+    : blankOriginal(site.content.identity.displayName);
+  return site;
+}
+async function imageToBase64(file: File) {
+  const result = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Gambar tidak bisa dibaca."));
+    reader.readAsDataURL(file);
+  });
+  return result.substring(result.indexOf(",") + 1);
+}
+function Field({ label, value, onChange, multiline, placeholder, maxLength, type = "text" }: {
+  label: string; value: string; onChange: (value: string) => void;
+  multiline?: boolean; placeholder?: string; maxLength?: number; type?: string;
+}) {
+  return <label className="studio-v2__field">
+    <span>{label}</span>
+    {multiline ? <textarea rows={3} value={value} maxLength={maxLength} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
+      : <input type={type} value={value} maxLength={maxLength} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />}
+  </label>;
+}
+
+export function StudioV2() {
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const inspectorRef = useRef<HTMLDivElement>(null);
+  const previewUrls = useRef<string[]>([]);
+  const [session, setSession] = useState<Session | null>(null);
+  const [password, setPassword] = useState("");
+  const [slugs, setSlugs] = useState<string[]>([]);
+  const [slug, setSlug] = useState("vini");
+  const [newSlug, setNewSlug] = useState("");
+  const [site, setSite] = useState<SiteDocument | null>(null);
+  const [sha, setSha] = useState<string | null>(null);
+  const [menu, setMenu] = useState<Menu>("Nama");
+  const [selected, setSelected] = useState("name");
+  const [showDesign, setShowDesign] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [working, setWorking] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [approved, setApproved] = useState(false);
+  const [published, setPublished] = useState<PublishStatus>(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [mediaPreviews, setMediaPreviews] = useState<Record<string, string>>({});
+  const [loadedOnce, setLoadedOnce] = useState(false);
+
+  const menuKey = menu.toLowerCase() as MenuKey;
+  const original = site?.content.original;
+  const currentSection = original?.[menuKey];
+  const style = { ...originalStyleDefaults, ...original?.style };
+
+  const refreshList = useCallback(async () => {
+    const result = await studioApi<{ slugs: string[] }>("list");
+    setSlugs(result.slugs.sort((a, b) => a.localeCompare(b)));
+    return result.slugs;
+  }, []);
+
+  useEffect(() => {
+    void studioApi<Session>("session").then(setSession).catch((cause: Error) => setError(cause.message));
+  }, []);
+  useEffect(() => () => { previewUrls.current.forEach((url) => URL.revokeObjectURL(url)); }, []);
+
+  const openClient = useCallback(async (nextSlug: string) => {
+    setWorking(true); setError(""); setMessage("");
+    setPublished(null); setReady(false);
+    setSite(null); setMediaPreviews({});
+    setSlug(nextSlug);
+    setMenu("Nama");
+    setSelected("name");
+    setShowDesign(false);
+    setApproved(false);
+    try {
+      let client: SiteDocument;
+      let newSha: string | null = null;
+      try {
+        const response = await studioApi<SiteFile>("site&slug=" + encodeURIComponent(nextSlug));
+        client = siteDocumentSchema.parse(response.document);
+        newSha = response.sha;
+      } catch (cause) {
+        if (!(cause instanceof Error) || !cause.message.includes("Belum ada data")) throw cause;
+        client = nextSlug === "vini" ? structuredClone(viniSeed) : blankSite(nextSlug);
+      }
+      try {
+        const draft = localStorage.getItem(draftKey(nextSlug));
+        if (draft) {
+          const parsed = siteDocumentSchema.safeParse(JSON.parse(draft));
+          if (parsed.success && parsed.data.slug === nextSlug) {
+            client = parsed.data;
+            setMessage("Draft Studio V2 sebelumnya dipulihkan.");
+          }
+        }
+      } catch { /* Invalid local draft should not block editing. */ }
+      setSite(defaultSite(client));
+      setSha(newSha);
+    } catch (cause) { setError((cause as Error).message); }
+    finally { setWorking(false); }
+  }, []);
+
+  useEffect(() => {
+    if (!session?.authenticated || loadedOnce) return;
+    setLoadedOnce(true);
+    void refreshList().then((items) => {
+      void openClient(items.includes("vini") ? "vini" : (items[0] || "vini"));
+    }).catch((cause: Error) => setError(cause.message));
+  }, [session?.authenticated, loadedOnce, openClient, refreshList]);
+
+  const change = useCallback((update: (next: SiteDocument) => void) => {
+    setSite((current) => {
+      if (!current) return current;
+      const next = structuredClone(current);
+      update(next);
+      try { localStorage.setItem(draftKey(next.slug), JSON.stringify(next)); }
+      catch { /* The publish API is independent from local draft storage. */ }
+      return next;
+    });
+    setApproved(false);
+    setMessage("Draft tersimpan di browser. Website publik belum berubah.");
+    setError("");
+  }, []);
+
+  const sendFrame = useCallback((command: Record<string, unknown>) => {
+    frameRef.current?.contentWindow?.postMessage(command, window.location.origin);
+  }, []);
+
+  useEffect(() => {
+    if (!site || !ready) return;
+    const prepared = prepareSite(site);
+    const assets = Object.fromEntries(Object.entries(resolveMedia(prepared))
+      .map(([id, url]) => [id, mediaPreviews[url] || url]));
+    sendFrame({ type: "NAMINA_V2_RENDER", site: prepared, assets });
+  }, [site, ready, mediaPreviews, sendFrame]);
+  useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_MENU", menu }); }, [menu, ready, sendFrame]);
+  useEffect(() => { if (ready) sendFrame({ type: "NAMINA_V2_SELECT", key: selected }); }, [selected, ready, sendFrame]);
+
+  const chooseMenu = (next: Menu) => {
+    setMenu(next);
+    setSelected(next === "Nama" ? "name" : "menu-title");
+    setShowDesign(false);
+    sendFrame({ type: "NAMINA_V2_MENU", menu: next });
+  };
+  const addCard = (section: GalleryKey) => {
+    if (!site) return;
+    const id = crypto.randomUUID();
+    change((next) => {
+      next.content.original![section].items.push({
+        id, title: section === "karya" ? "Karya baru" : "Produk baru",
+        description: "", link: "", imageAssetId: null, color: "#ef4853", motif: "cinema",
+      });
+    });
+    const nextMenu = section === "karya" ? "Karya" : "Produk";
+    setMenu(nextMenu);
+    setSelected("card:" + section + ":" + id);
+    setShowDesign(false);
+    sendFrame({ type: "NAMINA_V2_MENU", menu: nextMenu });
+    if (window.innerWidth < 1080) inspectorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.source !== frameRef.current?.contentWindow) return;
+      const value = event.data as Record<string, unknown> | null;
+      if (!value || typeof value !== "object") return;
+      if (value.type === "NAMINA_V2_READY") {
+        setReady(true);
+      }
+      if (value.type === "NAMINA_V2_SELECT" && typeof value.key === "string") {
+        setSelected(value.key);
+        setShowDesign(false);
+        if (window.innerWidth < 1080) inspectorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      if (value.type === "NAMINA_V2_MENU_CHANGED" && typeof value.menu === "string" && menuList.includes(value.menu as Menu)) {
+        setMenu(value.menu as Menu);
+      }
+      if (value.type === "NAMINA_V2_ADD_CARD" && (value.section === "karya" || value.section === "produk")) {
+        addCard(value.section);
+      }
+      if (value.type === "NAMINA_V2_UPDATE" && typeof value.key === "string" && typeof value.value === "string") {
+        const key = value.key;
+        const text = value.value;
+        change((next) => {
+          const current = next.content.original!;
+          const currentKey = (menu.toLowerCase() as MenuKey);
+          if (key === "name") next.content.identity.displayName = text;
+          else if (key === "profession") next.content.identity.profession = text;
+          else if (key === "intro") current[currentKey].intro = text;
+          else if (key === "description") current[currentKey].description = text;
+          else if (key === "subtitle") current[currentKey].subtitle = text;
+          else if (key === "menu-title") current.menuTitles = { ...current.menuTitles, [currentKey]: text };
+        });
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [menu, site, change]);
+
+  const createClient = () => {
+    const normalized = newSlug.toLowerCase().trim();
+    const checked = slugSchema.safeParse(normalized);
+    if (!checked.success) { setError(checked.error.issues[0]?.message || "Alamat halaman tidak valid."); return; }
+    if (slugs.includes(normalized)) { setError("Nama halaman sudah dipakai."); return; }
+    setSite(blankSite(normalized));
+    setSlug(normalized);
+    setSha(null);
+    setMenu("Nama"); setSelected("name");
+    setApproved(false); setShowDesign(false); setPublished(null);
+    setMediaPreviews({});
+    setNewSlug("");
+    setMessage("Draft klien baru siap. Ketuk teks pada layar HP untuk mulai mengedit.");
+  };
+
+  const uploadCardImage = async (id: string, file: File) => {
+    if (!site) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 1300000) {
+      setError("Gunakan foto JPG, PNG, atau WebP maksimal 1,3 MB.");
+      return;
+    }
+    setUploading(true); setError("");
+    try {
+      const response = await studioApi<{ url: string }>("upload", {
+        method: "POST",
+        body: JSON.stringify({ slug: site.slug, mime: file.type, base64: await imageToBase64(file) }),
+      });
+      const preview = URL.createObjectURL(file);
+      previewUrls.current.push(preview);
+      setMediaPreviews((previous) => ({ ...previous, [response.url]: preview }));
+      change((next) => { next.media.cards[id] = response.url; });
+      setMessage("Foto terunggah. Kartu sudah berubah di preview; publish saat final.");
+    } catch (cause) { setError((cause as Error).message); }
+    finally { setUploading(false); }
+  };
+
+  const publish = async () => {
+    if (!site || !approved) return;
+    const result = siteDocumentSchema.safeParse(prepareSite(site));
+    if (!result.success) {
+      setError("Periksa data: " + (result.error.issues[0]?.message || "ada kolom tidak valid."));
+      return;
+    }
+    setWorking(true); setError("");
+    try {
+      const updated = await studioApi<{ ok: true; sha: string }>("publish", {
+        method: "POST", body: JSON.stringify({ document: result.data, sha }),
+      });
+      setSha(updated.sha);
+      setSite(result.data);
+      localStorage.removeItem(draftKey(site.slug));
+      setApproved(false);
+      setPublished("deploying");
+      setMessage("Publikasi dikirim ke GitHub. Menunggu Vercel menayangkan website klien.");
+      await refreshList();
+    } catch (cause) { setError((cause as Error).message); }
+    finally { setWorking(false); }
+  };
+
+  useEffect(() => {
+    if (published !== "deploying" || !site) return;
+    let live = true;
+    let tries = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const expected = JSON.stringify(prepareSite(site));
+    const verify = async () => {
+      tries++;
+      try {
+        const response = await fetch("/clients/" + site.slug + ".json?check=" + Date.now(), { cache: "no-store" });
+        if (response.ok) {
+          const data: unknown = await response.json();
+          if (JSON.stringify(data) === expected) {
+            if (live) setPublished("live");
+            return;
+          }
+        }
+      } catch { /* Vercel may still be building. */ }
+      if (!live) return;
+      if (tries >= 45) { setPublished("pending"); return; }
+      timer = setTimeout(() => { void verify(); }, 4000);
+    };
+    void verify();
+    return () => { live = false; if (timer) clearTimeout(timer); };
+  }, [published, site]);
+
+  const updateSection = (field: "intro" | "subtitle" | "description", value: string) =>
+    change((next) => { next.content.original![menuKey][field] = value; });
+
+  const updateMenuTitle = (value: string) => change((next) => {
+    next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [menuKey]: value };
+  });
+  const updateStyle = <K extends keyof OriginalStyle>(field: K, value: OriginalStyle[K]) =>
+    change((next) => {
+      next.content.original!.style = { ...originalStyleDefaults, ...next.content.original!.style, [field]: value };
+    });
+
+  const parts = selected.split(":");
+  const factSection: FactKey | null = parts[0] === "fact" &&
+    ["nama", "karir", "skill"].includes(parts[1]) ? parts[1] as FactKey : null;
+  const gallerySection: GalleryKey | null = parts[0] === "card" &&
+    ["karya", "produk"].includes(parts[1]) ? parts[1] as GalleryKey : null;
+  const factIndex = factSection && Number.isInteger(Number(parts[2])) ? Number(parts[2]) : -1;
+  const fact = factSection && factIndex >= 0 ? original?.[factSection].items[factIndex] : null;
+  const card = gallerySection ? original?.[gallerySection].items.find((item) => item.id === parts[2]) : null;
+  const menuTitle = original?.menuTitles?.[menuKey] || menu;
+
+  const updateFact = (field: "label" | "value" | "icon", value: string | number) => {
+    if (!factSection || factIndex < 0) return;
+    change((next) => {
+      const target = next.content.original![factSection].items[factIndex];
+      if (!target) return;
+      if (field === "icon") target.icon = Number(value);
+      else target[field] = String(value);
+    });
+  };
+  const updateCard = (field: "title" | "description" | "link" | "color", value: string) => {
+    if (!gallerySection || !card) return;
+    change((next) => {
+      const target = next.content.original![gallerySection].items.find((item) => item.id === card.id);
+      if (target) target[field] = value;
+    });
+  };
+  const removeCard = () => {
+    if (!gallerySection || !card) return;
+    change((next) => {
+      next.content.original![gallerySection].items = next.content.original![gallerySection].items.filter((item) => item.id !== card.id);
+      delete next.media.cards[card.id];
+    });
+    setSelected("menu-title");
+  };
+  const addFact = () => {
+    if (!site || !["Nama", "Karir", "Skill"].includes(menu)) return;
+    const section = menuKey as FactKey;
+    const originalItems = site.content.original![section].items;
+    if (originalItems.length >= 30) return;
+    const id = crypto.randomUUID();
+    change((next) => {
+      next.content.original![section].items.push({
+        id, label: "Data baru", value: "Isi keterangan", icon: 8121295,
+      });
+    });
+    setSelected("fact:" + section + ":" + originalItems.length);
+  };
+
+  const login = async (event: React.FormEvent) => {
+    event.preventDefault(); setWorking(true); setError("");
+    try {
+      await studioApi("login", { method: "POST", body: JSON.stringify({ password }) });
+      setPassword("");
+      setSession({ configured: true, authenticated: true });
+    } catch (cause) { setError((cause as Error).message); }
+    finally { setWorking(false); }
+  };
+  const logout = async () => {
+    await studioApi("logout", { method: "POST", body: "{}" }).catch(() => {});
+    setSession({ configured: true, authenticated: false }); setSite(null); setLoadedOnce(false);
+  };
+
+  if (!session) return <main className="studio-v2__gate"><p>{error || "Memeriksa akses Studio V2…"}</p></main>;
+  if (!session.configured || !session.authenticated) return <main className="studio-v2__gate">
+    <section className="studio-v2__login">
+      <a href="/">NAMINA</a><span>VISUAL STUDIO 02</span>
+      <h1>Masuk Studio V2</h1>
+      <p>Gunakan kata sandi admin NAMINA yang sama dengan Studio V1.</p>
+      {session.configured ? <form onSubmit={(event) => void login(event)}>
+        <label htmlFor="v2-password">Kata sandi admin</label>
+        <input id="v2-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+        <button type="submit" disabled={working}>Masuk Editor</button>
+      </form> : <p>Studio menunggu konfigurasi admin.</p>}
+      {error && <p role="alert" className="studio-v2__error">{error}</p>}
+      <a className="studio-v2__back-link" href="/studio">Kembali ke Studio V1</a>
+    </section>
+  </main>;
+
+  function labelForSelection() {
+    if (showDesign) return "Warna, tipografi & layout";
+    if (selected === "name") return "Nama di website";
+    if (selected === "profession") return "Profesi / tagline";
+    if (selected === "intro") return "Kalimat pembuka";
+    if (selected === "description") return "Deskripsi bagian " + menuTitle;
+    if (selected === "subtitle") return "Subjudul";
+    if (selected === "menu-title" || selected.startsWith("menu:")) return "Nama menu";
+    if (selected === "contact") return "Tombol WhatsApp";
+    if (selected === "video") return "Video background";
+    if (fact) return "Kartu data · " + fact.label;
+    if (card) return "Kartu " + gallerySection + " · " + card.title;
+    return "Pilih elemen pada layar HP";
+  }
+
+  function inspectorContent(): ReactNode {
+    if (!site || !original) return <p>Pilih website terlebih dahulu.</p>;
+    if (showDesign) {
+      const colorFields = [
+        ["backgroundColor", "Latar belakang"], ["textColor", "Warna teks"],
+        ["accentColor", "Aksen merah"], ["buttonColor", "Warna tombol"],
+        ["buttonTextColor", "Teks tombol"], ["borderColor", "Garis & border"],
+      ] as const;
+      return <>
+        <p className="studio-v2__inspector-hint">Semua pengaturan langsung terlihat pada layar HP. Tidak mengubah template asli klien lain.</p>
+        <div className="studio-v2__colors">
+          {colorFields.map(([field, label]) => <label key={field}>
+            <span>{label}</span><input type="color" value={style[field]} onChange={(event) => updateStyle(field, event.target.value)} />
+            <code>{style[field]}</code>
+          </label>)}
+        </div>
+        <label className="studio-v2__field"><span>Jenis font</span><select value={style.fontFamily}
+          onChange={(event) => updateStyle("fontFamily", event.target.value as OriginalStyle["fontFamily"])}>
+          <option value="montserrat">Montserrat</option><option value="poppins">Poppins</option>
+          <option value="space">Space Grotesk</option><option value="cormorant">Cormorant Garamond</option>
+          <option value="georgia">Georgia</option><option value="system">Font sistem</option>
+        </select></label>
+        {([
+          ["titleScale", "Ukuran judul", .65, 1.6],
+          ["roleScale", "Ukuran profesi", .75, 1.5],
+          ["bodyScale", "Ukuran isi", .75, 1.5],
+          ["menuScale", "Ukuran menu", .75, 1.5],
+        ] as const).map(([field, label, min, max]) =>
+          <label className="studio-v2__slider" key={field}><span>{label} <b>{(style[field] ?? 1).toFixed(2)}×</b></span>
+            <input type="range" min={min} max={max} step=".05" value={style[field] ?? 1}
+              onChange={(event) => updateStyle(field, Number(event.target.value))} />
+          </label>)}
+        <label className="studio-v2__field"><span>Layout website</span><select value={style.layoutPreset || "original"}
+          onChange={(event) => updateStyle("layoutPreset", event.target.value as OriginalStyle["layoutPreset"])}>
+          <option value="original">Original sinematik</option>
+          <option value="center">Teks di tengah</option>
+          <option value="compact">Layout compact</option>
+        </select></label>
+        <label className="studio-v2__field"><span>Gaya tombol</span><select value={style.buttonVariant}
+          onChange={(event) => updateStyle("buttonVariant", event.target.value as OriginalStyle["buttonVariant"])}>
+          <option value="solid">Tombol penuh</option><option value="outline">Tombol outline</option>
+        </select></label>
+        <label className="studio-v2__slider"><span>Sudut tombol <b>{style.buttonRadius}px</b></span>
+          <input type="range" min="0" max="32" step="1" value={style.buttonRadius}
+            onChange={(event) => updateStyle("buttonRadius", Number(event.target.value))} /></label>
+        <button type="button" className="studio-v2__ghost" onClick={() => change((next) => { delete next.content.original!.style; })}>Reset desain Original</button>
+      </>;
+    }
+    if (selected === "name") return <Field label="Nama lengkap / nama tampil" value={site.content.identity.displayName}
+      maxLength={60} onChange={(value) => change((next) => {
+        const previous = next.content.identity.displayName;
+        next.content.identity.displayName = value;
+        const first = next.content.original!.nama.items.find((item) => item.label === "Nama" && item.value === previous);
+        if (first) first.value = value;
+      })} />;
+    if (selected === "profession") return <Field label="Profesi / tagline" maxLength={70}
+      value={site.content.identity.profession} onChange={(value) => change((next) => { next.content.identity.profession = value; })} />;
+    if (selected === "intro") return <Field label="Kalimat pembuka" maxLength={120}
+      value={currentSection?.intro || ""} onChange={(value) => updateSection("intro", value)} />;
+    if (selected === "description") return <Field label={"Deskripsi " + menuTitle} maxLength={400} multiline
+      value={currentSection?.description || ""} onChange={(value) => updateSection("description", value)} />;
+    if (selected === "subtitle") return <Field label="Subjudul halaman" maxLength={100}
+      value={currentSection?.subtitle || ""} onChange={(value) => updateSection("subtitle", value)} />;
+    if (selected === "menu-title" || selected.startsWith("menu:")) {
+      const key = selected.startsWith("menu:") && ["nama", "karir", "skill", "karya", "produk"].includes(parts[1])
+        ? parts[1] as MenuKey : menuKey;
+      return <Field label="Nama menu di navigasi" maxLength={24}
+        value={original.menuTitles?.[key] ?? key.charAt(0).toUpperCase() + key.slice(1)}
+        onChange={(value) => change((next) => {
+          next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [key]: value };
+        })} />;
+    }
+    if (selected === "contact") return <>
+      <Field label="Nomor WhatsApp (tanpa link)" type="tel" placeholder="081234567890"
+        value={whatsappNumber(original.contactUrl)} onChange={(value) => change((next) => {
+          next.content.original!.contactUrl = whatsappLink(value);
+        })} />
+      <Field label="Tulisan tombol" maxLength={40} value={original.contactLabel ?? "Japri Saya!"}
+        onChange={(value) => change((next) => { next.content.original!.contactLabel = value; })} />
+      {original.contactUrl && <a className="studio-v2__test-link" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Tes link WhatsApp ↗</a>}
+    </>;
+    if (selected === "video") return <>
+      <Field label="URL video utama (MP4 / link Dropbox)" type="url"
+        value={site.media.desktopVideo} placeholder="https://www.dropbox.com/scl/fi/..."
+        onChange={(value) => change((next) => { next.media.desktopVideo = value; })} />
+      <Field label="URL video HP (opsional)" type="url" value={site.media.mobileVideo}
+        onChange={(value) => change((next) => { next.media.mobileVideo = value; })} />
+      <a href="https://www.dropbox.com/home" className="studio-v2__test-link" target="_blank" rel="noopener noreferrer">Upload video ke Dropbox ↗</a>
+      <p className="studio-v2__inspector-hint">Upload video dilakukan di Dropbox. Tempel tautan berbagi yang bisa dibuka publik, idealnya menggunakan parameter raw=1.</p>
+    </>;
+    if (fact && factSection) return <>
+      <Field label="Nama data" value={fact.label} maxLength={40} onChange={(value) => updateFact("label", value)} />
+      <Field label="Isi data" value={fact.value} maxLength={180} multiline onChange={(value) => updateFact("value", value)} />
+      <label className="studio-v2__field"><span>Ikon animasi</span>
+        <select value={fact.icon} onChange={(event) => updateFact("icon", Number(event.target.value))}>
+          {icons.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+        </select>
+      </label>
+      <div className="studio-v2__inspector-actions">
+        <button type="button" className="studio-v2__danger" onClick={() => {
+          change((next) => {
+            next.content.original![factSection].items.splice(factIndex, 1);
+          });
+          setSelected("description");
+        }}>Hapus data ini</button>
+        <button type="button" onClick={addFact}>+ Tambah data</button>
+      </div>
+    </>;
+    if (card && gallerySection) {
+      const image = site.media.cards[card.id] || "";
+      return <>
+        <Field label="Judul kartu" value={card.title} maxLength={80} onChange={(value) => updateCard("title", value)} />
+        <Field label="Deskripsi popup" value={card.description} maxLength={1200} multiline onChange={(value) => updateCard("description", value)} />
+        <Field label="Link tombol kartu" value={card.link} type="url" placeholder="https://..." onChange={(value) => updateCard("link", value)} />
+        <div className="studio-v2__image">
+          {image ? <img src={mediaPreviews[image] || image} alt={"Foto " + card.title} /> : <span>Foto belum dipasang</span>}
+        </div>
+        <label className="studio-v2__upload">
+          <span>{uploading ? "Mengunggah foto…" : "+ Unggah / ganti foto"}</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              const file = event.currentTarget.files?.[0];
+              if (file) void uploadCardImage(card.id, file);
+              event.currentTarget.value = "";
+            }} />
+        </label>
+        <Field label="Atau tempel URL foto" type="url" value={image} placeholder="https://.../foto.webp"
+          onChange={(value) => change((next) => { next.media.cards[card.id] = value; })} />
+        <label className="studio-v2__color-field"><span>Warna kartu</span><input type="color" value={card.color}
+          onChange={(event) => updateCard("color", event.target.value)} /></label>
+        <div className="studio-v2__inspector-actions">
+          <button type="button" className="studio-v2__danger" onClick={removeCard}>Hapus kartu</button>
+          <button type="button" onClick={() => addCard(gallerySection)}>+ Tambah kartu</button>
+        </div>
+      </>;
+    }
+    return <div className="studio-v2__empty">
+      <strong>Ketuk elemen di HP</strong>
+      <p>Ketuk judul, deskripsi, kartu, atau tombol. Panel ini langsung berubah menjadi editor untuk elemen yang dipilih.</p>
+    </div>;
+  }
+
+  return <main className="studio-v2">
+    <header className="studio-v2__header">
+      <div className="studio-v2__header-inner">
+        <a href="/" className="studio-v2__logo">NAMINA<span>VISUAL STUDIO V2</span></a>
+        <div className="studio-v2__header-links">
+          <a href="/studio">Studio V1</a>
+          <button type="button" onClick={() => void logout()}>Keluar</button>
+        </div>
+      </div>
+    </header>
+    <div className="studio-v2__body">
+      <section className="studio-v2__intro">
+        <div><span>EDIT WEBSITE LANGSUNG</span><h1>Klik. Ganti. Jadi.</h1>
+          <p>Ketuk bagian website di layar HP. Edit teks, warna, kartu, foto atau link tanpa pindah formulir.</p></div>
+        <div className="studio-v2__status"><i /> Draft otomatis tersimpan</div>
+      </section>
+
+      <div className="studio-v2__toolbar">
+        <label><span>Website klien</span><select value={slugs.includes(slug) ? slug : ""} onChange={(event) => { if (event.target.value) void openClient(event.target.value); }}>
+          {!slugs.includes(slug) && <option value="">Klien baru · /{slug}</option>}
+          {slugs.map((item) => <option value={item} key={item}>/{item}</option>)}
+        </select></label>
+        <details className="studio-v2__new"><summary>+ Website baru</summary>
+          <div><input aria-label="Slug halaman baru" placeholder="nama-klien" value={newSlug} onChange={(event) => setNewSlug(event.target.value)} />
+            <button type="button" onClick={createClient}>Buat</button></div></details>
+        {site && <a className="studio-v2__view" href={"/" + site.slug} target="_blank" rel="noreferrer">Lihat live ↗</a>}
+      </div>
+      {error && <p className="studio-v2__notice studio-v2__error" role="alert">{error}</p>}
+      {message && <p className="studio-v2__notice" role="status">{message}</p>}
+      <div className="studio-v2__workspace">
+        <section className="studio-v2__canvas-column">
+          <div className="studio-v2__canvas-heading">
+            <strong><span className="studio-v2__live-dot" /> LIVE CANVAS</strong>
+            <span>390 × 780 · Mobile</span>
+          </div>
+          <div className="studio-v2__phone">
+            <div className="studio-v2__notch" aria-hidden="true" />
+            <iframe ref={frameRef} title="Canvas website klien dalam tampilan HP"
+              src="/studio-v2-canvas" loading="eager"
+              onLoad={() => { setReady(true); }} />
+          </div>
+          <p className="studio-v2__canvas-note">Ketuk elemen untuk memilih. <b>Klik dua kali pada teks untuk mengetik langsung di canvas.</b></p>
+          <div className="studio-v2__menus">
+            {menuList.map((item) => <button key={item} type="button" className={menu === item ? "is-active" : ""}
+              onClick={() => chooseMenu(item)}>{original?.menuTitles?.[item.toLowerCase() as MenuKey] || item}</button>)}
+          </div>
+          <div className="studio-v2__shortcuts">
+            <button type="button" onClick={() => addCard("karya")}>+ Tambah Karya</button>
+            <button type="button" onClick={() => addCard("produk")}>+ Tambah Produk</button>
+            <button type="button" onClick={() => { setSelected("video"); setShowDesign(false); }}>Ganti Video</button>
+          </div>
+        </section>
+        <aside className="studio-v2__inspector" ref={inspectorRef}>
+          <div className="studio-v2__inspector-top">
+            <div><span>EDIT ELEMEN</span><h2>{labelForSelection()}</h2></div>
+            <button type="button" onClick={() => setShowDesign((previous) => !previous)}>{showDesign ? "Edit konten" : "Warna & Desain"}</button>
+          </div>
+          {site ? <div className="studio-v2__inspector-body">
+            {inspectorContent()}
+            {!showDesign && ["Nama", "Karir", "Skill"].includes(menu) &&
+              <button className="studio-v2__add-data" type="button" onClick={addFact}>+ Tambah kartu data {menu}</button>}
+          </div> : <div className="studio-v2__inspector-body"><p>{working ? "Memuat website klien…" : "Pilih website di bagian atas."}</p></div>}
+          <div className="studio-v2__publish-section">
+            <div className="studio-v2__publish-heading"><strong>Siap tayang?</strong><span>Periksa preview sebelum terbit</span></div>
+            <label className="studio-v2__approve"><input type="checkbox" checked={approved}
+              onChange={(event) => setApproved(event.target.checked)} />
+              <span>Data, foto, tautan, dan desain sudah final.</span>
+            </label>
+            <button className="studio-v2__publish-button" type="button" disabled={!site || working || uploading || !approved}
+              onClick={() => void publish()}>{working ? "Memproses..." : "Publikasikan Website"}</button>
+            <p>Perubahan draft hanya menjadi publik setelah tombol ini ditekan.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+    {published && <div className="studio-v2__modal-backdrop">
+      <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-modal-title">
+        <div className="studio-v2__modal-mark">{published === "live" ? "✓" : "↗"}</div>
+        <h2 id="v2-modal-title">{published === "live" ? "Website berhasil dipublikasikan!" : published === "deploying" ? "Website sedang diterbitkan" : "Menunggu verifikasi Vercel"}</h2>
+        <p>{published === "live" ? "Halaman klien sudah tersedia dan siap dibagikan." : published === "deploying" ? "Perubahan tersimpan di GitHub. Sistem sedang memeriksa hasil deployment." : "Perubahan berhasil dikirim tetapi versi produksi belum terkonfirmasi."}</p>
+        <strong>{"https://namina.biz.id/" + slug}</strong>
+        {published === "live" && <div className="studio-v2__modal-actions">
+          <a href={"/" + slug} target="_blank" rel="noreferrer">Buka Website ↗</a>
+          <button type="button" onClick={() => void navigator.clipboard.writeText("https://namina.biz.id/" + slug)}>Salin Link</button>
+        </div>}
+        {published === "pending" && <button type="button" onClick={() => setPublished("deploying")}>Cek lagi</button>}
+        <button className="studio-v2__modal-close" type="button" onClick={() => setPublished(null)}>Tutup</button>
+      </section>
+    </div>}
+  </main>;
+}
