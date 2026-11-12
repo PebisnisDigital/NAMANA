@@ -386,7 +386,7 @@ export function StaticStudio() {
 
   if (!session.configured || !session.authenticated) return <main className="studio-gate studio-gate--app"><div className="studio-gate__card">
     <a className="studio-wordmark" href="/">NAMINA</a>
-    <h1>{session.configured ? "Masuk Studio" : "Studio menunggu konfigurasi"}</h1>
+    <h1>{session.configured ? "Masuk Generator V1" : "Generator menunggu konfigurasi"}</h1>
     {session.configured ? <form onSubmit={login}>
       <label htmlFor="studio-password">Kata sandi tim admin</label>
       <input id="studio-password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
@@ -428,7 +428,7 @@ export function StaticStudio() {
       <div className="studio-app__topbar-inner">
         <a className="studio-app__brand" href="/" aria-label="NAMINA, kembali ke beranda">NAMINA<span>STUDIO</span></a>
         <div className="studio-app__top-actions">
-          <a className="studio-app__v2-link" href="/studio-v2">Studio V2 ✦</a>
+          <a className="studio-app__v2-link" href="/studio">Visual Studio Resmi ✦</a>
           <button type="button" onClick={() => setShowBriefs((value) => !value)}>{showBriefs ? "Kembali edit" : "Brief klien"}</button>
           <button type="button" className="studio-app__logout" onClick={() => void logout()}>Keluar</button>
         </div>
@@ -438,7 +438,7 @@ export function StaticStudio() {
       {showBriefs ? <section className="studio-app__briefs"><BriefInbox onPrepare={prepareFromBrief} /></section> : <>
         <section className="studio-app__welcome">
           <p>NAMINA / CINEMATIC PORTFOLIO</p>
-          <h1>Studio kreator.</h1>
+          <h1>Generator V1.</h1>
           <span>Satu menu, satu langkah. Isi data, susun visual, lalu terbitkan.</span>
         </section>
         <section className="studio-app__card studio-app__client">
