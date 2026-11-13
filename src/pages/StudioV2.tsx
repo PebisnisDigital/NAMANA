@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { PublishSuccessModal } from "../components/PublishSuccessModal";
 import { VideoStudioPanel } from "../components/VideoStudioPanel";
+import { TemplateStylePicker } from "../components/TemplateStylePicker";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
-import { originalStyleDefaults } from "../static/originalStyle";
+import { naminaStylePresets, originalStyleDefaults } from "../static/originalStyle";
 import { blankSite, loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
@@ -486,6 +487,9 @@ export function StudioV2() {
           <p>Salin ulang data, video, slide ikon, karya, dan produk jika draft klien masih kosong. Konten saat ini akan diganti, tetapi website yang sudah tayang tidak berubah sampai dipublikasikan.</p>
           <button className="studio-v2__ghost" type="button" disabled={working} onClick={() => void useViniTemplate()}>Isi Template /vini</button>
         </div>}
+        <TemplateStylePicker style={original.style} onSelect={(preset) => change((next) => {
+          next.content.original!.style = structuredClone(naminaStylePresets[preset]);
+        })} />
         <div className="studio-v2__colors">
           {colorFields.map(([field, label]) => <label key={field}>
             <span>{label}</span><input type="color" value={style[field]} onChange={(event) => updateStyle(field, event.target.value)} />
