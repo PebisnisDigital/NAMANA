@@ -1,6 +1,44 @@
-# PESONAFLIX Cinematic — project agent instructions
+# NAMINA.PRO — agent instructions for Studio and client websites
 
-This repository is a staging prototype of a cinematic personal-profile experience. Keep this project's review and design rules scoped to this repository. Do not modify the PESONAFLIX production site as part of staging work.
+NAMINA is a multi-tenant cinematic website service. One Vite application serves many
+client slugs. The canonical production repository is PebisnisDigital/NAMINA,
+connected to Vercel project `namina`. Do not edit PESONAFLIX production.
+
+## Product rules
+
+- Client website content and style belong to each client's document and are
+  published to `namina_published_sites` in Supabase, not written to GitHub.
+- Publishing a client must NOT commit `public/clients/*.json` or trigger a
+  new Vercel deployment. Legacy files remain read-only fallback.
+- The admin Studio is `/studio`, with legacy generator `/studio-v1`.
+  Mitra website workspaces use RLS and `namina_business_publish_site`.
+- Admin and Mitra must edit the same site-document schema
+  (`src/static/sites.ts`), and all changes must remain tenant-isolated.
+- Create a draft, preview it, request explicit owner approval, then publish.
+  Never publish a customer site merely because draft creation succeeded.
+- Protect the existing `/vini` demo and historical site data.
+- Client media is referenced via URLs; Dropbox uploads have their own API.
+  Preserve muted autoplay, looping video, loading behavior and editable logos.
+
+## Hermes Agent operating boundary
+
+Hermes is intended as an operator using a future authenticated NAMINA Studio
+API/MCP layer. GitHub access is for source maintenance, NOT for publishing
+each client's website. There is currently no assumption that Hermes already
+has a connected NAMINA write API. Never give Hermes a Supabase service-role key,
+an unrestricted DB connection, or a shared admin password.
+Until the scoped API exists, do not directly mutate customer records.
+
+## Change controls
+
+- Work on a feature branch and open a Pull Request; do not push to `main`.
+- Do not deploy, run hosted database migrations, change domains, modify secrets,
+  or write production customer data without explicit owner approval.
+- Run lint, typecheck, tests and build when tooling is available. For dynamic
+  publication verify hosted DB migration, RLS, preview, legacy fallback, and
+  no new Vercel deployment on site publish before claiming completion.
+- Record what was actually tested versus what still needs verification.
+
 
 <!-- antislop:start -->
 ## Anti Slop (project-local)
