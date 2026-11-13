@@ -1,0 +1,571 @@
+{
+  "slug": "jerome",
+  "content": {
+    "schemaVersion": 1,
+    "template": "ORIGINAL",
+    "original": {
+      "contactUrl": "https://www.mantappu.com/talent/jerome-polin-sijabat/",
+      "style": {
+        "backgroundColor": "#050506",
+        "textColor": "#ffccaa",
+        "accentColor": "#ef4557",
+        "buttonColor": "#be2433",
+        "buttonTextColor": "#ffffff",
+        "borderColor": "#93565e",
+        "fontFamily": "montserrat",
+        "titleScale": 1,
+        "bodyScale": 1,
+        "roleScale": 0.98,
+        "menuScale": 1,
+        "layoutPreset": "original",
+        "contentMargin": 82,
+        "topSpacing": 40,
+        "factColumns": 3,
+        "galleryColumns": 2,
+        "cardGap": 14,
+        "buttonRadius": 15,
+        "borderWidth": 1,
+        "buttonVariant": "solid",
+        "shadow": "soft"
+      },
+      "nama": {
+        "intro": "PROFIL PUBLIK • DEMO NAMINA",
+        "subtitle": "",
+        "description": "Kreator konten edukasi, pengusaha, dan lulusan Matematika Terapan Waseda University. Lewat Nihongo Mantappu dan Mantappu Academy, Jerome menginspirasi generasi muda untuk menyukai matematika dan terus berkarya.",
+        "items": [
+          {
+            "id": "90000000-0000-4000-9001-000000000001",
+            "label": "Nama Lengkap",
+            "value": "Jerome Polin Sijabat",
+            "icon": 8121295
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000002",
+            "label": "Nama Populer",
+            "value": "Jerome Polin",
+            "icon": 8121295
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000003",
+            "label": "Tanggal Lahir",
+            "value": "2 Mei 1998",
+            "icon": 8121312
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000004",
+            "label": "Tempat Lahir",
+            "value": "Jakarta, Indonesia",
+            "icon": 8121270
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000005",
+            "label": "Usia",
+            "value": "28 tahun (November 2026)",
+            "icon": 8121312
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000006",
+            "label": "Kewarganegaraan",
+            "value": "Indonesia",
+            "icon": 8121270
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000007",
+            "label": "Profesi",
+            "value": "Kreator Edukasi & Pengusaha",
+            "icon": 8121299
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000008",
+            "label": "Pendidikan S1",
+            "value": "Waseda University, Jepang",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000009",
+            "label": "Jurusan",
+            "value": "Matematika Terapan",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000010",
+            "label": "Tahun Lulus",
+            "value": "2022",
+            "icon": 8121312
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000011",
+            "label": "Sekolah Menengah",
+            "value": "SMAN 5 Surabaya",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000012",
+            "label": "Beasiswa",
+            "value": "Mitsui Bussan Scholarship",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000013",
+            "label": "Kanal YouTube",
+            "value": "Nihongo Mantappu",
+            "icon": 8121262
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000014",
+            "label": "Bidang Utama",
+            "value": "Pendidikan & Bisnis Kreatif",
+            "icon": 8121304
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000015",
+            "label": "Minat",
+            "value": "Matematika dan Budaya Jepang",
+            "icon": 8121279
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000016",
+            "label": "Olahraga",
+            "value": "Lari & Maraton",
+            "icon": 8121297
+          },
+          {
+            "id": "90000000-0000-4000-9001-000000000017",
+            "label": "Pencapaian",
+            "value": "Forbes 30 Under 30 Asia (2021)",
+            "icon": 8121304
+          }
+        ]
+      },
+      "karir": {
+        "intro": "Jejak langkah dan pengalaman...",
+        "subtitle": "PERJALANAN & PENGALAMAN",
+        "description": "Perjalanan Jerome di dunia pendidikan, konten digital, dan kewirausahaan.",
+        "items": [
+          {
+            "id": "90000000-0000-4000-9002-000000000001",
+            "label": "CEO Mantappu Academy",
+            "value": "Memimpin lembaga pendidikan yang membuat belajar matematika lebih menarik.",
+            "icon": 8121304
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000002",
+            "label": "Founder Mantappu Academy",
+            "value": "Mendirikan platform pembelajaran matematika yang kreatif dan interaktif.",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000003",
+            "label": "Co-Founder Mantappu Corp",
+            "value": "Turut membangun perusahaan manajemen kreator dan industri hiburan digital.",
+            "icon": 8121304
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000004",
+            "label": "Kreator Nihongo Mantappu",
+            "value": "Mengembangkan kanal YouTube edukasi, matematika, dan budaya Jepang.",
+            "icon": 8121262
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000005",
+            "label": "Co-Founder Menantea",
+            "value": "Merintis bisnis minuman teh yang beroperasi pada 2021–2026.",
+            "icon": 8121304
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000006",
+            "label": "Founder Q&A Group",
+            "value": "Mengembangkan komunitas belajar dan tanya jawab untuk pelajar.",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000007",
+            "label": "Mathematics Educator",
+            "value": "Mengajar matematika dengan pendekatan kreatif dan mudah dipahami.",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000008",
+            "label": "Educational Content Creator",
+            "value": "Membuat konten pembelajaran yang memadukan ilmu dan hiburan.",
+            "icon": 8121272
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000009",
+            "label": "YouTube Content Creator",
+            "value": "Menghasilkan video edukatif dan kolaborasi menarik di YouTube.",
+            "icon": 8121262
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000010",
+            "label": "Public Speaker",
+            "value": "Berbagi inspirasi tentang pendidikan, kreativitas, dan bisnis.",
+            "icon": 8121299
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000011",
+            "label": "Author",
+            "value": "Menulis Mantappu Jiwa untuk membagikan cerita dan motivasi belajar.",
+            "icon": 8121272
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000012",
+            "label": "Brand Ambassador",
+            "value": "Terlibat dalam kampanye kreatif Samsung, Frisian Flag, dan Promag.",
+            "icon": 8121299
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000013",
+            "label": "Kreator CLASSROME",
+            "value": "Mengajak selebriti menyelesaikan tantangan matematika secara seru.",
+            "icon": 8121272
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000014",
+            "label": "Kreator Jerompiade",
+            "value": "Menghadirkan kompetisi edukatif seputar matematika dan pengetahuan.",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000015",
+            "label": "Kolaborator Waseda Boys",
+            "value": "Membuat konten persahabatan dan budaya Jepang bersama Waseda Boys.",
+            "icon": 8121272
+          },
+          {
+            "id": "90000000-0000-4000-9002-000000000016",
+            "label": "Penggerak Care for School",
+            "value": "Mendukung peningkatan fasilitas belajar melalui kolaborasi pendidikan.",
+            "icon": 8121313
+          }
+        ]
+      },
+      "skill": {
+        "intro": "Keahlian yang terus dikembangkan...",
+        "subtitle": "KEAHLIAN & KEMAMPUAN",
+        "description": "Kemampuan yang diasah lewat matematika, konten kreatif, dan bisnis.",
+        "items": [
+          {
+            "id": "90000000-0000-4000-9003-000000000001",
+            "label": "Matematika",
+            "value": "Menguasai matematika terapan, logika, dan pemecahan masalah.",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000002",
+            "label": "Konten Edukasi",
+            "value": "Mengemas pembelajaran menjadi konten kreatif yang menghibur.",
+            "icon": 8121272
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000003",
+            "label": "Public Speaking",
+            "value": "Menyampaikan ilmu dan inspirasi kepada berbagai audiens.",
+            "icon": 8121299
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000004",
+            "label": "Entrepreneurship",
+            "value": "Mengembangkan usaha di bidang pendidikan dan industri kreatif.",
+            "icon": 8121304
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000005",
+            "label": "Strategi Digital",
+            "value": "Merancang konsep konten yang relevan untuk platform digital.",
+            "icon": 8121262
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000006",
+            "label": "Personal Branding",
+            "value": "Membangun identitas sebagai kreator edukasi dan entrepreneur.",
+            "icon": 8121295
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000007",
+            "label": "Bahasa Jepang",
+            "value": "Menggunakan pengetahuan bahasa dan budaya Jepang dalam konten.",
+            "icon": 8121313
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000008",
+            "label": "Creative Storytelling",
+            "value": "Mengubah pengalaman menjadi cerita yang menarik dan mudah dipahami.",
+            "icon": 8121272
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000009",
+            "label": "Leadership",
+            "value": "Memimpin dan berkolaborasi dalam pengembangan inisiatif bisnis.",
+            "icon": 8121304
+          },
+          {
+            "id": "90000000-0000-4000-9003-000000000010",
+            "label": "Inovasi Pendidikan",
+            "value": "Mengembangkan cara belajar yang kreatif dan mudah diakses.",
+            "icon": 8121313
+          }
+        ]
+      },
+      "karya": {
+        "intro": "Karya dan inisiatif Jerome...",
+        "subtitle": "KREATIVITAS & PENCAPAIAN",
+        "description": "Pilihan kanal, program, buku, dan kolaborasi yang bisa dijelajahi.",
+        "items": [
+          {
+            "id": "90000000-0000-4000-9004-000000000001",
+            "title": "Nihongo Mantappu",
+            "description": "Kanal YouTube berisi matematika, budaya Jepang, dan hiburan edukatif.",
+            "link": "https://www.youtube.com/@nihongomantappu",
+            "imageAssetId": null,
+            "motif": "cinema",
+            "color": "#f34b53"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000002",
+            "title": "Mantappu Academy",
+            "description": "Inisiatif pendidikan Jerome yang menghadirkan pembelajaran matematika lebih interaktif.",
+            "link": "https://linktr.ee/mantappuacademy",
+            "imageAssetId": null,
+            "motif": "community",
+            "color": "#4ba5c9"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000003",
+            "title": "Buku Mantappu Jiwa",
+            "description": "Buku karya Jerome tentang pengalaman hidup, belajar, dan mengejar impian.",
+            "link": "https://gpu.id/book/92587/mantappu-jiwa",
+            "imageAssetId": null,
+            "motif": "monogram",
+            "color": "#f0ac67"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000004",
+            "title": "Jerompiade",
+            "description": "Program kompetisi edukatif yang menguji matematika dan pengetahuan umum.",
+            "link": "https://www.mantappu.com/2024/04/19/jerompiade-university-war-versi-indonesia/",
+            "imageAssetId": null,
+            "motif": "animation",
+            "color": "#df647b"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000005",
+            "title": "CLASSROME",
+            "description": "Tayangan tantangan matematika bersama artis di kanal Nihongo Mantappu.",
+            "link": "https://www.mantappu.com/2025/01/15/classrome-nihongo-mantappu-uji-matematika-artis/",
+            "imageAssetId": null,
+            "motif": "cinema",
+            "color": "#7f94e6"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000006",
+            "title": "Waseda Boys",
+            "description": "Kolaborasi video tentang persahabatan, pengalaman, dan budaya Jepang.",
+            "link": "https://www.mantappu.com/tag/waseda-boys/",
+            "imageAssetId": null,
+            "motif": "community",
+            "color": "#61a8a1"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000007",
+            "title": "Mantappu Corp",
+            "description": "Perusahaan manajemen kreator yang turut dibangun Jerome dan Jehian.",
+            "link": "https://www.mantappu.com/",
+            "imageAssetId": null,
+            "motif": "monogram",
+            "color": "#d66d79"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000008",
+            "title": "Buku Waseda Boys",
+            "description": "Buku kolaborasi yang membagikan cerita dan pengalaman di Jepang.",
+            "link": "https://www.mantappu.com/tag/waseda-boys/",
+            "imageAssetId": null,
+            "motif": "road",
+            "color": "#c5a874"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000009",
+            "title": "Menantea (2021–2026)",
+            "description": "Bisnis minuman teh yang pernah didirikan Jerome bersama para mitra.",
+            "link": "https://www.instagram.com/menantea.toko/",
+            "imageAssetId": null,
+            "motif": "community",
+            "color": "#a1cc87"
+          },
+          {
+            "id": "90000000-0000-4000-9004-000000000010",
+            "title": "Care for School",
+            "description": "Program bersama Mantappu Academy dan Arei untuk mendukung fasilitas pendidikan.",
+            "link": "https://www.mantappu.com/2026/11/09/care-for-school-kolaborasi-jerome-polin-mantappu-academy-dan-arei-untuk-pendidikan-di-garut/",
+            "imageAssetId": null,
+            "motif": "community",
+            "color": "#5ca9c6"
+          }
+        ]
+      },
+      "produk": {
+        "intro": "Inisiatif bisnis dan publikasi...",
+        "subtitle": "PRODUK & BISNIS",
+        "description": "Bisnis dan karya yang dikembangkan atau pernah dijalani Jerome.",
+        "items": [
+          {
+            "id": "90000000-0000-4000-9005-000000000001",
+            "title": "Mantappu Academy",
+            "description": "Lembaga pendidikan yang berfokus pada pembelajaran matematika dan pengembangan siswa.",
+            "link": "https://linktr.ee/mantappuacademy",
+            "imageAssetId": null,
+            "motif": "monogram",
+            "color": "#57b1b7"
+          },
+          {
+            "id": "90000000-0000-4000-9005-000000000002",
+            "title": "Mantappu Corp",
+            "description": "Perusahaan kreator yang mengembangkan kolaborasi dan peluang industri digital.",
+            "link": "https://www.mantappu.com/",
+            "imageAssetId": null,
+            "motif": "community",
+            "color": "#ec5968"
+          },
+          {
+            "id": "90000000-0000-4000-9005-000000000003",
+            "title": "Buku Mantappu Jiwa",
+            "description": "Buku motivasi dan perjalanan Jerome dalam menekuni pendidikan serta kreativitas.",
+            "link": "https://gpu.id/book/92587/mantappu-jiwa",
+            "imageAssetId": null,
+            "motif": "monogram",
+            "color": "#f9b55b"
+          },
+          {
+            "id": "90000000-0000-4000-9005-000000000004",
+            "title": "Nihongo Mantappu",
+            "description": "Kanal konten edukasi dan hiburan yang menjadi karya utama Jerome.",
+            "link": "https://www.youtube.com/@nihongomantappu",
+            "imageAssetId": null,
+            "motif": "cinema",
+            "color": "#8fa6ed"
+          },
+          {
+            "id": "90000000-0000-4000-9005-000000000005",
+            "title": "Menantea (Arsip)",
+            "description": "Usaha minuman teh yang pernah dijalankan bersama para mitra pada 2021–2026.",
+            "link": "https://www.instagram.com/menantea.toko/",
+            "imageAssetId": null,
+            "motif": "community",
+            "color": "#a3be72"
+          }
+        ]
+      },
+      "menuTitles": {
+        "nama": "Profil",
+        "karir": "Karir",
+        "skill": "Skill",
+        "karya": "Karya",
+        "produk": "Produk"
+      },
+      "menuSettings": {
+        "nama": {
+          "icon": "person",
+          "slideSpeed": 58
+        },
+        "karir": {
+          "icon": "briefcase",
+          "slideSpeed": 64
+        },
+        "skill": {
+          "icon": "sliders",
+          "slideSpeed": 54
+        },
+        "karya": {
+          "icon": "image",
+          "slideSpeed": 45
+        },
+        "produk": {
+          "icon": "shopping",
+          "slideSpeed": 48
+        }
+      },
+      "contactLabel": "Profil Resmi"
+    },
+    "identity": {
+      "displayName": "JEROME POLIN",
+      "profession": "EDUCATION CREATOR & ENTREPRENEUR",
+      "bio": "Profil publik Jerome Polin Sijabat, kreator edukasi dan pendiri Mantappu Academy. Halaman demonstrasi NAMINA, bukan situs resmi atau afiliasi.",
+      "portraitAssetId": null,
+      "brandLabel": "PROFIL PUBLIK • DEMO",
+      "introLabel": "Halo, perkenalkan..."
+    },
+    "wallet": {
+      "color": "#3b1722",
+      "materialPreset": "original",
+      "animationPreset": "normal"
+    },
+    "background": {
+      "desktopVideoAssetId": null,
+      "mobileVideoAssetId": null,
+      "posterAssetId": null,
+      "overlayOpacity": 0.65,
+      "focalX": 50,
+      "mobileFocalX": 50,
+      "focalY": 50
+    },
+    "theme": {
+      "accent": "#ef4557",
+      "fontPreset": "original",
+      "headingScale": 1,
+      "enterKeyAssetId": null
+    },
+    "cards": [
+      {
+        "id": "90000000-0000-4000-9006-000000000001",
+        "type": "profile",
+        "title": "Jerome Polin",
+        "subtitle": "Education Creator",
+        "description": "Profil publik Jerome Polin Sijabat, kreator pendidikan dan entrepreneur Indonesia.",
+        "visible": true,
+        "color": "#ef4557",
+        "imageAssetId": null,
+        "icon": "person",
+        "kind": "name",
+        "animatedIcon": 8121295,
+        "link": "https://www.mantappu.com/talent/jerome-polin-sijabat/"
+      },
+      {
+        "id": "90000000-0000-4000-9006-000000000002",
+        "type": "experience",
+        "title": "Mantappu Academy",
+        "subtitle": "CEO & Founder",
+        "description": "Mengembangkan lembaga pendidikan dengan fokus pembelajaran matematika kreatif.",
+        "visible": true,
+        "color": "#e6b65a",
+        "imageAssetId": null,
+        "icon": "book",
+        "kind": "work",
+        "animatedIcon": 8121313,
+        "link": "https://linktr.ee/mantappuacademy"
+      },
+      {
+        "id": "90000000-0000-4000-9006-000000000003",
+        "type": "experience",
+        "title": "Nihongo Mantappu",
+        "subtitle": "YouTube Creator",
+        "description": "Membagikan matematika, budaya Jepang, dan hiburan edukatif.",
+        "visible": true,
+        "color": "#67b5d6",
+        "imageAssetId": null,
+        "icon": "website",
+        "kind": "work",
+        "animatedIcon": 8121262,
+        "link": "https://www.youtube.com/@nihongomantappu"
+      }
+    ]
+  },
+  "media": {
+    "desktopVideo": "",
+    "mobileVideo": "",
+    "poster": "",
+    "portrait": "",
+    "enterKey": "",
+    "cards": {}
+  }
+}
