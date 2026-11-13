@@ -334,7 +334,7 @@ export function StudioV2() {
       const updated = await studioApi<{ ok: true; sha: string; mode: "database" }>("publish", {
         method: "POST", body: JSON.stringify({ document: result.data, sha }),
       });
-      if (!updated.ok || updated.mode !== "database" || !/^db:[1-9]\\d*$/.test(updated.sha)) {
+      if (!updated.ok || updated.mode !== "database" || !/^db:[1-9]\d*$/.test(updated.sha)) {
         throw new Error("Publikasi Supabase belum berhasil dikonfirmasi.");
       }
       setSha(updated.sha);
