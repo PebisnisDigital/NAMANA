@@ -6,7 +6,7 @@ import { StudioV2 } from "./StudioV2";
 
 /**
  * Same official /studio for everyone:
- * - Admin: original GitHub-backed Visual Studio (protected by admin password).
+ * - Admin: Visual Studio publishing directly into the Supabase public site store.
  * - Partner: their own Supabase-RLS workspace and visual editor.
  * Server-side RLS controls access; this is only a routing convenience.
  */

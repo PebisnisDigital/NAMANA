@@ -331,15 +331,18 @@ export function StudioV2() {
     }
     setWorking(true); setError("");
     try {
-      const updated = await studioApi<{ ok: true; sha: string }>("publish", {
+      const updated = await studioApi<{ ok: true; sha: string; mode: "database" }>("publish", {
         method: "POST", body: JSON.stringify({ document: result.data, sha }),
       });
+      if (!updated.ok || updated.mode !== "database" || !/^db:[1-9]\d*$/.test(updated.sha)) {
+        throw new Error("Publikasi Supabase belum berhasil dikonfirmasi.");
+      }
       setSha(updated.sha);
       setSite(result.data);
-      localStorage.removeItem(draftKey(site.slug));
+      try { localStorage.removeItem(draftKey(site.slug)); } catch { /* Draft cache is optional. */ }
       setApproved(false);
       setPublished("live");
-      await refreshList();
+      void refreshList().catch(() => {});
     } catch (cause) { setError((cause as Error).message); }
     finally { setWorking(false); }
   };
@@ -746,7 +749,7 @@ export function StudioV2() {
       <section className="studio-v2__modal" role="dialog" aria-modal="true" aria-labelledby="v2-confirm-title">
         <div className="studio-v2__modal-mark">✓</div>
         <h2 id="v2-confirm-title">Siap terbitkan website?</h2>
-        <p>Periksa semua teks, video, kartu, foto, link, dan warna. Draft tidak akan tampil publik sampai kamu menekan Publikasikan.</p>
+        <p>Periksa semua teks, video, kartu, foto, link, dan warna. Website langsung diterbitkan ke Supabase tanpa deploy GitHub atau Vercel.</p>
         <strong>{"https://namina.biz.id/" + slug}</strong>
         <label className="studio-v2__approve"><input type="checkbox" checked={approved}
           onChange={(event) => setApproved(event.target.checked)} />

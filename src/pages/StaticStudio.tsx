@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ViniCinematic } from "../components/ViniCinematic";
+import { PublishSuccessModal } from "../components/PublishSuccessModal";
 import { slugSchema } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { blankSite, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
@@ -37,8 +38,7 @@ const menuFields = [
   { key: "produk", label: "Produk", description: "Produk dan bisnis" },
 ] as const;
 type StudioStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-type PublishStatus =
-  | { phase: "deploying" | "live" | "pending"; slug: string; expected: SiteDocument };
+type PublishResult = { ok: true; sha: string; mode: "database" };
 const promptKey = (slug: string) => `namina:studio:media-prompts:${slug}`;
 const emptyPrompts: MediaPrompts = { image: "", video: "" };
 function savedPrompts(slug: string): MediaPrompts {
@@ -66,16 +66,6 @@ function ensureOriginal(site: SiteDocument): SiteDocument {
   return site;
 }
 
-async function imageBase64(file: File): Promise<string> {
-  const dataUrl = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error("Gambar gagal dibaca."));
-    reader.readAsDataURL(file);
-  });
-  return dataUrl.slice(dataUrl.indexOf(",") + 1);
-}
-
 function textList(value: string) {
   return value.split(/[\n,;]+/).map((text) => text.trim()).filter(Boolean).slice(0, 30);
 }
@@ -94,11 +84,9 @@ export function StaticStudio() {
   const [newSlug, setNewSlug] = useState("");
   const [document, setDocument] = useState<SiteDocument | null>(null);
   const [sha, setSha] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [localMediaPreviews, setLocalMediaPreviews] = useState<Record<string, string>>({});
   const [isPreview, setIsPreview] = useState(false);
   const [step, setStep] = useState<StudioStep>(1);
-  const [publishStatus, setPublishStatus] = useState<PublishStatus | null>(null);
+  const [publishedLink, setPublishedLink] = useState<string | null>(null);
   const [mediaPrompts, setMediaPrompts] = useState<MediaPrompts>({ ...emptyPrompts });
   const [approved, setApproved] = useState(false);
   const [showBriefs, setShowBriefs] = useState(false);
@@ -106,7 +94,6 @@ export function StaticStudio() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const initialLoadStarted = useRef(false);
-  const uploadedPreviewUrls = useRef<string[]>([]);
 
   const loadSlugs = useCallback(async () => {
     const result = await callApi<StudioResponse>("list");
@@ -180,7 +167,7 @@ export function StaticStudio() {
   };
 
   const publish = async () => {
-    if (!document || step !== 8 || !approved) return;
+    if (!document || step !== 8 || !approved || working) return;
     const checked = siteDocumentSchema.safeParse(prepareSite(document));
     if (!checked.success) {
       setError(checked.error.issues[0]?.message || "Periksa data sebelum terbit.");
@@ -188,19 +175,25 @@ export function StaticStudio() {
     }
     setWorking(true);
     setError("");
+    setPublishedLink(null);
     try {
-      const result = await callApi<{ ok: true; sha: string }>("publish", {
+      // Admin publishes the same way as partners: one database write,
+      // no GitHub commit, no Vercel deployment or waiting/polling.
+      const result = await callApi<PublishResult>("publish", {
         method: "POST", body: JSON.stringify({ document: checked.data, sha }),
       });
+      if (!result.ok || result.mode !== "database" || !/^db:[1-9]\d*$/.test(result.sha)) {
+        throw new Error("Publikasi database belum terkonfirmasi. Silakan coba kembali.");
+      }
       setSha(result.sha);
       setDocument(checked.data);
-      localStorage.removeItem(draftKey(document.slug));
-      setMessage("Data sudah dikirim ke GitHub. NAMINA sedang memeriksa hasil deployment Vercel.");
-      setPublishStatus({ phase: "deploying", slug: checked.data.slug, expected: checked.data });
+      try { localStorage.removeItem(draftKey(document.slug)); } catch { /* Optional local cache. */ }
       setApproved(false);
-      await loadSlugs();
+      setMessage("");
+      setPublishedLink("https://namina.biz.id/" + checked.data.slug);
+      void loadSlugs().catch(() => {});
     } catch (cause) {
-      setError((cause as Error).message);
+      setError(cause instanceof Error ? cause.message : "Publikasi gagal.");
     } finally {
       setWorking(false);
     }
@@ -323,61 +316,6 @@ export function StaticStudio() {
     initialLoadStarted.current = false;
   };
 
-  useEffect(() => () => { uploadedPreviewUrls.current.forEach((url) => URL.revokeObjectURL(url)); }, []);
-
-  const uploadGallery = async (id: string, file: File) => {
-    if (!document) return;
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 1300000) {
-      setError("Gunakan foto JPG, PNG, atau WebP maksimal 1,3 MB.");
-      return;
-    }
-    setUploading(true);
-    setError("");
-    try {
-      const result = await callApi<{ url: string }>("upload", {
-        method: "POST", body: JSON.stringify({ slug: document.slug, mime: file.type, base64: await imageBase64(file) }),
-      });
-      const previewUrl = URL.createObjectURL(file);
-      uploadedPreviewUrls.current.push(previewUrl);
-      setLocalMediaPreviews((previews) => ({ ...previews, [result.url]: previewUrl }));
-      change((next) => { next.media.cards[id] = result.url; });
-      setMessage("Gambar terunggah ke media. Data tetap draft sampai tahap publikasi final.");
-    } catch (cause) { setError((cause as Error).message); }
-    finally { setUploading(false); }
-  };
-
-
-  // Confirm that the exact published client JSON has reached the production domain,
-  // rather than declaring success when only the GitHub commit has completed.
-  useEffect(() => {
-    if (!publishStatus || publishStatus.phase !== "deploying") return;
-    let active = true;
-    let attempts = 0;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const verify = async () => {
-      attempts += 1;
-      try {
-        const response = await fetch("/clients/" + publishStatus.slug + ".json?check=" + Date.now(), { cache: "no-store" });
-        if (response.ok) {
-          const data: unknown = await response.json();
-          if (JSON.stringify(data) === JSON.stringify(publishStatus.expected)) {
-            if (active) setPublishStatus((previous) => previous && previous.slug === publishStatus.slug
-              ? { ...previous, phase: "live" } : previous);
-            return;
-          }
-        }
-      } catch { /* The production deployment may still be in progress. */ }
-      if (!active) return;
-      if (attempts >= 45) {
-        setPublishStatus((previous) => previous && previous.slug === publishStatus.slug
-          ? { ...previous, phase: "pending" } : previous);
-        return;
-      }
-      timer = setTimeout(() => { void verify(); }, 4000);
-    };
-    void verify();
-    return () => { active = false; if (timer) clearTimeout(timer); };
-  }, [publishStatus]);
 
   if (!session) return <main className="studio-gate studio-gate--app">
     {error ? <div className="studio-gate__card" role="alert"><h1>Studio tidak dapat dihubungi</h1><p>{error}</p><button type="button" onClick={() => location.reload()}>Coba lagi</button></div>
@@ -397,9 +335,7 @@ export function StaticStudio() {
   </div></main>;
 
   const prepared = document ? prepareSite(document) : null;
-  const assetUrls = prepared ? Object.fromEntries(
-    Object.entries(resolveMedia(prepared)).map(([id, url]) => [id, localMediaPreviews[url] || url]),
-  ) : {};
+  const assetUrls = prepared ? resolveMedia(prepared) : {};
 
 
 
@@ -489,8 +425,7 @@ export function StaticStudio() {
               <div><h2>Isi menu {activeStage.label}</h2><p>Semua bisa diedit. Perubahan tersimpan sebagai draft, belum tampil di website publik.</p></div>
             </div>
             <OriginalStudioEditor key={document.slug + "-" + currentMenu} section={currentMenu}
-              site={document} change={change} uploading={uploading} previews={localMediaPreviews}
-              onUpload={(id, file) => void uploadGallery(id, file)} />
+              site={document} change={change} />
           </section>}
           {step === 6 && <StudioMediaEditor site={document} change={change} prompts={mediaPrompts} onPromptChange={changePrompt} />}
           {step === 7 && <>
@@ -530,7 +465,7 @@ export function StaticStudio() {
           {step === 8 && <section className="studio-app__card studio-app__publish">
             <div className="studio-app__card-heading">
               <span className="studio-app__card-icon" aria-hidden="true">✓</span>
-              <div><h2>Periksa lalu publish</h2><p>Ini tahap terakhir. Cek semua data sebelum website klien diluncurkan.</p></div>
+              <div><h2>Siap Publikasikan?</h2><p>Periksa data klien sebelum menerbitkan langsung ke Supabase. Tanpa deploy Vercel.</p></div>
             </div>
             <div className="studio-app__publish-link"><small>Alamat website klien</small><strong>{"namina.biz.id/" + document.slug}</strong></div>
             <ul className="studio-app__publish-list">
@@ -549,35 +484,15 @@ export function StaticStudio() {
         </>}
         <footer className="studio-app__bottom">
           {step > 1 && <button type="button" className="studio-app__back" onClick={() => goToStep((step - 1) as StudioStep)}>Kembali</button>}
-          {step < 8 && <button type="button" className="studio-app__primary" disabled={!document || working || uploading} onClick={nextStep}>
+          {step < 8 && <button type="button" className="studio-app__primary" disabled={!document || working} onClick={nextStep}>
             {step === 7 ? "Lanjut ke Publish" : "Lanjut"} <span aria-hidden="true">›</span>
           </button>}
-          {step === 8 && <button type="button" className="studio-app__primary" disabled={!document || working || uploading || !approved} onClick={() => void publish()}>
-            {working ? "Mengirim..." : "Publish Website"}
+          {step === 8 && <button type="button" className="studio-app__primary" disabled={!document || working || !approved} onClick={() => void publish()}>
+            {working ? "Menerbitkan…" : "Publikasikan"}
           </button>}
         </footer>
       </>}
     </div>
-    {publishStatus && <div className="studio-eight__modal-backdrop" role="presentation">
-      <section className="studio-eight__modal" role="dialog" aria-modal="true" aria-labelledby="studio-publish-title">
-        <div className="studio-eight__modal-icon" aria-hidden="true">{publishStatus.phase === "live" ? "✓" : "↗"}</div>
-        <h2 id="studio-publish-title">{publishStatus.phase === "live" ? "Website berhasil dipublikasikan!" : publishStatus.phase === "deploying" ? "Publikasi sedang diproses" : "Menunggu konfirmasi Vercel"}</h2>
-        <p>{publishStatus.phase === "live"
-          ? "Selamat! Halaman NAMINA klien sudah terbit dan siap dibagikan."
-          : publishStatus.phase === "deploying"
-          ? "Data berhasil tersimpan ke GitHub. Vercel sedang menayangkan versi terbarunya. Link akan muncul setelah terverifikasi."
-          : "Perubahan sudah dikirim ke GitHub, tetapi Vercel belum terkonfirmasi. Cek status deployment sebelum membagikan link."}</p>
-        <div className="studio-eight__modal-link">
-          <small>Alamat website klien</small>
-          <strong>{"https://namina.biz.id/" + publishStatus.slug}</strong>
-        </div>
-        {publishStatus.phase === "live" && <>
-          <a className="studio-eight__modal-go" href={"/" + publishStatus.slug} target="_blank" rel="noopener noreferrer">Buka website klien ↗</a>
-          <button type="button" onClick={() => void navigator.clipboard.writeText("https://namina.biz.id/" + publishStatus.slug)}>Salin Link</button>
-        </>}
-        {publishStatus.phase === "pending" && <button type="button" onClick={() => setPublishStatus((prev) => prev ? { ...prev, phase: "deploying" } : prev)}>Cek lagi</button>}
-        <button type="button" className="studio-eight__modal-close" onClick={() => setPublishStatus(null)}>Tutup</button>
-      </section>
-    </div>}
+    {publishedLink && <PublishSuccessModal url={publishedLink} onClose={() => setPublishedLink(null)} />}
   </main>;
 }

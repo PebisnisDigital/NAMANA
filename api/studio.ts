@@ -223,36 +223,9 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     }
 
     if (action === "upload" && req.method === "POST") {
-      const body = z.object({
-        slug: slugSchema,
-        mime: z.enum(["image/jpeg", "image/png", "image/webp"]),
-        base64: z.string().min(12).max(1800000).regex(/^[A-Za-z0-9+/]+={0,2}$/),
-      }).strict().parse(await readBody(req, 1900000));
-      const bytes = Buffer.from(body.base64, "base64");
-      if (bytes.length > 1300000 || bytes.length < 12) {
-        send(res, 413, { error: "Foto maksimal 1,3 MB. Kompres sebelum mengunggah." });
-        return;
-      }
-      const jpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-      const png = bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
-      const webp = bytes.subarray(0, 4).toString() === "RIFF" && bytes.subarray(8, 12).toString() === "WEBP";
-      if (!((body.mime === "image/jpeg" && jpeg) || (body.mime === "image/png" && png) || (body.mime === "image/webp" && webp))) {
-        send(res, 400, { error: "File bukan gambar JPG, PNG, atau WebP yang valid." });
-        return;
-      }
-      const ext = body.mime === "image/jpeg" ? "jpg" : body.mime === "image/png" ? "png" : "webp";
-      const file = `${randomBytes(16).toString("hex")}.${ext}`;
-      const path = `public/media/${body.slug}/${file}`;
-      const response = await github(path, {
-        method: "PUT",
-        body: JSON.stringify({
-          message: `Upload media NAMINA ${body.slug}`,
-          branch,
-          content: body.base64,
-        }),
-      });
-      if (!response.ok) throw new Error(`Upload media GitHub gagal (${response.status}).`);
-      send(res, 200, { url: `/media/${body.slug}/${file}` });
+      // Legacy media uploads used to commit images to GitHub, triggering a
+      // full deployment. Admin/Mitra media is now URL-only instead.
+      send(res, 410, { error: "Upload ke GitHub sudah dinonaktifkan. Gunakan URL gambar HTTPS agar tidak memicu deploy." });
       return;
     }
 
@@ -267,7 +240,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
         const current = await old.json() as { sha: string };
         return current.sha;
       });
-      send(res, 200, { ok: true, sha, mode: "database" });
+      send(res, 200, { ok: true, sha, mode: "database", url: "https://namina.biz.id/" + payload.document.slug });
       return;
     }
     send(res, 405, { error: "Aksi tidak didukung." });

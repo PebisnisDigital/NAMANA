@@ -7,9 +7,6 @@ type EditProps = {
   site: SiteDocument;
   change: (update: (next: SiteDocument) => void) => void;
   section: SectionKey | GalleryKey;
-  onUpload: (id: string, file: File) => void;
-  uploading: boolean;
-  previews: Record<string, string>;
 };
 
 const icons = [
@@ -52,7 +49,7 @@ function whatsappLink(value: string) {
   const international = digits.startsWith("0") ? "62" + digits.slice(1) : digits.startsWith("8") ? "62" + digits : digits;
   return "https://wa.me/" + international;
 }
-export function OriginalStudioEditor({ site, change, section, onUpload, uploading, previews }: EditProps) {
+export function OriginalStudioEditor({ site, change, section }: EditProps) {
   const activeTab = section;
   const [waNumber, setWaNumber] = useState(() => whatsappInput(site.content.original?.contactUrl || ""));
   const [selectedGallery, setSelectedGallery] = useState<string | null>(null);
@@ -189,21 +186,13 @@ export function OriginalStudioEditor({ site, change, section, onUpload, uploadin
           <div className="studio-media__asset">
             <strong>Foto untuk kartu ini (rasio 19:6)</strong>
             {site.media.cards[item.id]
-              ? <img className="studio-media__image" src={previews[site.media.cards[item.id]] || site.media.cards[item.id]} alt={"Preview foto " + item.title} width={570} height={180} />
+              ? <img className="studio-media__image" src={site.media.cards[item.id]} alt={"Preview foto " + item.title} width={570} height={180} />
               : <div className="studio-media__placeholder">Belum ada foto</div>}
             <label className="studio-original__field">
               <span>URL foto (opsional)</span>
               <input type="url" placeholder="https://.../foto.webp" value={site.media.cards[item.id] || ""} onChange={(event) => change((next) => { next.media.cards[item.id] = event.target.value; })} />
             </label>
-            <label className="studio-media__upload">
-              <span>+ Unggah foto kartu</span>
-              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} onChange={(event) => {
-                const file = event.currentTarget.files?.[0];
-                if (file) onUpload(item.id, file);
-                event.currentTarget.value = "";
-              }} />
-            </label>
-            <small>JPG, PNG atau WebP • maks. 1,3 MB</small>
+            <small>Tempel URL HTTPS gambar yang sudah tersedia. Gambar tidak diunggah ke GitHub sehingga tidak memicu deploy.</small>
           </div>
         </div>;
       })}
