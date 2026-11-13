@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { businessClient } from "../business/client";
 import { PublishSuccessModal } from "../components/PublishSuccessModal";
+import { VideoStudioPanel } from "../components/VideoStudioPanel";
 import { loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, type SiteDocument } from "../static/sites";
 import { originalStyleDefaults } from "../static/originalStyle";
 import type { OriginalMenuIcon, OriginalStyle } from "../domain/content";
@@ -281,12 +282,14 @@ export function BusinessVisualStudio() {
       }))}
       {field("Tulisan tombol",original.contactLabel||"Japri Saya!",v=>change(next=>{next.content.original!.contactLabel=v}))}
     </>;
-    if(selected==="video")return <>
-      {field("Link video desktop / Dropbox",site.media.desktopVideo,v=>change(next=>{next.media.desktopVideo=v}))}
-      {field("Link video HP",site.media.mobileVideo,v=>change(next=>{next.media.mobileVideo=v}))}
-      <p className="studio-v2__inspector-hint">Jika video HP sama dengan PC, kolom HP boleh dikosongkan. Jika area video hitam, klik Tes Link Video untuk memeriksa akses MP4 dari hosting.</p>
-      {(site.media.mobileVideo || site.media.desktopVideo).startsWith("https://") && <a className="studio-v2__test-link" href={site.media.mobileVideo || site.media.desktopVideo} target="_blank" rel="noopener noreferrer">Tes Link Video ↗</a>}
-    </>;
+    if(selected==="video")return <VideoStudioPanel key={site.slug} site={site} siteId={rowId}
+      onChangeVideo={url=>change(next=>{
+        const previous=next.media.desktopVideo;
+        next.media.desktopVideo=url;
+        if(!next.media.mobileVideo || next.media.mobileVideo===previous) next.media.mobileVideo=url;
+      })}
+      onChangeManual={(field,url)=>change(next=>{next.media[field]=url})}
+    />;
     if(fact&&factSection)return <>
       {field("Judul data",fact.label,v=>change(next=>{next.content.original![factSection].items[factIndex].label=v}))}
       {field("Isi data",fact.value,v=>change(next=>{next.content.original![factSection].items[factIndex].value=v}),true)}

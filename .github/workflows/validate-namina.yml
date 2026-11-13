@@ -18,5 +18,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npx tsx --test tests/vini-template.test.ts tests/mobile-video-preview.test.ts tests/admin-publish-no-deploy.test.ts
+      - run: npx tsx --test tests/vini-template.test.ts tests/mobile-video-preview.test.ts tests/admin-publish-no-deploy.test.ts tests/video-studio-upload.test.ts
       - run: npm run build

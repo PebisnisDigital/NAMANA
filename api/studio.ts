@@ -66,7 +66,7 @@ function sessionCookie(req: ApiRequest) {
   return req.headers.cookie?.split(";").map((part) => part.trim()).find((part) => part.startsWith("namana_session="))?.slice(15);
 }
 
-function authenticated(req: ApiRequest) {
+export function authenticated(req: ApiRequest) {
   if (!configured()) return false;
   const cookie = sessionCookie(req);
   if (!cookie) return false;

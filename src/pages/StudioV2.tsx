@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { PublishSuccessModal } from "../components/PublishSuccessModal";
+import { VideoStudioPanel } from "../components/VideoStudioPanel";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
@@ -618,16 +619,14 @@ export function StudioV2() {
         onChange={(value) => change((next) => { next.content.original!.contactLabel = value; })} />
       {original.contactUrl && <a className="studio-v2__test-link" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Tes link WhatsApp ↗</a>}
     </>;
-    if (selected === "video") return <>
-      <Field label="URL video utama (MP4 / link Dropbox)" type="url"
-        value={site.media.desktopVideo} placeholder="https://www.dropbox.com/scl/fi/..."
-        onChange={(value) => change((next) => { next.media.desktopVideo = value; })} />
-      <Field label="URL video HP (opsional)" type="url" value={site.media.mobileVideo}
-        onChange={(value) => change((next) => { next.media.mobileVideo = value; })} />
-      <a href="https://www.dropbox.com/home" className="studio-v2__test-link" target="_blank" rel="noopener noreferrer">Upload video ke Dropbox ↗</a>
-      <p className="studio-v2__inspector-hint">Link video HP boleh kosong jika sama dengan PC. Jika video tidak muncul, gunakan Tes Link Video untuk memastikan file MP4 dapat dibuka dari hosting.</p>
-      {(site.media.mobileVideo || site.media.desktopVideo).startsWith("https://") && <a className="studio-v2__test-link" href={site.media.mobileVideo || site.media.desktopVideo} target="_blank" rel="noopener noreferrer">Tes Link Video ↗</a>}
-    </>;
+    if (selected === "video") return <VideoStudioPanel key={site.slug} site={site}
+      onChangeVideo={url=>change(next=>{
+        const previous=next.media.desktopVideo;
+        next.media.desktopVideo=url;
+        if(!next.media.mobileVideo || next.media.mobileVideo===previous) next.media.mobileVideo=url;
+      })}
+      onChangeManual={(field,url)=>change(next=>{next.media[field]=url})}
+    />;
     if (fact && factSection) return <>
       <Field label="Nama data" value={fact.label} maxLength={40} onChange={(value) => updateFact("label", value)} />
       <Field label="Isi data" value={fact.value} maxLength={180} multiline onChange={(value) => updateFact("value", value)} />
