@@ -66,16 +66,6 @@ function ensureOriginal(site: SiteDocument): SiteDocument {
   return site;
 }
 
-async function imageBase64(file: File): Promise<string> {
-  const dataUrl = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error("Gambar gagal dibaca."));
-    reader.readAsDataURL(file);
-  });
-  return dataUrl.slice(dataUrl.indexOf(",") + 1);
-}
-
 function textList(value: string) {
   return value.split(/[\n,;]+/).map((text) => text.trim()).filter(Boolean).slice(0, 30);
 }
@@ -94,8 +84,6 @@ export function StaticStudio() {
   const [newSlug, setNewSlug] = useState("");
   const [document, setDocument] = useState<SiteDocument | null>(null);
   const [sha, setSha] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [localMediaPreviews, setLocalMediaPreviews] = useState<Record<string, string>>({});
   const [isPreview, setIsPreview] = useState(false);
   const [step, setStep] = useState<StudioStep>(1);
   const [publishedLink, setPublishedLink] = useState<string | null>(null);
@@ -106,7 +94,6 @@ export function StaticStudio() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const initialLoadStarted = useRef(false);
-  const uploadedPreviewUrls = useRef<string[]>([]);
 
   const loadSlugs = useCallback(async () => {
     const result = await callApi<StudioResponse>("list");
@@ -329,29 +316,6 @@ export function StaticStudio() {
     initialLoadStarted.current = false;
   };
 
-  useEffect(() => () => { uploadedPreviewUrls.current.forEach((url) => URL.revokeObjectURL(url)); }, []);
-
-  const uploadGallery = async (id: string, file: File) => {
-    if (!document) return;
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 1300000) {
-      setError("Gunakan foto JPG, PNG, atau WebP maksimal 1,3 MB.");
-      return;
-    }
-    setUploading(true);
-    setError("");
-    try {
-      const result = await callApi<{ url: string }>("upload", {
-        method: "POST", body: JSON.stringify({ slug: document.slug, mime: file.type, base64: await imageBase64(file) }),
-      });
-      const previewUrl = URL.createObjectURL(file);
-      uploadedPreviewUrls.current.push(previewUrl);
-      setLocalMediaPreviews((previews) => ({ ...previews, [result.url]: previewUrl }));
-      change((next) => { next.media.cards[id] = result.url; });
-      setMessage("Gambar terunggah ke media. Data tetap draft sampai tahap publikasi final.");
-    } catch (cause) { setError((cause as Error).message); }
-    finally { setUploading(false); }
-  };
-
 
   if (!session) return <main className="studio-gate studio-gate--app">
     {error ? <div className="studio-gate__card" role="alert"><h1>Studio tidak dapat dihubungi</h1><p>{error}</p><button type="button" onClick={() => location.reload()}>Coba lagi</button></div>
@@ -371,9 +335,7 @@ export function StaticStudio() {
   </div></main>;
 
   const prepared = document ? prepareSite(document) : null;
-  const assetUrls = prepared ? Object.fromEntries(
-    Object.entries(resolveMedia(prepared)).map(([id, url]) => [id, localMediaPreviews[url] || url]),
-  ) : {};
+  const assetUrls = prepared ? resolveMedia(prepared) : {};
 
 
 
@@ -463,8 +425,7 @@ export function StaticStudio() {
               <div><h2>Isi menu {activeStage.label}</h2><p>Semua bisa diedit. Perubahan tersimpan sebagai draft, belum tampil di website publik.</p></div>
             </div>
             <OriginalStudioEditor key={document.slug + "-" + currentMenu} section={currentMenu}
-              site={document} change={change} uploading={uploading} previews={localMediaPreviews}
-              onUpload={(id, file) => void uploadGallery(id, file)} />
+              site={document} change={change} />
           </section>}
           {step === 6 && <StudioMediaEditor site={document} change={change} prompts={mediaPrompts} onPromptChange={changePrompt} />}
           {step === 7 && <>
@@ -523,10 +484,10 @@ export function StaticStudio() {
         </>}
         <footer className="studio-app__bottom">
           {step > 1 && <button type="button" className="studio-app__back" onClick={() => goToStep((step - 1) as StudioStep)}>Kembali</button>}
-          {step < 8 && <button type="button" className="studio-app__primary" disabled={!document || working || uploading} onClick={nextStep}>
+          {step < 8 && <button type="button" className="studio-app__primary" disabled={!document || working} onClick={nextStep}>
             {step === 7 ? "Lanjut ke Publish" : "Lanjut"} <span aria-hidden="true">›</span>
           </button>}
-          {step === 8 && <button type="button" className="studio-app__primary" disabled={!document || working || uploading || !approved} onClick={() => void publish()}>
+          {step === 8 && <button type="button" className="studio-app__primary" disabled={!document || working || !approved} onClick={() => void publish()}>
             {working ? "Menerbitkan…" : "Publikasikan"}
           </button>}
         </footer>
