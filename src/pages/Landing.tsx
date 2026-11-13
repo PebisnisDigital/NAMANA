@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Shell } from "./shared";
 import "../intro-landing.css";
 
@@ -7,66 +7,55 @@ const INTRO_VIDEO =
 
 export function Landing() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [needsInteraction, setNeedsInteraction] = useState(false);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     document.title = "NAMINA | Cinematic Intro";
     const video = videoRef.current;
     if (!video) return;
 
-    // Attempt sound-on autoplay. Browser autoplay policies may require a user gesture.
+    // Try sound-on playback first. Browser permissions ultimately decide.
     video.defaultMuted = false;
     video.muted = false;
     video.volume = 1;
-    void video.play()
-      .then(() => setNeedsInteraction(false))
-      .catch(() => setNeedsInteraction(true));
+
+    const resumeWithAudio = () => {
+      if (!video.muted && !video.paused) return;
+      video.muted = false;
+      video.volume = 1;
+      void video.play().catch(() => {
+        // Keep the cinematic intro moving if audio playback is blocked.
+        video.muted = true;
+        void video.play().catch(() => {});
+      });
+    };
+
+    void video.play().catch(() => {
+      // Muted autoplay is usually permitted; do not show a blocking overlay.
+      video.muted = true;
+      void video.play().catch(() => {});
+    });
+
+    // The first natural page interaction can unlock audio. No visible controls.
+    document.addEventListener("pointerdown", resumeWithAudio);
+    document.addEventListener("keydown", resumeWithAudio);
+    return () => {
+      document.removeEventListener("pointerdown", resumeWithAudio);
+      document.removeEventListener("keydown", resumeWithAudio);
+    };
   }, []);
-
-  function startWithSound() {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Called directly from a visitor gesture so mobile browsers can unlock audio.
-    video.muted = false;
-    video.volume = 1;
-    void video.play()
-      .then(() => setNeedsInteraction(false))
-      .catch(() => setNeedsInteraction(true));
-  }
 
   return (
     <main className="namina-video-intro" aria-label="Video intro sinematik NAMINA">
-      {error ? (
-        <a className="namina-video-intro__fallback" href={INTRO_VIDEO} target="_blank" rel="noopener noreferrer">
-          Video tidak dapat dimuat. Buka video intro NAMINA.
-        </a>
-      ) : (
-        <>
-          <video
-            ref={videoRef}
-            className="namina-video-intro__video"
-            src={INTRO_VIDEO}
-            autoPlay
-            playsInline
-            loop
-            preload="auto"
-            aria-label="Animasi pembuka logo NAMINA dengan suara"
-            onError={() => setError(true)}
-          />
-          {needsInteraction && (
-            <button
-              className="namina-video-intro__start"
-              type="button"
-              onClick={startWithSound}
-              aria-label="Putar intro NAMINA dengan suara"
-            >
-              <span>Ketuk untuk putar dengan suara</span>
-            </button>
-          )}
-        </>
-      )}
+      <video
+        ref={videoRef}
+        className="namina-video-intro__video"
+        src={INTRO_VIDEO}
+        autoPlay
+        playsInline
+        loop
+        preload="auto"
+        aria-label="Animasi pembuka logo NAMINA"
+      />
     </main>
   );
 }
