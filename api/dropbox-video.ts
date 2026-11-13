@@ -8,6 +8,7 @@ import { authenticated as isAdminStudioSession } from "./studio.js";
 type Request = IncomingMessage & { body?: unknown };
 const MAX_VIDEO_BYTES = 80 * 1024 * 1024; // Small H.264 loops, not source movies.
 const TTL_SECONDS = 1800; // One-use Dropbox link, expires after 30 min.
+const SOFT_DAILY_UPLOADS_PER_SITE = 3; // Further server-side quota controls recommended as NAMINA scales.
 const authSchema = z.object({
   slug: slugSchema,
   siteId: z.uuid().optional(),
@@ -83,7 +84,7 @@ function readTicket(value: string): Ticket {
   const ticket = z.object({
     slug: slugSchema,
     siteId: z.uuid().optional(),
-    path: z.string().regex(/^\/NAMINA\/(admin|mitra)\/[a-z0-9-]+\/[0-9a-f-]+\.mp4$/),
+    path: z.string().regex(/^\/NAMINA\/(admin|mitra)\/[a-z0-9-]+\/\d{4}-\d{2}-\d{2}-[0-9a-f-]+\.mp4$/),
     size: z.number().int().min(1).max(MAX_VIDEO_BYTES),
     expires: z.number().int(),
   }).strict().parse(JSON.parse(Buffer.from(body, "base64url").toString("utf8")));
@@ -217,7 +218,18 @@ export default async function handler(req: Request, res: ServerResponse) {
       await ensureFolder("/NAMINA", token);
       await ensureFolder("/NAMINA/" + (payload.siteId ? "mitra" : "admin"), token);
       await ensureFolder(basePath, token);
-      const path = basePath + "/" + randomUUID() + ".mp4";
+      // Limit accidental or abusive use of the shared owner Dropbox quota.
+      // A user can still prepare parallel links; enable durable per-workspace
+      // rate limits before opening this feature to a large number of partners.
+      const today = new Date().toISOString().slice(0, 10);
+      const folder = await dropbox("files/list_folder", token, { path: basePath, limit: 1000 }) as
+        { entries?: Array<{ name?: string }> };
+      const currentUploads = (folder.entries || []).filter((file) =>
+        file.name?.startsWith(today + "-")).length;
+      if (currentUploads >= SOFT_DAILY_UPLOADS_PER_SITE) {
+        throw new Error("Batas 3 video per website per hari tercapai. Coba besok atau hubungi Admin NAMINA.");
+      }
+      const path = basePath + "/" + today + "-" + randomUUID() + ".mp4";
       const temporary = await dropbox("files/get_temporary_upload_link", token, {
         commit_info: { path, mode: { ".tag": "add" }, autorename: false, mute: true },
         duration: TTL_SECONDS,
