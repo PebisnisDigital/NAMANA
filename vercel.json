@@ -3,17 +3,30 @@
   "buildCommand": "npm run typecheck && npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/studio.ts": { "maxDuration": 20 },
-    "api/dropbox-video.ts": { "maxDuration": 30 },
-    "api/formulir.ts": { "maxDuration": 20 },
-    "api/operations.ts": { "maxDuration": 30 },
-    "api/site.ts": { "includeFiles": "dist/index.html" }
+    "api/studio.ts": {
+      "maxDuration": 20
+    },
+    "api/dropbox-video.ts": {
+      "maxDuration": 30
+    },
+    "api/formulir.ts": {
+      "maxDuration": 20
+    },
+    "api/operations.ts": {
+      "maxDuration": 30
+    },
+    "api/site.ts": {
+      "includeFiles": "dist/index.html"
+    }
   },
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
@@ -31,14 +44,42 @@
     {
       "source": "/(studio|dashboard|admin|preview|canvas|auth|login)(.*)",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
-        { "key": "Cache-Control", "value": "private, no-store" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        }
       ]
     }
   ],
   "rewrites": [
-    { "source": "/vinihtml", "destination": "/vinihtml/index.html" },
-    { "source": "/vinihtml/", "destination": "/vinihtml/index.html" },
-    { "source": "/((?!api/|clients/|videos/|animated-icons/|robots.txt).*)", "destination": "/index.html" }
+    {
+      "source": "/vinihtml",
+      "destination": "/vinihtml/index.html"
+    },
+    {
+      "source": "/vinihtml/",
+      "destination": "/vinihtml/index.html"
+    },
+    {
+      "source": "/((?!api/|clients/|videos/|animated-icons/|robots.txt).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "naminapro.vercel.app"
+        }
+      ],
+      "destination": "https://namina.biz.id/:path*",
+      "permanent": true
+    }
   ]
 }
