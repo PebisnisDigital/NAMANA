@@ -1,0 +1,165 @@
+.namina-video-tools {
+  display: grid;
+  gap: 15px;
+  color: #ffeae4;
+  font-family: Montserrat, system-ui, sans-serif;
+}
+.namina-video-tools * { box-sizing: border-box; }
+.namina-video-tools__section {
+  padding: 13px;
+  border: 1px solid #71424e;
+  border-radius: 13px;
+  background: #2d1d26;
+}
+.namina-video-tools__section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 850;
+  color: #ffe7df;
+}
+.namina-video-tools__section p {
+  margin: 0 0 11px;
+  font-size: 10px;
+  line-height: 1.55;
+  color: #d7b7bc;
+}
+.namina-video-tools__section textarea {
+  display: block;
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  max-height: 280px;
+  padding: 11px 12px;
+  border: 1px solid #925361;
+  border-radius: 10px;
+  color: #fff0eb;
+  background: #160f15;
+  font: 550 11px/1.6 Montserrat, system-ui, sans-serif;
+}
+.namina-video-tools__copy {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  margin-top: 9px;
+  padding: 8px 10px;
+  background: #b32c3e;
+  border: 1px solid #e96071;
+  border-radius: 9px;
+  color: #fff;
+  font: 800 11px Montserrat, system-ui, sans-serif;
+  cursor: pointer;
+}
+.namina-video-tools__copy:hover { background: #d0374b; }
+.namina-video-tools__reset {
+  display: block;
+  width: 100%;
+  margin: 8px 0 0;
+  min-height: 30px;
+  background: transparent;
+  border: 0;
+  color: #f4bfc7;
+  text-decoration: underline;
+  font: 600 10px Montserrat, system-ui, sans-serif;
+  cursor: pointer;
+}
+.namina-video-tools__upload {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 20px 10px;
+  border: 1px dashed #ec8996;
+  border-radius: 12px;
+  background: #3e2731;
+  text-align: center;
+  cursor: pointer;
+}
+.namina-video-tools__upload:hover { background: #5a303c; }
+.namina-video-tools__upload--busy { opacity: .6; cursor: wait; }
+.namina-video-tools__upload-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #ab2c3d;
+  font-size: 26px;
+  line-height: 1;
+}
+.namina-video-tools__upload strong { font-size: 12px; }
+.namina-video-tools__upload small { font-size: 9px; color: #debfc7; line-height: 1.6; }
+.namina-video-tools__upload input[type=file] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.namina-video-tools__upload input[type=file]:disabled { cursor: not-allowed; }
+.namina-video-tools__progress { display: grid; gap: 8px; margin: 12px 0 0; }
+.namina-video-tools__progress-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #140d13;
+}
+.namina-video-tools__progress-track > div {
+  height: 100%;
+  border-radius: inherit;
+  background: #e33a50;
+  transition: width .2s ease;
+}
+.namina-video-tools__progress span { font-size: 10px; color: #f6c4cb; }
+.namina-video-tools__progress button {
+  min-height: 30px;
+  border: 1px solid #9c5b65;
+  border-radius: 8px;
+  background: #4e2934;
+  color: #ffddd6;
+  font: 700 10px Montserrat, system-ui, sans-serif;
+  cursor: pointer;
+}
+.namina-video-tools .namina-video-tools__error,
+.namina-video-tools .namina-video-tools__notice,
+.namina-video-tools .namina-video-tools__success {
+  margin: 10px 0 0;
+  padding: 10px;
+  border: 1px solid #a96975;
+  border-radius: 10px;
+  background: #491d2a;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.namina-video-tools .namina-video-tools__success {
+  border-color: #4c9875;
+  background: #153e31;
+  color: #b2f1d1;
+}
+.namina-video-tools .namina-video-tools__notice {
+  border-color: #9f7b57;
+  background: #382c23;
+  color: #f9d8b7;
+}
+.namina-video-tools__manual {
+  display: grid;
+  border: 1px solid #6b434d;
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: #201820;
+}
+.namina-video-tools__manual summary {
+  cursor: pointer;
+  font: 750 11px Montserrat, system-ui, sans-serif;
+  color: #f5bdc5;
+}
+.namina-video-tools__manual[open] summary { margin-bottom: 13px; }
+.namina-video-tools__manual input {
+  width: 100%;
+  min-width: 0;
+}
+.namina-video-tools__hint { margin: 0; font: 500 10px/1.6 Montserrat, system-ui, sans-serif; color: #c5a8ae; }
+@media (max-width: 420px) {
+  .namina-video-tools__section { padding: 11px; }
+  .namina-video-tools__upload { padding: 14px 8px; }
+}
