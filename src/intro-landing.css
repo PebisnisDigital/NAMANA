@@ -206,7 +206,10 @@
   .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__flare {
     animation: none;
   }
-  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__scene,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__scene {
+    animation: namina-intro-gentle 8.8s ease-in-out infinite both;
+    filter: none;
+  }
   .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__wordmark,
   .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__red {
     opacity: 1;
@@ -220,4 +223,11 @@
   .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__flare {
     opacity: 0;
   }
+}
+
+/* Reduced motion gets a calm entrance instead of an apparently frozen homepage. */
+@keyframes namina-intro-gentle {
+  0% { opacity: 0; transform: scale(.98); }
+  15%, 88% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
 }
