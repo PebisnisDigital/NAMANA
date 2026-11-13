@@ -7,26 +7,33 @@ const INTRO_VIDEO =
 
 export function Landing() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(true);
+  const [needsInteraction, setNeedsInteraction] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     document.title = "NAMINA | Cinematic Intro";
     const video = videoRef.current;
-    if (video) {
-      video.muted = true;
-      void video.play().catch(() => {
-        // The native video controls remain available if autoplay is blocked.
-      });
-    }
+    if (!video) return;
+
+    // Attempt sound-on autoplay. Browser autoplay policies may require a user gesture.
+    video.defaultMuted = false;
+    video.muted = false;
+    video.volume = 1;
+    void video.play()
+      .then(() => setNeedsInteraction(false))
+      .catch(() => setNeedsInteraction(true));
   }, []);
 
-  function toggleSound() {
+  function startWithSound() {
     const video = videoRef.current;
     if (!video) return;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-    if (video.paused) void video.play().catch(() => {});
+
+    // Called directly from a visitor gesture so mobile browsers can unlock audio.
+    video.muted = false;
+    video.volume = 1;
+    void video.play()
+      .then(() => setNeedsInteraction(false))
+      .catch(() => setNeedsInteraction(true));
   }
 
   return (
@@ -42,22 +49,22 @@ export function Landing() {
             className="namina-video-intro__video"
             src={INTRO_VIDEO}
             autoPlay
-            muted={muted}
             playsInline
             loop
             preload="auto"
-            aria-label="Animasi pembuka logo NAMINA"
+            aria-label="Animasi pembuka logo NAMINA dengan suara"
             onError={() => setError(true)}
           />
-          <button
-            className="namina-video-intro__sound"
-            type="button"
-            onClick={toggleSound}
-            aria-label={muted ? "Aktifkan suara video" : "Matikan suara video"}
-            title={muted ? "Aktifkan suara" : "Matikan suara"}
-          >
-            {muted ? "Suara mati" : "Suara aktif"}
-          </button>
+          {needsInteraction && (
+            <button
+              className="namina-video-intro__start"
+              type="button"
+              onClick={startWithSound}
+              aria-label="Putar intro NAMINA dengan suara"
+            >
+              <span>Ketuk untuk putar dengan suara</span>
+            </button>
+          )}
         </>
       )}
     </main>
