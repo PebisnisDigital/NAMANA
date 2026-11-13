@@ -163,7 +163,7 @@ export function playableVideoUrl(value: string): string {
     const url = new URL(value);
     if (url.protocol !== "https:" ||
         !["dropbox.com", "www.dropbox.com"].includes(url.hostname) ||
-        !/^\\/(scl\\/fi|s)\\//.test(url.pathname)) return value;
+        !(url.pathname.startsWith("/scl/fi/") || url.pathname.startsWith("/s/"))) return value;
     url.searchParams.delete("dl");
     url.searchParams.delete("st");
     url.searchParams.set("raw", "1");
