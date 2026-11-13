@@ -1106,3 +1106,23 @@
     margin-right: 5px;
   }
 }
+
+
+/* Per-client header artwork, using the same bounds in Studio and published pages. */
+.vini-cinema__custom-logo {
+  display: block;
+  width: auto;
+  height: clamp(35px, 4vw, 54px);
+  max-width: min(260px, 32vw);
+  object-fit: contain;
+  object-position: left center;
+}
+.vini-cinema--styled .vini-cinema__brand .namina-logo--compact {
+  color: var(--namina-ink);
+}
+@media (max-width: 700px) {
+  .vini-cinema__custom-logo {
+    height: 40px;
+    max-width: min(200px, 58vw);
+  }
+}
