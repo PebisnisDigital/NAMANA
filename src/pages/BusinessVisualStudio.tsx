@@ -279,6 +279,18 @@ export function BusinessVisualStudio() {
             })}/></label>
       </>;
     }
+    if(selected==="logo")return <>
+      {field("Link gambar logo (HTTPS, PNG/WebP/SVG)",site.content.identity.logoUrl||"",v=>change(next=>{
+        next.content.identity.logoUrl=v.trim();
+      }))}
+      {site.content.identity.logoUrl && <>
+        <div style={{background:"#f3f3f3",borderRadius:10,padding:12,marginBlock:10}}>
+          <img src={site.content.identity.logoUrl} alt="Preview logo" style={{display:"block",maxWidth:"100%",maxHeight:95,objectFit:"contain"}} />
+        </div>
+        <button className="studio-v2__ghost" type="button" onClick={()=>change(next=>{next.content.identity.logoUrl=""})}>Pakai logo NAMINA bawaan</button>
+      </>}
+      <p className="studio-v2__inspector-hint">Klik logo pada preview untuk mengedit. Gunakan tautan langsung gambar HTTPS, bukan halaman preview.</p>
+    </>;
     if(selected==="contact")return <>
       {field("Nomor WhatsApp",original.contactUrl.replace(/\D/g,"").replace(/^62/,"0"),v=>change(next=>{
         const digits=v.replace(/\D/g,"");
