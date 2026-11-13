@@ -260,7 +260,14 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       // GitHub is read only. New clients publish with no token; archived
       // sites still require their original SHA to avoid accidental overwrite.
       const sha = await publishAdminToDatabase(payload.document, payload.sha, async () => {
-        if (!legacyGitHubAvailable()) return null;
+        // Preserve the original Vini JSON: without GitHub access we cannot
+        // verify its SHA before first-time migration into the database.
+        if (!legacyGitHubAvailable()) {
+          if (payload.document.slug === "vini") {
+            throw new PublicationConflict("Migrasi website Vini memerlukan akses baca arsip GitHub untuk mencegah penimpaan.");
+          }
+          return null;
+        }
         const old = await github(`public/clients/${payload.document.slug}.json?ref=${encodeURIComponent(branch)}`);
         if (old.status === 404) return null;
         if (!old.ok) throw new Error(`Website lama belum bisa diperiksa (${old.status}).`);
