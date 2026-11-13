@@ -184,6 +184,8 @@ export const contentSchema = z
         bio: text(300),
         portraitAssetId: asset,
         brandLabel: text(32).optional(),
+        // Client-owned header logo. Empty string restores the NAMINA default.
+        logoUrl: text(2000).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan link gambar HTTPS yang valid.").optional(),
         introLabel: text(80).optional(),
       })
       .strict(),
