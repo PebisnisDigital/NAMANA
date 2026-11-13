@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { businessClient } from "../business/client";
 import { PublishSuccessModal } from "../components/PublishSuccessModal";
 import { VideoStudioPanel } from "../components/VideoStudioPanel";
+import { TemplateStylePicker } from "../components/TemplateStylePicker";
 import { loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, type SiteDocument } from "../static/sites";
-import { originalStyleDefaults } from "../static/originalStyle";
+import { naminaStylePresets, originalStyleDefaults } from "../static/originalStyle";
 import type { OriginalMenuIcon, OriginalStyle } from "../domain/content";
 import "../business.css";
 import "../studio-v2.css";
@@ -238,6 +239,9 @@ export function BusinessVisualStudio() {
         <button className="studio-v2__ghost" type="button" disabled={working} onClick={() => void applyViniTemplate()}>Gunakan Template /vini</button>
       </div>
       <p className="studio-v2__inspector-hint">Atur tampilan visual dari website klien ini saja.</p>
+      <TemplateStylePicker style={original.style} onSelect={(preset) => change(next => {
+        next.content.original!.style = structuredClone(naminaStylePresets[preset]);
+      })} />
       <div className="studio-v2__colors">
         {(["backgroundColor","textColor","accentColor","buttonColor","buttonTextColor","borderColor"] as const).map(k=>
           <label key={k}><span>{k}</span><input type="color" value={style[k]} onChange={e=>updateStyle(k,e.target.value)}/><code>{style[k]}</code></label>)}
