@@ -154,10 +154,29 @@ export function blankSite(slug: string): SiteDocument {
   return cloneViniTemplate(slug);
 }
 
+/** Convert Dropbox Share links into media responses before browser playback.
+ * Keep rlkey (access grant) while discarding short-lived share-page tracking.
+ */
+export function playableVideoUrl(value: string): string {
+  if (!value) return value;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" ||
+        !["dropbox.com", "www.dropbox.com"].includes(url.hostname) ||
+        !/^\\/(scl\\/fi|s)\\//.test(url.pathname)) return value;
+    url.searchParams.delete("dl");
+    url.searchParams.delete("st");
+    url.searchParams.set("raw", "1");
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
 export function resolveMedia(document: SiteDocument): AssetUrls {
   const entries: [string, string][] = [
-    [mediaIds.desktopVideo, document.media.desktopVideo],
-    [mediaIds.mobileVideo, document.media.mobileVideo],
+    [mediaIds.desktopVideo, playableVideoUrl(document.media.desktopVideo)],
+    [mediaIds.mobileVideo, playableVideoUrl(document.media.mobileVideo)],
     [mediaIds.poster, document.media.poster],
     [mediaIds.portrait, document.media.portrait],
     [mediaIds.enterKey, document.media.enterKey || ""],
@@ -177,6 +196,8 @@ export function resolveMedia(document: SiteDocument): AssetUrls {
 
 export function prepareSite(document: SiteDocument): SiteDocument {
   const site = structuredClone(document);
+  site.media.desktopVideo = playableVideoUrl(site.media.desktopVideo);
+  site.media.mobileVideo = playableVideoUrl(site.media.mobileVideo);
   site.content.background.desktopVideoAssetId = site.media.desktopVideo ? mediaIds.desktopVideo : null;
   site.content.background.mobileVideoAssetId = site.media.mobileVideo ? mediaIds.mobileVideo : null;
   site.content.background.posterAssetId = site.media.poster ? mediaIds.poster : null;
