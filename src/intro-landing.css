@@ -1,143 +1,223 @@
-/* Fullscreen brand-only cinematic NAMINA homepage.
-   No menus, headings, CTAs or footer are displayed. */
-.namina-brand-intro {
+/* NAMINA cinematic ident: the page contains only the logo.
+   SVG masks really draw the N; the composition grows gently from the center. */
+.namina-cinematic-intro {
   position: fixed;
   inset: 0;
   z-index: 30;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   overflow: hidden;
-  min-height: 100dvh;
-  width: 100%;
-  background:
-    radial-gradient(ellipse 44% 39% at 50% 55%, rgba(163, 18, 39, .17), transparent 70%),
-    radial-gradient(ellipse 75% 75% at 50% 54%, #171018, #08080b 64%, #030306 100%);
-  perspective: 1300px;
   isolation: isolate;
+  color: #fff6ef;
+  background:
+    radial-gradient(ellipse 38% 43% at 50% 51%, rgba(104, 12, 28, .24), transparent 78%),
+    radial-gradient(ellipse at center, #101015 0%, #07070b 65%, #020204 100%);
 }
-
-.namina-brand-intro::before {
+.namina-cinematic-intro::before {
   content: "";
   position: absolute;
-  inset: -55%;
+  inset: -35%;
   pointer-events: none;
-  background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(246, 49, 74, .055) 40deg, transparent 94deg, rgba(255,255,255,.035) 140deg, transparent 184deg, rgba(206, 21, 44, .055) 246deg, transparent 310deg);
-  animation: namina-brand-spotlight 23s linear infinite;
+  background: conic-gradient(from 30deg at 50% 50%, transparent 0deg, #cf24310a 45deg, transparent 100deg, #f8799222 178deg, transparent 240deg, #9e172916 295deg, transparent 360deg);
+  animation: namina-intro-ambient 26s linear infinite;
 }
-.namina-brand-intro::after {
-  content: "";
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  width: min(58vw, 500px);
-  height: min(12vw, 85px);
-  transform: translate(-50%, 165px);
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(215, 25, 48, .29), transparent 72%);
-  filter: blur(26px);
-  pointer-events: none;
-  animation: namina-brand-shadow 14s ease-in-out infinite;
-}
-
-.namina-brand-intro__mark {
+.namina-cinematic-intro__trigger {
   position: relative;
   z-index: 1;
-  width: fit-content;
-  max-width: 90vw;
+  display: grid;
+  place-items: center;
+  width: min(85vw, 740px);
+  height: min(72vh, 560px);
   margin: 0;
   padding: 0;
-  line-height: 1;
-  transform-origin: 50% 55%;
-  will-change: transform, opacity, filter;
-  animation: namina-brand-cinematic 14s cubic-bezier(.25,.78,.26,1) infinite both;
+  min-height: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.namina-brand-intro__mark .namina-logo--hero {
+.namina-cinematic-intro__trigger:hover,
+.namina-cinematic-intro__trigger:active {
+  color: inherit;
+  background: none;
+}
+.namina-cinematic-intro__trigger:focus-visible {
+  outline: 2px solid #f18d94;
+  outline-offset: -10px;
+}
+.namina-cinematic-intro__scene {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(15px, 2.4vh, 26px);
-  color: #f7eee9;
-  filter: drop-shadow(0 15px 44px rgba(0, 0, 0, .65));
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  animation: namina-intro-grow 8.8s cubic-bezier(.32,.05,.2,1) infinite both;
 }
-.namina-brand-intro__mark .namina-logo--hero .namina-logo__symbol {
-  width: clamp(110px, 18vw, 212px);
-  filter: drop-shadow(0 6px 35px rgba(229, 34, 54, .35));
-  animation: namina-brand-symbol 14s ease-in-out infinite both;
+.namina-cinematic-intro__mark {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(9px, 2.2vh, 23px);
+  filter: drop-shadow(0 18px 40px #000c);
 }
-.namina-brand-intro__mark .namina-logo--hero .namina-logo__name {
-  font-size: clamp(72px, 12.8vw, 175px);
-  letter-spacing: .055em;
-  line-height: .88;
-  text-shadow: 0 4px 35px #0009;
-  animation: namina-brand-type 14s ease-in-out infinite both;
+.namina-cinematic-intro__symbol {
+  display: block;
+  width: clamp(95px, 18vw, 215px);
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0 12px rgba(210, 18, 44, .25));
 }
-@keyframes namina-brand-cinematic {
-  0%   {opacity:0;transform:translate3d(0,-70vh,-500px) rotate(-9deg) scale(.24);filter:blur(12px)}
-  9%   {opacity:1;transform:translate3d(0,7vh,90px) rotate(2deg) scale(1.24);filter:blur(0)}
-  12%  {transform:translate3d(0,-3vh,0) rotate(-1deg) scale(.92)}
-  16%  {transform:translate3d(0,0,0) rotate(0) scale(1)}
-  25%  {transform:translate3d(0,-1vh,0) rotate(0) scale(1.07)}
-  31%  {transform:translate3d(0,0,-150px) rotate(0) scale(.88)}
-  38%  {transform:translate3d(30vw,-9vh,-90px) rotate(11deg) scale(.72)}
-  44%  {transform:translate3d(-26vw,3vh,60px) rotate(-10deg) scale(.85)}
-  51%  {transform:translate3d(0,-48vh,-120px) rotate(4deg) scale(.69)}
-  58%  {transform:translate3d(0,10vh,50px) rotate(-2deg) scale(1.15)}
-  61%  {transform:translate3d(0,-6vh,0) rotate(0) scale(.95)}
-  65%  {transform:translate3d(0,0,0) rotate(0) scale(1)}
-  72%  {transform:translate3d(0,-2vh,80px) rotate(0) scale(1.12)}
-  80%  {transform:translate3d(0,0,0) rotate(0) scale(1)}
-  89%  {opacity:1;transform:translate3d(0,0,0) rotate(0) scale(1);filter:blur(0)}
-  100% {opacity:0;transform:translate3d(0,-70vh,-500px) rotate(-9deg) scale(.24);filter:blur(12px)}
+.namina-cinematic-intro__red {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: namina-intro-red 8.8s ease-in-out infinite both;
 }
-@keyframes namina-brand-symbol {
-  0%, 16%, 31%, 65%, 89%, 100% { transform: rotate(0deg) }
-  21% { transform: rotateY(19deg) rotateZ(-4deg) }
-  29% { transform: rotateY(-10deg) rotateZ(2deg) }
-  70% { transform: rotateY(16deg) }
-  76% { transform: rotateY(-8deg) }
+.namina-cinematic-intro__stroke {
+  stroke-dasharray: 260;
+  stroke-dashoffset: 260;
+  stroke-linecap: butt;
 }
-@keyframes namina-brand-type {
-  0%, 9%, 100% {letter-spacing:.18em;opacity:.4}
-  16%, 89% {letter-spacing:.055em;opacity:1}
-  40% {letter-spacing:.11em;opacity:1}
-  65% {letter-spacing:.055em;opacity:1}
+.namina-cinematic-intro__stroke--left {
+  animation: namina-intro-write-left 8.8s ease-in-out infinite both;
 }
-@keyframes namina-brand-spotlight {to {transform:rotate(360deg)}}
-@keyframes namina-brand-shadow {
-  0%, 100% {opacity:0;transform:translate(-50%,170px) scale(.5)}
-  9%, 58% {opacity:.72;transform:translate(-50%,165px) scale(1.15)}
-  25%, 65%, 80% {opacity:.5;transform:translate(-50%,165px) scale(.9)}
-  38%, 51% {opacity:.13;transform:translate(-50%,165px) scale(.55)}
+.namina-cinematic-intro__stroke--diagonal {
+  animation: namina-intro-write-diagonal 8.8s ease-in-out infinite both;
 }
+.namina-cinematic-intro__stroke--right {
+  animation: namina-intro-write-right 8.8s ease-in-out infinite both;
+}
+.namina-cinematic-intro__wordmark {
+  display: block;
+  font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-size: clamp(62px, 13vw, 158px);
+  line-height: .9;
+  letter-spacing: .07em;
+  color: #fff7f1;
+  text-shadow: 0 4px 25px #000a, 0 0 42px #c51b3220;
+  transform-origin: center;
+  animation: namina-intro-word 8.8s cubic-bezier(.18,.75,.3,1) infinite both;
+}
+.namina-cinematic-intro__halo {
+  position: absolute;
+  z-index: -1;
+  top: 49%;
+  left: 50%;
+  width: clamp(250px, 54vw, 760px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 27, 51, .23), rgba(126, 10, 26, .075) 43%, transparent 68%);
+  filter: blur(15px);
+  pointer-events: none;
+  animation: namina-intro-halo 8.8s ease-in-out infinite both;
+}
+.namina-cinematic-intro__flare {
+  position: absolute;
+  z-index: 3;
+  width: min(78vw, 930px);
+  height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, #dd2a3e22 25%, #fffdf4 50%, #dd2a3e22 75%, transparent);
+  box-shadow: 0 0 27px 9px #d320383d, 0 0 52px 20px #fd6b6b11;
+  transform-origin: center;
+  animation: namina-intro-flare 8.8s ease-in-out infinite both;
+}
+@keyframes namina-intro-grow {
+  0% { opacity: 0; transform: scale(.10) translateY(0) }
+  9% { opacity: .3; transform: scale(.18) translateY(0) }
+  18% { opacity: .88; transform: scale(.32) translateY(0) }
+  32% { opacity: 1; transform: scale(.57) translateY(0) }
+  47% { opacity: 1; transform: scale(1.12) translateY(0) }
+  54% { opacity: 1; transform: scale(1) translateY(0) }
+  64% { opacity: 1; transform: scale(1.035) translateY(0) }
+  77%, 92% { opacity: 1; transform: scale(1) translateY(0) }
+  100% { opacity: 0; transform: scale(.86) translateY(0) }
+}
+@keyframes namina-intro-write-left {
+  0%, 11% { stroke-dashoffset: 260 }
+  27%, 94% { stroke-dashoffset: 0 }
+  100% { stroke-dashoffset: 260 }
+}
+@keyframes namina-intro-write-diagonal {
+  0%, 24% { stroke-dashoffset: 260 }
+  39%, 94% { stroke-dashoffset: 0 }
+  100% { stroke-dashoffset: 260 }
+}
+@keyframes namina-intro-write-right {
+  0%, 34% { stroke-dashoffset: 260 }
+  48%, 94% { stroke-dashoffset: 0 }
+  100% { stroke-dashoffset: 260 }
+}
+@keyframes namina-intro-red {
+  0%, 5% { opacity: 0 }
+  17%, 94% { opacity: 1 }
+  100% { opacity: 0 }
+}
+@keyframes namina-intro-word {
+  0%, 31% { opacity: 0; transform: translateY(15px) scale(.84); letter-spacing: .22em; filter: blur(10px) }
+  48% { opacity: .5; transform: translateY(3px) scale(.98); letter-spacing: .12em; filter: blur(2px) }
+  57%, 92% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: .07em; filter: blur(0) }
+  100% { opacity: 0; transform: translateY(0) scale(.9); letter-spacing: .07em; filter: blur(3px) }
+}
+@keyframes namina-intro-halo {
+  0%, 7% { opacity: 0; transform: translate(-50%, -50%) scale(.15) }
+  33% { opacity: .65; transform: translate(-50%, -50%) scale(.62) }
+  47% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) }
+  65%, 92% { opacity: .25; transform: translate(-50%, -50%) scale(1) }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.7) }
+}
+@keyframes namina-intro-flare {
+  0%, 35% { opacity: 0; transform: scaleX(.01) }
+  47% { opacity: 1; transform: scaleX(.95) }
+  56% { opacity: 0; transform: scaleX(1.25) }
+  100% { opacity: 0; transform: scaleX(.01) }
+}
+@keyframes namina-intro-ambient { to { transform: rotate(360deg) } }
+
 @media (max-width: 700px) {
-  .namina-brand-intro__mark .namina-logo--hero .namina-logo__symbol {width: clamp(105px, 32vw, 155px)}
-  .namina-brand-intro__mark .namina-logo--hero .namina-logo__name {font-size: clamp(64px, 19vw, 110px)}
-  .namina-brand-intro::after {transform:translate(-50%,120px)}
-  @keyframes namina-brand-cinematic {
-    0% {opacity:0; transform:translate3d(0,-55vh,0) scale(.25);filter:blur(10px)}
-    12% {opacity:1;transform:translate3d(0,3vh,0) scale(1.13);filter:blur(0)}
-    17% {transform:translate3d(0,-2vh,0) scale(.95)}
-    25% {transform:translate3d(0,0,0) scale(1.05)}
-    38% {transform:translate3d(15vw,-8vh,0) rotate(9deg) scale(.8)}
-    44% {transform:translate3d(-13vw,3vh,0) rotate(-9deg) scale(.84)}
-    51% {transform:translate3d(0,-42vh,0) scale(.73)}
-    58% {transform:translate3d(0,8vh,0) scale(1.13)}
-    62% {transform:translate3d(0,-5vh,0) scale(.94)}
-    67% {transform:translate3d(0,0,0) scale(1)}
-    78%, 89% {opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
-    100% {opacity:0;transform:translate3d(0,-55vh,0) scale(.25);filter:blur(10px)}
-  }
+  .namina-cinematic-intro__trigger { width: 94vw; height: min(75vh, 500px); }
+  .namina-cinematic-intro__symbol { width: clamp(100px, 32vw, 160px); }
+  .namina-cinematic-intro__wordmark { font-size: clamp(70px, 21vw, 115px); }
+  .namina-cinematic-intro__halo { width: 96vw; }
 }
+
+/* Respect reduced-motion automatically, but allow a deliberate tap on the logo
+   to replay the requested full animation, with the sound also user-triggered. */
 @media (prefers-reduced-motion: reduce) {
-  .namina-brand-intro::before,
-  .namina-brand-intro::after,
-  .namina-brand-intro__mark,
-  .namina-brand-intro__mark .namina-logo--hero .namina-logo__symbol,
-  .namina-brand-intro__mark .namina-logo--hero .namina-logo__name {
-    animation: none !important;
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in)::before { animation: none; }
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__scene,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__red,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__stroke,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__wordmark,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__halo,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__flare {
+    animation: none;
+  }
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__scene,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__wordmark,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__red {
+    opacity: 1;
     transform: none;
     filter: none;
-    opacity: 1;
   }
-  .namina-brand-intro__mark .namina-logo--hero .namina-logo__symbol {filter:drop-shadow(0 6px 35px rgba(229,34,54,.3))}
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__stroke {
+    stroke-dashoffset: 0;
+  }
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__halo,
+  .namina-cinematic-intro:not(.namina-cinematic-intro--opt-in) .namina-cinematic-intro__flare {
+    opacity: 0;
+  }
 }
