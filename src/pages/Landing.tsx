@@ -1,61 +1,65 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Shell } from "./shared";
 import "../intro-landing.css";
 
 const INTRO_VIDEO =
-  "https://www.dropbox.com/scl/fi/5b7pls0qxzo4f6f0k6mqv/Cinematic_logo_reveal_animation_b424378f_1080p-1.mp4?rlkey=crahsp9nv9q28lbee71e958z8&raw=1";
+  "https://www.dropbox.com/scl/fi/r0pk04lqyqgxvlyq6r2wp/Namina_logo_reveal_animation_9149f6a7_1080p.mp4?rlkey=oegcrx65yg2fjmi4xfpt98xf0&raw=1";
 
 export function Landing() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [opened, setOpened] = useState(false);
+  const [playbackFailed, setPlaybackFailed] = useState(false);
 
   useEffect(() => {
     document.title = "NAMINA | Cinematic Intro";
+  }, []);
+
+  function openNamina() {
     const video = videoRef.current;
     if (!video) return;
 
-    // Try sound-on playback first. Browser permissions ultimately decide.
+    // play() MUST be called directly in the click handler, before an async effect,
+    // so desktop and mobile browsers can authorize playback with audio.
+    setPlaybackFailed(false);
     video.defaultMuted = false;
     video.muted = false;
     video.volume = 1;
-
-    const resumeWithAudio = () => {
-      if (!video.muted && !video.paused) return;
-      video.muted = false;
-      video.volume = 1;
-      void video.play().catch(() => {
-        // Keep the cinematic intro moving if audio playback is blocked.
-        video.muted = true;
-        void video.play().catch(() => {});
+    video.currentTime = 0;
+    void video.play()
+      .then(() => setOpened(true))
+      .catch(() => {
+        // Do not start a silent video or hide the CTA when sound-on play is denied.
+        setPlaybackFailed(true);
       });
-    };
-
-    void video.play().catch(() => {
-      // Muted autoplay is usually permitted; do not show a blocking overlay.
-      video.muted = true;
-      void video.play().catch(() => {});
-    });
-
-    // The first natural page interaction can unlock audio. No visible controls.
-    document.addEventListener("pointerdown", resumeWithAudio);
-    document.addEventListener("keydown", resumeWithAudio);
-    return () => {
-      document.removeEventListener("pointerdown", resumeWithAudio);
-      document.removeEventListener("keydown", resumeWithAudio);
-    };
-  }, []);
+  }
 
   return (
-    <main className="namina-video-intro" aria-label="Video intro sinematik NAMINA">
+    <main className="namina-video-intro" aria-label="Intro sinematik NAMINA">
       <video
         ref={videoRef}
-        className="namina-video-intro__video"
+        className={`namina-video-intro__video${opened ? " namina-video-intro__video--visible" : ""}`}
         src={INTRO_VIDEO}
-        autoPlay
         playsInline
         loop
         preload="auto"
-        aria-label="Animasi pembuka logo NAMINA"
+        aria-label="Animasi video logo NAMINA dengan suara"
       />
+      {!opened && (
+        <div className="namina-video-intro__entry">
+          <button
+            className="namina-video-intro__open"
+            type="button"
+            onClick={openNamina}
+          >
+            BUKA NAMINA
+          </button>
+          {playbackFailed && (
+            <p role="status" className="namina-video-intro__error">
+              Video belum dapat diputar. Coba lagi.
+            </p>
+          )}
+        </div>
+      )}
     </main>
   );
 }
