@@ -1,4 +1,4 @@
-/* Full-screen NAMINA video reveal. Only applies to the home page. */
+/* Full-screen NAMINA intro; deliberately no on-screen video controls. */
 .namina-video-intro {
   position: fixed;
   inset: 0;
@@ -16,32 +16,4 @@
   height: 100%;
   object-fit: contain;
   background: #000;
-}
-/* One-time startup fallback only when a browser blocks sound-on autoplay. */
-.namina-video-intro__start {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  border: none;
-  background: rgba(0,0,0,.3);
-  color: #fff;
-  font: 600 clamp(14px, 3vw, 18px)/1.5 Arial, sans-serif;
-  cursor: pointer;
-  text-align: center;
-}
-.namina-video-intro__start span {
-  padding: 14px 20px;
-  border: 1px solid rgba(255,255,255,.5);
-  border-radius: 8px;
-  background: rgba(0,0,0,.65);
-}
-.namina-video-intro__start:focus-visible { outline: 2px solid #fff; outline-offset: -5px; }
-.namina-video-intro__fallback {
-  color: white;
-  font: 500 16px/1.5 Arial, sans-serif;
-  text-align: center;
-  padding: 24px;
 }
