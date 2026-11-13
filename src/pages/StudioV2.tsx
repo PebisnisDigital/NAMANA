@@ -465,6 +465,7 @@ export function StudioV2() {
     if (selected === "subtitle") return "Subjudul";
     if (selected.startsWith("menu:")) return "Menu " + (original?.menuTitles?.[selected.slice(5) as MenuKey] || selected.slice(5));
     if (selected === "menu-title") return "Judul menu";
+    if (selected === "logo") return "Logo website";
     if (selected === "contact") return "Tombol WhatsApp";
     if (selected === "video") return "Video background";
     if (fact) return "Kartu data · " + fact.label;
@@ -614,6 +615,19 @@ export function StudioV2() {
       onChange={(value) => change((next) => {
         next.content.original!.menuTitles = { ...next.content.original!.menuTitles, [menuKey]: value };
       })} />;
+    if (selected === "logo") return <>
+      <Field label="Link gambar logo (HTTPS, PNG/WebP/SVG)" maxLength={2000}
+        placeholder="https://contoh.com/logo.png"
+        value={site.content.identity.logoUrl ?? ""}
+        onChange={(value) => change((next) => { next.content.identity.logoUrl = value.trim(); })} />
+      {site.content.identity.logoUrl && <>
+        <div style={{ background: "#f3f3f3", borderRadius: 10, padding: 12, marginBlock: 10 }}>
+          <img src={site.content.identity.logoUrl} alt="Preview logo" style={{ display: "block", maxWidth: "100%", maxHeight: 95, objectFit: "contain" }} />
+        </div>
+        <button type="button" className="studio-v2__ghost" onClick={() => change((next) => { next.content.identity.logoUrl = ""; })}>Pakai logo NAMINA bawaan</button>
+      </>}
+      <p className="studio-v2__inspector-hint">Logo otomatis mengikuti ukuran header PC dan HP. Pakai URL gambar langsung, bukan halaman preview Dropbox.</p>
+    </>;
     if (selected === "contact") return <>
       <Field label="Nomor WhatsApp (tanpa link)" type="tel" placeholder="081234567890"
         value={whatsappNumber(original.contactUrl)} onChange={(value) => change((next) => {
