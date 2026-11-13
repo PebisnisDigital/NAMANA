@@ -1,11 +1,11 @@
-/* Full-screen NAMINA intro; deliberately no on-screen video controls. */
+/* NAMINA public cinematic splash and video playback. */
 .namina-video-intro {
   position: fixed;
   inset: 0;
+  min-height: 100dvh;
   width: 100%;
-  height: 100dvh;
   overflow: hidden;
-  background: #000;
+  background: #020202;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,4 +16,46 @@
   height: 100%;
   object-fit: contain;
   background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+.namina-video-intro__video--visible {
+  opacity: 1;
+}
+.namina-video-intro__entry {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 50%, #20090c 0%, #080304 44%, #000 85%);
+}
+.namina-video-intro__open {
+  min-width: 230px;
+  padding: 19px 36px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  background: #b71825;
+  color: #fff;
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: clamp(16px, 3vw, 21px);
+  font-weight: 800;
+  letter-spacing: .15em;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 12px 38px rgba(135, 9, 20, .35);
+  transition: transform .18s ease, background .18s ease;
+}
+.namina-video-intro__open:hover { transform: scale(1.04); background: #d31b2c; }
+.namina-video-intro__open:active { transform: scale(.99); }
+.namina-video-intro__open:focus-visible { outline: 3px solid #fff; outline-offset: 5px; }
+.namina-video-intro__error {
+  color: #f4caca;
+  font: 500 13px/1.5 Montserrat, Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .namina-video-intro__open { transition: none; }
 }
