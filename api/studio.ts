@@ -53,8 +53,8 @@ function configured() {
   return !!(
     process.env.NAMANA_ADMIN_PASSWORD && process.env.NAMANA_ADMIN_PASSWORD.length >= 12 &&
     process.env.NAMANA_SESSION_SECRET && process.env.NAMANA_SESSION_SECRET.length >= 32 &&
-    process.env.NAMANA_GITHUB_TOKEN &&
-    process.env.NAMANA_GITHUB_BRANCH
+    process.env.VITE_SUPABASE_URL &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 }
 
@@ -84,6 +84,12 @@ function matchesPassword(value: string) {
   return timingSafeEqual(expected, incoming);
 }
 
+// GitHub is optional for new database-backed client publications.
+// It is used only to inspect archived public/clients JSON files.
+function legacyGitHubAvailable() {
+  return Boolean(process.env.NAMANA_GITHUB_TOKEN);
+}
+
 function githubConfig() {
   const repo = process.env.NAMANA_GITHUB_REPO || "PebisnisDigital/NAMINA";
   const branch = process.env.NAMANA_GITHUB_BRANCH || "main";
@@ -92,6 +98,7 @@ function githubConfig() {
 }
 
 async function github(path: string, options: RequestInit = {}) {
+  if (!legacyGitHubAvailable()) throw new Error("Akses arsip GitHub belum dikonfigurasi.");
   const { repo } = githubConfig();
   return fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
     ...options,
@@ -138,7 +145,7 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       return;
     }
     if (!configured()) {
-      send(res, 503, { error: "Studio belum dikonfigurasi. Tambahkan kredensial admin dan GitHub di Vercel." });
+      send(res, 503, { error: "Studio belum dikonfigurasi. Periksa kredensial admin dan koneksi database di Vercel." });
       return;
     }
     if (action === "login" && req.method === "POST") {
@@ -157,6 +164,12 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       return;
     }
 
+    if (action === "readiness" && req.method === "GET") {
+      // Read-only check for the actual migration, not just the presence of env vars.
+      await listAdminPublications();
+      send(res, 200, { publishing: "database", database: "ready", legacyGitHub: legacyGitHubAvailable() ? "available" : "unavailable" });
+      return;
+    }
     if (action === "briefList" && req.method === "GET") {
       send(res, 200, await briefStore("list"));
       return;
@@ -179,6 +192,10 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
         }
         const existsInDatabase = await hasAnyPublication(body.websiteSlug);
         if (!existsInDatabase) {
+          if (!legacyGitHubAvailable()) {
+            send(res, 409, { error: "Website belum ditemukan di database. Arsip website lama belum dapat diverifikasi tanpa akses GitHub." });
+            return;
+          }
           const { branch } = githubConfig();
           const oldSite = await github(`public/clients/${body.websiteSlug}.json?ref=${encodeURIComponent(branch)}`);
           if (oldSite.status === 404) {
@@ -195,6 +212,10 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     const { branch } = githubConfig();
     if (action === "list" && req.method === "GET") {
       const dynamic = await listAdminPublications();
+      if (!legacyGitHubAvailable()) {
+        send(res, 200, { slugs: [...new Set(["vini", ...dynamic])] });
+        return;
+      }
       const response = await github(`public/clients?ref=${encodeURIComponent(branch)}`);
       if (response.status === 404) {
         send(res, 200, { slugs: [...new Set(["vini", ...dynamic])] });
@@ -210,6 +231,10 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
       const slug = slugSchema.parse(parsedUrl.searchParams.get("slug"));
       const dynamic = await findAdminPublication(slug);
       if (dynamic) { send(res, 200, dynamic); return; }
+      if (!legacyGitHubAvailable()) {
+        send(res, 404, { error: "Belum ada data database yang dipublikasikan. Arsip GitHub hanya dapat dibuka bila aksesnya dikonfigurasi." });
+        return;
+      }
       const response = await github(`public/clients/${slug}.json?ref=${encodeURIComponent(branch)}`);
       if (response.status === 404) {
         send(res, 404, { error: "Belum ada data yang dipublikasikan." });
@@ -232,8 +257,10 @@ export default async function handler(req: ApiRequest, res: ServerResponse) {
     if (action === "publish" && req.method === "POST") {
       const payload = z.object({ document: documentSchema, sha: z.string().max(100).nullable() })
         .strict().parse(await readBody(req));
-      // GitHub is read only: check the legacy file SHA when first migrating a site.
+      // GitHub is read only. New clients publish with no token; archived
+      // sites still require their original SHA to avoid accidental overwrite.
       const sha = await publishAdminToDatabase(payload.document, payload.sha, async () => {
+        if (!legacyGitHubAvailable()) return null;
         const old = await github(`public/clients/${payload.document.slug}.json?ref=${encodeURIComponent(branch)}`);
         if (old.status === 404) return null;
         if (!old.ok) throw new Error(`Website lama belum bisa diperiksa (${old.status}).`);
