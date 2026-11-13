@@ -4,7 +4,7 @@ import "../intro-landing.css";
 
 /** Original cinematic impact synthesized locally, not a copied studio ident. */
 function playCinematicImpact(context: AudioContext) {
-  const impact = context.currentTime + 3.25;
+  const impact = context.currentTime + 4.05;
 
   const whoosh = context.createOscillator();
   whoosh.type = "sawtooth";
