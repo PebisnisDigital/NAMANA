@@ -38,3 +38,24 @@ export const originalShadowValues: Record<OriginalStyle["shadow"], string> = {
   soft: "0 10px 24px #0008",
   strong: "0 20px 44px #000b",
 };
+
+/** Shared visual presets for both Admin and Partner Studio.
+ * Changing a preset never overwrites identity, collections, links or client video.
+ */
+export type NaminaStylePreset = "original" | "putih";
+
+export const naminaStylePresets: Record<NaminaStylePreset, OriginalStyle> = {
+  original: { ...originalStyleDefaults, backgroundColor: "#000000", textColor: "#ffc799",
+    accentColor: "#f34b53", buttonColor: "#b5232b", buttonTextColor: "#ffffff",
+    borderColor: "#b67b78" },
+  putih: { ...originalStyleDefaults, backgroundColor: "#ffffff", textColor: "#141414",
+    accentColor: "#d91128", buttonColor: "#d91128", buttonTextColor: "#ffffff",
+    borderColor: "#e8a6ae" },
+};
+
+export function identifyNaminaStyle(style?: OriginalStyle): NaminaStylePreset {
+  if (!style) return "original";
+  const color = style.backgroundColor.toLowerCase();
+  if (color === "#ffffff" || color === "#fff" || color === "#fefefe") return "putih";
+  return "original";
+}
