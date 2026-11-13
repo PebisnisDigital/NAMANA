@@ -90,6 +90,13 @@ function CardArtwork({ card }: { card: VisualCard }) {
   );
 }
 
+function ClientHeaderLogo({ url }: { url?: string }) {
+  const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [url]);
+  if (!url || broken) return <NaminaLogo variant="compact" />;
+  return <img className="vini-cinema__custom-logo" src={url} alt="Logo website" referrerPolicy="no-referrer" onError={() => setBroken(true)} />;
+}
+
 export function ViniCinematic({
   content,
   assetUrls,
@@ -487,7 +494,7 @@ export function ViniCinematic({
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
           <button className="vini-cinema__brand" data-v2-edit={editorMode ? "logo" : undefined} type="button" onClick={() => selectMenu("Nama")} aria-label={`Logo website, kembali ke ${menuTitles.Nama}`}>
-            {content.identity.logoUrl ? <img className="vini-cinema__custom-logo" src={content.identity.logoUrl} alt="Logo website" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <NaminaLogo variant="compact" />}
+            <ClientHeaderLogo url={content.identity.logoUrl} />
           </button>
           <button
             className="vini-cinema__menu-toggle"
