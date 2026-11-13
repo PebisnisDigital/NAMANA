@@ -49,7 +49,20 @@ async function studioApi<T>(action: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-const draftKey = (slug: string) => "namina:studio-v2:draft:" + slug;
+const localDraftPrefix = "namina:studio-v2:draft:";
+const draftKey = (slug: string) => localDraftPrefix + slug;
+
+// Unpublished Studio V2 drafts live in this browser, not in the server's client list.
+function listLocalDraftSlugs(): string[] {
+  try {
+    return Object.keys(localStorage)
+      .filter((key) => key.startsWith(localDraftPrefix))
+      .map((key) => key.slice(localDraftPrefix.length))
+      .filter((slug) => slugSchema.safeParse(slug).success);
+  } catch {
+    return [];
+  }
+}
 function whatsappNumber(url: string): string {
   try {
     const parsed = new URL(url);
@@ -85,6 +98,7 @@ export function StudioV2() {
   const [session, setSession] = useState<Session | null>(null);
   const [password, setPassword] = useState("");
   const [slugs, setSlugs] = useState<string[]>([]);
+  const [localDraftSlugs, setLocalDraftSlugs] = useState<string[]>([]);
   const [slug, setSlug] = useState("vini");
   const [newSlug, setNewSlug] = useState("");
   const [site, setSite] = useState<SiteDocument | null>(null);
@@ -118,7 +132,9 @@ export function StudioV2() {
 
   const refreshList = useCallback(async () => {
     const result = await studioApi<{ slugs: string[] }>("list");
-    setSlugs(result.slugs.sort((a, b) => a.localeCompare(b)));
+    const localDrafts = listLocalDraftSlugs();
+    setLocalDraftSlugs(localDrafts);
+    setSlugs([...new Set([...result.slugs, ...localDrafts])].sort((a, b) => a.localeCompare(b)));
     return result.slugs;
   }, []);
 
@@ -287,7 +303,10 @@ export function StudioV2() {
     const normalized = newSlug.toLowerCase().trim();
     const checked = slugSchema.safeParse(normalized);
     if (!checked.success) { setError(checked.error.issues[0]?.message || "Alamat halaman tidak valid."); return; }
-    if (slugs.includes(normalized)) { setError("Nama halaman sudah dipakai."); return; }
+    if (slugs.includes(normalized) || listLocalDraftSlugs().includes(normalized)) {
+      setError("Alamat ini sudah memiliki website atau draft lokal. Pilih dari daftar klien agar draft lama tidak tertimpa.");
+      return;
+    }
     setWorking(true);
     setError("");
     try {
@@ -700,7 +719,7 @@ export function StudioV2() {
           <select aria-label="Pilih website klien" value={slugs.includes(slug) ? slug : ""}
             onChange={(event) => { if (event.target.value) void openClient(event.target.value); }}>
             {!slugs.includes(slug) && <option value="">/{slug} · draft</option>}
-            {slugs.map((item) => <option key={item} value={item}>/{item}</option>)}
+            {slugs.map((item) => <option key={item} value={item}>/{item}{localDraftSlugs.includes(item) ? " · draft lokal" : ""}</option>)}
           </select>
         </label>
         <details className="studio-v2__new studio-v2__workbar-create">
