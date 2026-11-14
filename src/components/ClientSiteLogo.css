@@ -1,0 +1,56 @@
+.vini-cinema--styled .vini-cinema__brand .namina-logo--compact {
+  color: var(--namina-ink, #fff5ed);
+}
+.vini-cinema__client-logo-text {
+  display: inline-block;
+  max-width: min(380px, 40vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.1;
+  font-size: min(var(--client-logo-size, 34px), 8vw);
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.vini-cinema__client-logo-image {
+  display: block;
+  max-height: 72px;
+  max-width: 40vw;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+}
+.studio-v2__client-logo-settings {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(218, 137, 153, .32);
+  border-radius: 13px;
+  padding: 15px;
+  margin: 10px 0 16px;
+}
+.studio-v2__client-logo-settings > strong {
+  font-size: 15px;
+}
+.studio-v2__client-logo-settings .studio-v2__inspector-hint {
+  margin: 0;
+}
+.studio-v2__logo-color {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.studio-v2__logo-color input {
+  width: 48px;
+  height: 38px;
+  cursor: pointer;
+}
+@media (max-width: 850px) {
+  .vini-cinema__client-logo-text {
+    max-width: 42vw;
+    font-size: min(var(--client-logo-size, 34px), 7vw);
+  }
+  .vini-cinema__client-logo-image {
+    max-width: 40vw;
+    max-height: 50px;
+  }
+}
