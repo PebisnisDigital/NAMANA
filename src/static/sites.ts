@@ -238,6 +238,23 @@ export function prepareSite(document: SiteDocument): SiteDocument {
   return site;
 }
 
+/**
+ * Upgrade only the original /vini WhatsApp greeting from legacy published records.
+ * Preserve explicitly configured client contact messages and all other slugs.
+ */
+export function upgradeViniLegacyContact(site: SiteDocument): SiteDocument {
+  const original = site.slug === "vini" ? site.content.original : undefined;
+  if (!original || original.contactMessage !== undefined) return site;
+  try {
+    const url = new URL(original.contactUrl);
+    if (url.hostname !== "wa.me" || url.pathname !== "/62881022445869") return site;
+    if (url.searchParams.get("text") !== "Halo Teh Vini, saya melihat profil NAMINA dan ingin menghubungi Teteh.") return site;
+  } catch { return site; }
+  original.contactLabel = "Hubungi Saya";
+  original.contactMessage = viniOriginal.contactMessage;
+  return site;
+}
+
 export function normalizeSite(document: SiteDocument): SiteDocument {
-  return siteDocumentSchema.parse(prepareSite(document));
+  return upgradeViniLegacyContact(siteDocumentSchema.parse(prepareSite(document)));
 }
