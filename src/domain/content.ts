@@ -114,6 +114,17 @@ const originalGallerySectionSchema = z.object({
   description: text(400),
   items: z.array(originalGalleryItemSchema).max(20),
 }).strict();
+export const originalLogoSchema = z.object({
+  mode: z.enum(["default", "text", "image"]),
+  text: text(60),
+  color,
+  fontFamily: z.enum(["montserrat", "space", "georgia", "system", "poppins", "cormorant", "bebas"]),
+  fontSize: z.number().int().min(16).max(80),
+  imageUrl: text(1000).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan link gambar publik HTTPS yang valid."),
+  imageWidth: z.number().int().min(50).max(360),
+}).strict();
+export type OriginalLogo = z.infer<typeof originalLogoSchema>;
+
 export const originalStyleSchema = z.object({
   backgroundColor: color,
   textColor: color,
@@ -165,6 +176,7 @@ export const originalProfileSchema = z.object({
   contactUrl: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan URL WhatsApp HTTPS yang valid."),
   contactLabel: text(40).optional(),
   style: originalStyleSchema.optional(),
+  logo: originalLogoSchema.optional(),
   nama: originalFactSectionSchema,
   karir: originalFactSectionSchema,
   skill: originalFactSectionSchema,
