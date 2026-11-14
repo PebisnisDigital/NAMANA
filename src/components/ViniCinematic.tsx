@@ -4,7 +4,8 @@ import type { AssetUrls, OriginalProfile, SiteContent, OriginalMenuIcon } from "
 import { blankOriginal } from "../static/originalSeed";
 import { retryDropboxImage } from "../static/sites";
 import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
-import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
+import { NaminaIntroStage } from "./NaminaLogo";
+import { ClientSiteLogo } from "./ClientSiteLogo";
 import { videoSourceForViewport } from "./videoSource";
 import "./ViniCinematic.css";
 
@@ -487,8 +488,8 @@ export function ViniCinematic({
 
       <div className="vini-cinema__layout" aria-hidden={showLoader} inert={showLoader}>
         <header className="vini-cinema__header">
-          <button className="vini-cinema__brand" type="button" onClick={() => selectMenu("Nama")} aria-label={`NAMINA, kembali ke ${menuTitles.Nama}`}>
-            <NaminaLogo variant="compact" />
+          <button className="vini-cinema__brand" type="button" data-v2-edit={editorMode ? "logo" : undefined} onClick={() => selectMenu("Nama")} aria-label={`${original.logo?.text?.trim() || "NAMINA"}, kembali ke ${menuTitles.Nama}`}>
+            <ClientSiteLogo logo={original.logo} />
           </button>
           <button
             className="vini-cinema__menu-toggle"
