@@ -5,7 +5,7 @@ import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
 import { ClientLogoSettings } from "../components/ClientSiteLogo";
-import { blankSite, loadViniTemplate, playableDropboxMediaUrl, prepareSite, resolveMedia, retryDropboxImage, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import { blankSite, loadViniTemplate, playableDropboxMediaUrl, prepareSite, resolveMedia, retryDropboxImage, siteDocumentSchema, upgradeViniLegacyContact, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
 import "../studio-v2-immersive.css";
@@ -79,7 +79,7 @@ function defaultSite(site: SiteDocument) {
   if (!site.content.original) site.content.original = site.slug === "vini"
     ? structuredClone(viniOriginal)
     : blankOriginal(site.content.identity.displayName);
-  return site;
+  return upgradeViniLegacyContact(site);
 }
 function Field({ label, value, onChange, multiline, placeholder, maxLength, type = "text" }: {
   label: string; value: string; onChange: (value: string) => void;
