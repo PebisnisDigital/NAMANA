@@ -486,6 +486,14 @@ export function StudioV2() {
           <p>Salin ulang data, video, slide ikon, karya, dan produk jika draft klien masih kosong. Konten saat ini akan diganti, tetapi website yang sudah tayang tidak berubah sampai dipublikasikan.</p>
           <button className="studio-v2__ghost" type="button" disabled={working} onClick={() => void useViniTemplate()}>Isi Template /vini</button>
         </div>}
+        <div className="studio-v2__template-reset">
+          <strong>Pilih template warna</strong>
+          <p>Ganti tampilan tanpa menghapus data, foto, video, karya, atau produk klien.</p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button type="button" className="studio-v2__ghost" aria-pressed={style.backgroundColor.toLowerCase() === "#08080c"} onClick={() => change((next) => { next.content.original!.style = { ...style, backgroundColor: "#08080c", textColor: "#fff5ed", accentColor: "#f34b53", buttonColor: "#b5232b", buttonTextColor: "#ffffff", borderColor: "#b67b78" }; })}>◐ Template Gelap</button>
+            <button type="button" className="studio-v2__ghost" aria-pressed={style.backgroundColor.toLowerCase() === "#ffffff"} onClick={() => change((next) => { next.content.original!.style = { ...style, backgroundColor: "#ffffff", textColor: "#191919", accentColor: "#d52e3c", buttonColor: "#c62836", buttonTextColor: "#ffffff", borderColor: "#d8d8de" }; })}>☀ Template Putih</button>
+          </div>
+        </div>
         <div className="studio-v2__colors">
           {colorFields.map(([field, label]) => <label key={field}>
             <span>{label}</span><input type="color" value={style[field]} onChange={(event) => updateStyle(field, event.target.value)} />
