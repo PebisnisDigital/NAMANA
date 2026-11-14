@@ -4,7 +4,7 @@
     "schemaVersion": 1,
     "template": "ORIGINAL",
     "original": {
-      "contactUrl": "https://wa.me/62881022445869?text=Halo%20Teh%20Vini%2C%20saya%20melihat%20profil%20NAMINA%20dan%20ingin%20menghubungi%20Teteh.",
+      "contactUrl": "https://wa.me/62881022445869",
       "style": {
         "backgroundColor": "#000000",
         "textColor": "#ffc799",
@@ -338,7 +338,9 @@
             "motif": "animation"
           }
         ]
-      }
+      },
+      "contactLabel": "Hubungi Saya",
+      "contactMessage": "Halo Teh Vini! 👋\n\nSaya sudah melihat website profil NAMINA milik Teteh. Keren banget, tampilannya profesional dan beda dari website profil biasanya! 😍\n\nSaya juga tertarik punya website profil pribadi seperti punya Teteh.\n\nBoleh dibantu buatkan website NAMINA untuk saya juga, Teh?"
     },
     "identity": {
       "displayName": "TEH VINI",
