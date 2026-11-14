@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { blankSite, loadViniTemplate, siteDocumentSchema, viniSeed } from "../src/static/sites.ts";
+import { blankSite, loadViniTemplate, normalizeSite, siteDocumentSchema, viniSeed } from "../src/static/sites.ts";
 
 test("new client uses a complete independent /vini template, not empty slides", () => {
   const first = blankSite("contoh-siti");
@@ -54,4 +54,30 @@ test("new client copies published /vini JSON including current video and icon sl
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("Vini contact template has the approved button and sales inquiry", async () => {
+  const source = JSON.parse(await readFile(new URL("../public/clients/vini.json", import.meta.url), "utf8"));
+  const published = siteDocumentSchema.parse(source);
+  assert.equal(published.content.original?.contactLabel, "Hubungi Saya");
+  assert.match(published.content.original?.contactMessage || "", /Boleh dibantu buatkan website NAMINA/);
+  assert.equal(viniSeed.content.original?.contactMessage, published.content.original?.contactMessage);
+});
+
+test("legacy /vini published greeting upgrades without touching customized client messages", () => {
+  const legacy = structuredClone(viniSeed);
+  legacy.content.original!.contactUrl = "https://wa.me/62881022445869?text=Halo%20Teh%20Vini%2C%20saya%20melihat%20profil%20NAMINA%20dan%20ingin%20menghubungi%20Teteh.";
+  delete legacy.content.original!.contactLabel;
+  delete legacy.content.original!.contactMessage;
+  const upgraded = normalizeSite(legacy);
+  assert.equal(upgraded.content.original?.contactLabel, "Hubungi Saya");
+  assert.equal(upgraded.content.original?.contactMessage, viniSeed.content.original?.contactMessage);
+
+  const customized = structuredClone(legacy);
+  customized.content.original!.contactMessage = "Pesan saya sendiri.";
+  assert.equal(normalizeSite(customized).content.original?.contactMessage, "Pesan saya sendiri.");
+
+  const anotherClient = structuredClone(legacy);
+  anotherClient.slug = "klien-lain";
+  assert.equal(normalizeSite(anotherClient).content.original?.contactMessage, undefined);
 });
