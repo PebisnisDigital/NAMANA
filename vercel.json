@@ -68,18 +68,5 @@
       "source": "/((?!api/|clients/|videos/|animated-icons/|robots.txt).*)",
       "destination": "/index.html"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "naminapro.vercel.app"
-        }
-      ],
-      "destination": "https://namina.biz.id/:path*",
-      "permanent": true
-    }
   ]
 }
