@@ -154,22 +154,39 @@ export function blankSite(slug: string): SiteDocument {
   return cloneViniTemplate(slug);
 }
 
+/** Resolve Dropbox share-page URLs into direct image/video responses, preserving rlkey. */
+export function playableDropboxMediaUrl(value: string): string {
+  if (!value) return value;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" ||
+        !["dropbox.com", "www.dropbox.com"].includes(url.hostname) ||
+        !(url.pathname.startsWith("/scl/fi/") || url.pathname.startsWith("/s/"))) return value;
+    url.searchParams.delete("dl");
+    url.searchParams.delete("st");
+    url.searchParams.set("raw", "1");
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
 export function resolveMedia(document: SiteDocument): AssetUrls {
   const entries: [string, string][] = [
-    [mediaIds.desktopVideo, document.media.desktopVideo],
-    [mediaIds.mobileVideo, document.media.mobileVideo],
-    [mediaIds.poster, document.media.poster],
-    [mediaIds.portrait, document.media.portrait],
-    [mediaIds.enterKey, document.media.enterKey || ""],
+    [mediaIds.desktopVideo, playableDropboxMediaUrl(document.media.desktopVideo)],
+    [mediaIds.mobileVideo, playableDropboxMediaUrl(document.media.mobileVideo)],
+    [mediaIds.poster, playableDropboxMediaUrl(document.media.poster)],
+    [mediaIds.portrait, playableDropboxMediaUrl(document.media.portrait)],
+    [mediaIds.enterKey, playableDropboxMediaUrl(document.media.enterKey || "")],
   ];
   for (const card of document.content.cards) {
     const url = document.media.cards[card.id];
-    if (url) entries.push([card.id, url]);
+    if (url) entries.push([card.id, playableDropboxMediaUrl(url)]);
   }
   for (const gallery of [document.content.original?.karya, document.content.original?.produk]) {
     for (const item of gallery?.items || []) {
       const url = document.media.cards[item.id];
-      if (url) entries.push([item.id, url]);
+      if (url) entries.push([item.id, playableDropboxMediaUrl(url)]);
     }
   }
   return Object.fromEntries(entries.filter(([, url]) => !!url));
@@ -177,6 +194,14 @@ export function resolveMedia(document: SiteDocument): AssetUrls {
 
 export function prepareSite(document: SiteDocument): SiteDocument {
   const site = structuredClone(document);
+  site.media.desktopVideo = playableDropboxMediaUrl(site.media.desktopVideo);
+  site.media.mobileVideo = playableDropboxMediaUrl(site.media.mobileVideo);
+  site.media.poster = playableDropboxMediaUrl(site.media.poster);
+  site.media.portrait = playableDropboxMediaUrl(site.media.portrait);
+  site.media.enterKey = playableDropboxMediaUrl(site.media.enterKey || "");
+  for (const [id, url] of Object.entries(site.media.cards)) {
+    site.media.cards[id] = playableDropboxMediaUrl(url);
+  }
   site.content.background.desktopVideoAssetId = site.media.desktopVideo ? mediaIds.desktopVideo : null;
   site.content.background.mobileVideoAssetId = site.media.mobileVideo ? mediaIds.mobileVideo : null;
   site.content.background.posterAssetId = site.media.poster ? mediaIds.poster : null;
