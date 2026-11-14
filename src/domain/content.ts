@@ -175,6 +175,7 @@ export const originalProfileSchema = z.object({
   }).partial().strict().optional(),
   contactUrl: text(500).refine((value) => !value || (value.startsWith("https://") && safeLink(value)), "Gunakan URL WhatsApp HTTPS yang valid."),
   contactLabel: text(40).optional(),
+  contactMessage: text(1500).optional(),
   style: originalStyleSchema.optional(),
   logo: originalLogoSchema.optional(),
   nama: originalFactSectionSchema,
