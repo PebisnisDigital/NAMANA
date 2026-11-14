@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { AssetUrls, OriginalProfile, SiteContent, OriginalMenuIcon } from "../domain/content";
 import { blankOriginal } from "../static/originalSeed";
+import { retryDropboxImage } from "../static/sites";
 import { originalFontFamilies, originalShadowValues } from "../static/originalStyle";
 import { NaminaIntroStage, NaminaLogo } from "./NaminaLogo";
 import { videoSourceForViewport } from "./videoSource";
@@ -63,7 +64,7 @@ function IntroDescription({ text, editorTarget }: { text: string; editorTarget?:
 }
 
 function CardArtwork({ card }: { card: VisualCard }) {
-  if (card.imageUrl) return <img className="vini-cinema__artwork" src={card.imageUrl} alt={`Gambar ${card.title}`} width={1280} height={720} loading="lazy" decoding="async" />;
+  if (card.imageUrl) return <img className="vini-cinema__artwork" src={card.imageUrl} alt={`Gambar ${card.title}`} width={1280} height={720} loading="lazy" decoding="async" onError={(event) => retryDropboxImage(event.currentTarget)} />;
   const gradientId = `visual-gradient-${card.id}`;
   return (
     <svg className="vini-cinema__artwork" viewBox="0 0 950 300" role="img" aria-label={`Ilustrasi ${card.title}`} preserveAspectRatio="xMidYMid slice">
