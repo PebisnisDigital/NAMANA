@@ -167,8 +167,6 @@ export function BusinessPortal() {
         {workspace && <>
           <div className="business__stats">
             <div><small>Status langganan</small><strong>{workspace.subscription_status === "active" && !canCreate ? "Perlu diperpanjang" : statusText[workspace.subscription_status]}</strong><span>{workspace.subscription_status === "pending" ? "Menunggu aktivasi admin. Belum ada pembayaran." : "Paket Bisnis NAMINA"}</span></div>
-            <div><small>Website draft</small><strong>{sites.length} / {workspace.max_sites}</strong><span>Kuota awal Paket Bisnis</span></div>
-            <div><small>Biaya Paket Bisnis</small><strong>Rp87.000</strong><span>Perpanjangan via WhatsApp</span></div>
           </div>
           <section className="business__section">
             <div className="business__section-head"><h2>Website klienku</h2><span>Website dan draft pribadi</span></div>
@@ -185,7 +183,7 @@ export function BusinessPortal() {
             <p className="business__fineprint">Website yang sudah ada tetap dapat diedit. Untuk membuat website baru lagi, hubungi admin NAMINA melalui WhatsApp.</p>
             <a className="business__primary" href={"https://wa.me/62881022445869?text=" +
               encodeURIComponent("Halo Teh Vini, saya " + (workspace.display_name || user.email || "mitra NAMINA") +
-              ". Mau perpanjang Paket Bisnis NAMINA Rp87.000 untuk 30 hari.")} target="_blank" rel="noopener noreferrer">
+              ". Mau memperpanjang Paket Bisnis NAMINA. Mohon informasi proses perpanjangannya.")} target="_blank" rel="noopener noreferrer">
               Perpanjang via WA
             </a>
           </section>}
@@ -198,7 +196,7 @@ export function BusinessPortal() {
               </label>
               <button className="business__primary" type="submit" disabled={busy || sites.length >= workspace.max_sites || !canCreate}>Buat dari Template Vini</button>
             </form>
-            <p className="business__fineprint">{canCreate ? "Kuota pembuatan website masih aktif. " : "Masa tambah website sudah habis atau belum aktif. Website lama tetap bisa diedit. "}Semua perpanjangan dilakukan melalui WhatsApp, bukan pembayaran di website.</p>
+            <p className="business__fineprint">Perpanjangan langganan dilakukan melalui WhatsApp, bukan pembayaran di website.</p>
           </section>
         </>}
       </>}
