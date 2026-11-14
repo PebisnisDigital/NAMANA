@@ -238,6 +238,14 @@ export function BusinessVisualStudio() {
         <button className="studio-v2__ghost" type="button" disabled={working} onClick={() => void applyViniTemplate()}>Gunakan Template /vini</button>
       </div>
       <p className="studio-v2__inspector-hint">Atur tampilan visual dari website klien ini saja.</p>
+      <div className="studio-v2__template-reset">
+        <strong>Pilih template warna</strong>
+        <p>Ubah warna website ini tanpa mengganti konten klien.</p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <button type="button" className="studio-v2__ghost" aria-pressed={style.backgroundColor.toLowerCase() === "#08080c"} onClick={() => change(next => { next.content.original!.style = { ...style, backgroundColor: "#08080c", textColor: "#fff5ed", accentColor: "#f34b53", buttonColor: "#b5232b", buttonTextColor: "#ffffff", borderColor: "#b67b78" }; })}>◐ Template Gelap</button>
+          <button type="button" className="studio-v2__ghost" aria-pressed={style.backgroundColor.toLowerCase() === "#ffffff"} onClick={() => change(next => { next.content.original!.style = { ...style, backgroundColor: "#ffffff", textColor: "#191919", accentColor: "#d52e3c", buttonColor: "#c62836", buttonTextColor: "#ffffff", borderColor: "#d8d8de" }; })}>☀ Template Putih</button>
+        </div>
+      </div>
       <div className="studio-v2__colors">
         {(["backgroundColor","textColor","accentColor","buttonColor","buttonTextColor","borderColor"] as const).map(k=>
           <label key={k}><span>{k}</span><input type="color" value={style[k]} onChange={e=>updateStyle(k,e.target.value)}/><code>{style[k]}</code></label>)}
