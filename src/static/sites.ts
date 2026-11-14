@@ -171,6 +171,26 @@ export function playableDropboxMediaUrl(value: string): string {
   }
 }
 
+/** Retry a failed Dropbox image through its direct asset host (no raw=1 redirect).
+ * Only public Dropbox share links are supported; no token or credential is added.
+ */
+export function retryDropboxImage(img: HTMLImageElement): void {
+  if (img.dataset.dropboxDirectTried === "1") return;
+  try {
+    const url = new URL(img.currentSrc || img.src);
+    if (!["dropbox.com", "www.dropbox.com", "dl.dropbox.com"].includes(url.hostname) ||
+        !(url.pathname.startsWith("/scl/fi/") || url.pathname.startsWith("/s/"))) return;
+    url.hostname = "dl.dropboxusercontent.com";
+    url.searchParams.delete("dl");
+    url.searchParams.delete("raw");
+    url.searchParams.delete("st");
+    img.dataset.dropboxDirectTried = "1";
+    img.src = url.toString();
+  } catch {
+    // A non-Dropbox or invalid image URL remains unchanged.
+  }
+}
+
 export function resolveMedia(document: SiteDocument): AssetUrls {
   const entries: [string, string][] = [
     [mediaIds.desktopVideo, playableDropboxMediaUrl(document.media.desktopVideo)],
