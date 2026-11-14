@@ -4,6 +4,7 @@ import { PublishSuccessModal } from "../components/PublishSuccessModal";
 import { VideoStudioPanel } from "../components/VideoStudioPanel";
 import { loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, type SiteDocument } from "../static/sites";
 import { originalStyleDefaults } from "../static/originalStyle";
+import { ClientLogoSettings } from "../components/ClientSiteLogo";
 import type { OriginalMenuIcon, OriginalStyle } from "../domain/content";
 import "../business.css";
 import "../studio-v2.css";
@@ -246,6 +247,8 @@ export function BusinessVisualStudio() {
           <button type="button" className="studio-v2__ghost" aria-pressed={style.backgroundColor.toLowerCase() === "#ffffff"} onClick={() => change(next => { next.content.original!.style = { ...style, backgroundColor: "#ffffff", textColor: "#191919", accentColor: "#d52e3c", buttonColor: "#c62836", buttonTextColor: "#ffffff", borderColor: "#d8d8de" }; })}>☀ Template Putih</button>
         </div>
       </div>
+      <ClientLogoSettings value={original.logo} fallbackColor={style.textColor}
+        onChange={(logo) => change(next => { next.content.original!.logo = logo; })} />
       <div className="studio-v2__colors">
         {(["backgroundColor","textColor","accentColor","buttonColor","buttonTextColor","borderColor"] as const).map(k=>
           <label key={k}><span>{k}</span><input type="color" value={style[k]} onChange={e=>updateStyle(k,e.target.value)}/><code>{style[k]}</code></label>)}
@@ -260,6 +263,8 @@ export function BusinessVisualStudio() {
         <option value="original">Original</option><option value="center">Tengah</option><option value="compact">Compact</option>
       </select></label>
     </>;
+    if(selected==="logo")return <ClientLogoSettings value={original.logo} fallbackColor={style.textColor}
+      onChange={(logo) => change(next => { next.content.original!.logo = logo; })} />;
     if(selected.startsWith("menu:")){
       const k=selected.slice(5) as MenuKey;
       if(!(k in placeholders))return null;
