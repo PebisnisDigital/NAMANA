@@ -5,7 +5,7 @@ import { TemplateStylePicker } from "../components/TemplateStylePicker";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { naminaStylePresets, originalStyleDefaults } from "../static/originalStyle";
-import { blankSite, loadViniTemplate, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import { blankSite, loadViniTemplate, playableVideoUrl, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
 import "../studio-v2-immersive.css";
@@ -690,7 +690,7 @@ export function StudioV2() {
         <Field label="Deskripsi popup" value={card.description} maxLength={1200} multiline onChange={(value) => updateCard("description", value)} />
         <Field label="Link tombol kartu" value={card.link} type="url" placeholder="https://..." onChange={(value) => updateCard("link", value)} />
         <div className="studio-v2__image">
-          {image ? <img src={image} alt={"Foto " + card.title} /> : <span>Foto belum dipasang</span>}
+          {image ? <img src={playableVideoUrl(image)} alt={"Foto " + card.title} /> : <span>Foto belum dipasang</span>}
         </div>
         <p className="studio-v2__inspector-hint">Foto disimpan di hosting gambar; NAMINA cukup memakai URL publik agar tidak perlu deploy.</p>
         <Field label="URL gambar (HTTPS)" type="url" value={image} placeholder="https://.../foto.webp"
