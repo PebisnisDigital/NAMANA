@@ -520,7 +520,7 @@ export function ViniCinematic({
             ) : (
               <>
                 <h1 data-v2-edit={editorMode ? "menu-title" : undefined} className="vini-cinema__section-title">{menuTitles[activeMenu]}<span data-v2-edit={editorMode ? "subtitle" : undefined}>{activeSection.subtitle}</span></h1>
-                <IntroDescription text={activeSection.description} editorTarget={editorMode ? "description" : undefined} />
+                {!activeGallery && <IntroDescription text={activeSection.description} editorTarget={editorMode ? "description" : undefined} />}
               </>
             )}
           </div>
