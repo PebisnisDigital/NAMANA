@@ -62,6 +62,19 @@ function whatsappLink(value: string): string {
   const intl = digits.startsWith("0") ? "62" + digits.slice(1) : digits.startsWith("8") ? "62" + digits : digits;
   return intl ? "https://wa.me/" + intl : "";
 }
+function whatsappMessage(url: string): string {
+  try { return new URL(url).searchParams.get("text") || ""; }
+  catch { return ""; }
+}
+function whatsappWithMessage(url: string, message: string): string {
+  if (!url) return "";
+  try {
+    const parsed = new URL(url);
+    if (message.trim()) parsed.searchParams.set("text", message.trim());
+    else parsed.searchParams.delete("text");
+    return parsed.toString();
+  } catch { return url; }
+}
 function defaultSite(site: SiteDocument) {
   if (!site.content.original) site.content.original = site.slug === "vini"
     ? structuredClone(viniOriginal)
@@ -631,7 +644,15 @@ export function StudioV2() {
         })} />
       <Field label="Tulisan tombol" maxLength={40} value={original.contactLabel ?? "Japri Saya!"}
         onChange={(value) => change((next) => { next.content.original!.contactLabel = value; })} />
-      {original.contactUrl && <a className="studio-v2__test-link" href={original.contactUrl} target="_blank" rel="noopener noreferrer">Tes link WhatsApp ↗</a>}
+      <Field label="Pesan WhatsApp otomatis" multiline maxLength={1500}
+        placeholder="Halo, saya sudah melihat profil Anda dan ingin menghubungi Anda."
+        value={original.contactMessage ?? whatsappMessage(original.contactUrl)}
+        onChange={(value) => change((next) => {
+          next.content.original!.contactMessage = value;
+        })} />
+      {original.contactUrl && <a className="studio-v2__test-link"
+        href={whatsappWithMessage(original.contactUrl, original.contactMessage ?? whatsappMessage(original.contactUrl))}
+        target="_blank" rel="noopener noreferrer">Tes chat WhatsApp ↗</a>}
     </>;
     if (selected === "video") return <VideoStudioPanel key={site.slug} site={site}
       onChangeVideo={url=>change(next=>{
