@@ -42,8 +42,10 @@ const produkData: GallerySeed[] = [
   ["CUANIMASI", "CUANIMASI merupakan salah satu produk kreatif Teh Vini.", "#ffb96b", "animation"],
 ];
 
-export const viniOriginal: OriginalProfile = {\n  contactMessage: "Halo Teh Vini! 👋\\n\\nSaya sudah melihat website profil NAMINA milik Teteh. Keren banget, tampilannya profesional dan beda dari website profil biasanya! 😍\\n\\nSaya juga tertarik punya website profil pribadi seperti punya Teteh.\\n\\nBoleh dibantu buatkan website NAMINA untuk saya juga, Teh?",
-  contactUrl: "https://wa.me/62881022445869?text=Halo%20Teh%20Vini%2C%20saya%20melihat%20profil%20NAMINA%20dan%20ingin%20menghubungi%20Teteh.",
+export const viniOriginal: OriginalProfile = {
+  contactUrl: "https://wa.me/62881022445869",
+  contactLabel: "Hubungi Saya",
+  contactMessage: "Halo Teh Vini! 👋\n\nSaya sudah melihat website profil NAMINA milik Teteh. Keren banget, tampilannya profesional dan beda dari website profil biasanya! 😍\n\nSaya juga tertarik punya website profil pribadi seperti punya Teteh.\n\nBoleh dibantu buatkan website NAMINA untuk saya juga, Teh?",
   nama: {
     intro: "Halo, perkenalkan nama saya adalah...",
     subtitle: "",
