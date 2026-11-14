@@ -4,7 +4,7 @@ import { VideoStudioPanel } from "../components/VideoStudioPanel";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
-import { blankSite, loadViniTemplate, playableDropboxMediaUrl, prepareSite, resolveMedia, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
+import { blankSite, loadViniTemplate, playableDropboxMediaUrl, prepareSite, resolveMedia, retryDropboxImage, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
 import "../studio-v2-immersive.css";
@@ -653,7 +653,7 @@ export function StudioV2() {
         <Field label="Deskripsi popup" value={card.description} maxLength={1200} multiline onChange={(value) => updateCard("description", value)} />
         <Field label="Link tombol kartu" value={card.link} type="url" placeholder="https://..." onChange={(value) => updateCard("link", value)} />
         <div className="studio-v2__image">
-          {image ? <img src={playableDropboxMediaUrl(image)} alt={"Foto " + card.title} /> : <span>Foto belum dipasang</span>}
+          {image ? <img src={playableDropboxMediaUrl(image)} alt={"Foto " + card.title} onError={(event) => retryDropboxImage(event.currentTarget)} /> : <span>Foto belum dipasang</span>}
         </div>
         <p className="studio-v2__inspector-hint">Foto disimpan di hosting gambar; NAMINA cukup memakai URL publik agar tidak perlu deploy.</p>
         <Field label="URL gambar (HTTPS)" type="url" value={image} placeholder="https://.../foto.webp"
