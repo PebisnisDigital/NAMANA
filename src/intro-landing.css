@@ -1,0 +1,103 @@
+.namina-entry {
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #000;
+  color: #f8f3ed;
+}
+
+.namina-entry__video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.namina-entry__video--visible { opacity: 1; }
+
+.namina-entry__button {
+  position: relative;
+  z-index: 1;
+  min-width: 218px;
+  min-height: 62px;
+  padding: 17px 34px;
+  border: 1px solid #f33c43;
+  border-radius: 3px;
+  background: #df222d;
+  color: #fff;
+  font: 700 16px/1.25 Montserrat, sans-serif;
+  letter-spacing: .11em;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.namina-entry__button:hover {
+  background: #ff3540;
+  box-shadow: 0 0 34px #e02b3740;
+  transform: translateY(-2px);
+}
+
+.namina-entry__button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 5px;
+}
+
+.namina-entry__loading,
+.namina-entry__failure {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  text-align: center;
+}
+
+.namina-entry__loading {
+  font: 700 13px/1.5 Montserrat, sans-serif;
+  letter-spacing: .15em;
+}
+
+.namina-entry__spinner {
+  width: 45px;
+  height: 45px;
+  border: 3px solid #3b1015;
+  border-top-color: #ee303b;
+  border-radius: 50%;
+  animation: namina-entry-spin .9s linear infinite;
+}
+
+.namina-entry__failure p {
+  margin: 0;
+  font: 500 14px/1.5 Montserrat, sans-serif;
+}
+
+@keyframes namina-entry-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .namina-entry__button {
+    min-width: 206px;
+    min-height: 58px;
+    padding: 16px 25px;
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .namina-entry__button { transition: none; }
+  .namina-entry__spinner { animation-duration: 1.8s; }
+}

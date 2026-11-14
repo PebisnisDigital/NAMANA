@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Landing, Legal } from "./pages/Landing";
+import { Legal } from "./pages/Landing";
+import { IntroLanding } from "./pages/IntroLanding";
 import { StaticStudio } from "./pages/StaticStudio";
 import { StudioV2 } from "./pages/StudioV2";
 import { StudioGateway } from "./pages/StudioGateway";
@@ -23,7 +24,7 @@ function App() {
   const path = location.pathname.replace(/\/$/, "") || "/";
   const demoTheme = getDemoTheme(path.slice(1));
   let page;
-  if (path === "/") page = <Landing />;
+  if (path === "/") page = <IntroLanding />;
   else if (path === "/formulir") page = <ClientForm />;
   else if (["/mitra","/daftar"].includes(path)) page = <BusinessPortal />;
   else if (path === "/akses") page = <BusinessMagicAccess />;
