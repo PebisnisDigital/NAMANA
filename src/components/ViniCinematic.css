@@ -508,7 +508,7 @@
   .vini-cinema__highlight-track .vini-cinema__highlight img { width: 29px; height: 29px; }
 }
 
-/* Karya and Produk: cinematic 19:6 picture cards with clickable detail popup. */
+/* Karya and Produk: uncropped 16:9 landscape cards with clickable detail popup. */
 .vini-cinema__section-title { text-transform: uppercase; }
 .vini-cinema__gallery-viewport {
   order: 2;
@@ -532,7 +532,7 @@
 .vini-cinema__visual-card {
   display: block;
   width: 100%;
-  aspect-ratio: 19 / 6;
+  aspect-ratio: 16 / 9;
   padding: 0;
   border: 1px solid #ffffff3e;
   border-radius: 13px;
@@ -550,7 +550,7 @@
 .vini-cinema__artwork { display: block; width: 100%; height: 100%; }
 .vini-cinema__artwork { -webkit-user-drag: none; }
 .vini-cinema__visual-card img.vini-cinema__artwork,
-.vini-cinema__modal img.vini-cinema__artwork { object-fit: cover; }
+.vini-cinema__modal img.vini-cinema__artwork { object-fit: contain; background: #17101a; }
 .vini-cinema__empty { color: #ded0c9; margin: 10px 0 0; min-height: 94px; }
 .vini-cinema__detail-link {
   display: inline-flex;
@@ -587,7 +587,7 @@
   background: #151117;
   box-shadow: 0 24px 80px #000e;
 }
-.vini-cinema__modal > .vini-cinema__artwork { aspect-ratio: 19 / 6; }
+.vini-cinema__modal > .vini-cinema__artwork { aspect-ratio: 16 / 9; }
 .vini-cinema__modal-close {
   position: absolute;
   top: 12px;
