@@ -9,6 +9,15 @@ import { ClientSiteLogo } from "./ClientSiteLogo";
 import { videoSourceForViewport } from "./videoSource";
 import "./ViniCinematic.css";
 
+function contactLink(url: string, message?: string): string {
+  if (!url || message === undefined) return url;
+  try {
+    const parsed = new URL(url);
+    if (message.trim()) parsed.searchParams.set("text", message.trim());
+    else parsed.searchParams.delete("text");
+    return parsed.toString();
+  } catch { return url; }
+}
 function getPageSize() {
   if (typeof window === "undefined") return 2;
   if (window.matchMedia("(max-width: 700px)").matches) return 1;
@@ -508,7 +517,7 @@ export function ViniCinematic({
               </button>
             ))}
           </nav>
-          {original.contactUrl && <a data-v2-edit={editorMode ? "contact" : undefined} className="vini-cinema__contact-top" href={original.contactUrl} target="_blank" rel="noopener noreferrer">{original.contactLabel?.trim() || "Japri Saya!"}</a>}
+          {original.contactUrl && <a data-v2-edit={editorMode ? "contact" : undefined} className="vini-cinema__contact-top" href={contactLink(original.contactUrl, original.contactMessage)} target="_blank" rel="noopener noreferrer">{original.contactLabel?.trim() || "Japri Saya!"}</a>}
         </header>
 
         <div className="vini-cinema__main">
