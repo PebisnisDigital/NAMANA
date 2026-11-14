@@ -154,8 +154,8 @@ export function blankSite(slug: string): SiteDocument {
   return cloneViniTemplate(slug);
 }
 
-/** Convert Dropbox Share links into media responses before browser playback.
- * Keep rlkey (access grant) while discarding short-lived share-page tracking.
+/** Convert Dropbox shared preview links into direct media URLs for both images and videos.
+ * Preserve rlkey (access grant) and remove the share-page tracking parameter.
  */
 export function playableVideoUrl(value: string): string {
   if (!value) return value;
@@ -177,18 +177,18 @@ export function resolveMedia(document: SiteDocument): AssetUrls {
   const entries: [string, string][] = [
     [mediaIds.desktopVideo, playableVideoUrl(document.media.desktopVideo)],
     [mediaIds.mobileVideo, playableVideoUrl(document.media.mobileVideo)],
-    [mediaIds.poster, document.media.poster],
-    [mediaIds.portrait, document.media.portrait],
-    [mediaIds.enterKey, document.media.enterKey || ""],
+    [mediaIds.poster, playableVideoUrl(document.media.poster)],
+    [mediaIds.portrait, playableVideoUrl(document.media.portrait)],
+    [mediaIds.enterKey, playableVideoUrl(document.media.enterKey || "")],
   ];
   for (const card of document.content.cards) {
     const url = document.media.cards[card.id];
-    if (url) entries.push([card.id, url]);
+    if (url) entries.push([card.id, playableVideoUrl(url)]);
   }
   for (const gallery of [document.content.original?.karya, document.content.original?.produk]) {
     for (const item of gallery?.items || []) {
       const url = document.media.cards[item.id];
-      if (url) entries.push([item.id, url]);
+      if (url) entries.push([item.id, playableVideoUrl(url)]);
     }
   }
   return Object.fromEntries(entries.filter(([, url]) => !!url));
@@ -198,6 +198,12 @@ export function prepareSite(document: SiteDocument): SiteDocument {
   const site = structuredClone(document);
   site.media.desktopVideo = playableVideoUrl(site.media.desktopVideo);
   site.media.mobileVideo = playableVideoUrl(site.media.mobileVideo);
+  site.media.poster = playableVideoUrl(site.media.poster);
+  site.media.portrait = playableVideoUrl(site.media.portrait);
+  site.media.enterKey = playableVideoUrl(site.media.enterKey || "");
+  for (const [id, url] of Object.entries(site.media.cards)) {
+    site.media.cards[id] = playableVideoUrl(url);
+  }
   site.content.background.desktopVideoAssetId = site.media.desktopVideo ? mediaIds.desktopVideo : null;
   site.content.background.mobileVideoAssetId = site.media.mobileVideo ? mediaIds.mobileVideo : null;
   site.content.background.posterAssetId = site.media.poster ? mediaIds.poster : null;
