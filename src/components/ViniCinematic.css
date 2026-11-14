@@ -1106,3 +1106,19 @@
     margin-right: 5px;
   }
 }
+
+/* Karya & Produk: let the image slider follow the heading rather than
+   preserving the tall text-description slot used by Nama/Karir/Skill. */
+.vini-cinema--gallery .vini-cinema__intro {
+  min-height: 0;
+}
+.vini-cinema--gallery .vini-cinema__gallery-viewport,
+.vini-cinema--gallery .vini-cinema__empty {
+  margin-top: clamp(22px, 3.4vh, 36px);
+}
+@media (max-width: 700px) {
+  .vini-cinema--gallery .vini-cinema__gallery-viewport,
+  .vini-cinema--gallery .vini-cinema__empty {
+    margin-top: 18px;
+  }
+}
