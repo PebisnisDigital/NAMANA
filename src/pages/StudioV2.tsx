@@ -4,6 +4,7 @@ import { VideoStudioPanel } from "../components/VideoStudioPanel";
 import { slugSchema, type OriginalStyle, type OriginalMenuIcon } from "../domain/content";
 import { blankOriginal, viniOriginal } from "../static/originalSeed";
 import { originalStyleDefaults } from "../static/originalStyle";
+import { ClientLogoSettings } from "../components/ClientSiteLogo";
 import { blankSite, loadViniTemplate, playableDropboxMediaUrl, prepareSite, resolveMedia, retryDropboxImage, siteDocumentSchema, viniSeed, type SiteDocument } from "../static/sites";
 import "../studio-v2.css";
 import "../studio-v2-fullscreen.css";
@@ -457,6 +458,7 @@ export function StudioV2() {
 
   function labelForSelection() {
     if (showDesign) return "Warna, tipografi & layout";
+    if (selected === "logo") return "Logo website";
     if (selected === "name") return "Nama di website";
     if (selected === "profession") return "Profesi / tagline";
     if (selected === "intro") return "Kalimat pembuka";
@@ -494,6 +496,8 @@ export function StudioV2() {
             <button type="button" className="studio-v2__ghost" aria-pressed={style.backgroundColor.toLowerCase() === "#ffffff"} onClick={() => change((next) => { next.content.original!.style = { ...style, backgroundColor: "#ffffff", textColor: "#191919", accentColor: "#d52e3c", buttonColor: "#c62836", buttonTextColor: "#ffffff", borderColor: "#d8d8de" }; })}>☀ Template Putih</button>
           </div>
         </div>
+        <ClientLogoSettings value={original.logo} fallbackColor={style.textColor}
+          onChange={(logo) => change((next) => { next.content.original!.logo = logo; })} />
         <div className="studio-v2__colors">
           {colorFields.map(([field, label]) => <label key={field}>
             <span>{label}</span><input type="color" value={style[field]} onChange={(event) => updateStyle(field, event.target.value)} />
@@ -532,6 +536,8 @@ export function StudioV2() {
         <button type="button" className="studio-v2__ghost" onClick={() => change((next) => { delete next.content.original!.style; })}>Reset desain Original</button>
       </>;
     }
+    if (selected === "logo") return <ClientLogoSettings value={original.logo} fallbackColor={style.textColor}
+      onChange={(logo) => change((next) => { next.content.original!.logo = logo; })} />;
     if (selected === "name") return <Field label="Nama lengkap / nama tampil" value={site.content.identity.displayName}
       maxLength={60} onChange={(value) => change((next) => {
         const previous = next.content.identity.displayName;
