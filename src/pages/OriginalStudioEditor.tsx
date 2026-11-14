@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SiteDocument } from "../static/sites";
+import { playableDropboxMediaUrl, type SiteDocument } from "../static/sites";
 
 type SectionKey = "nama" | "karir" | "skill";
 type GalleryKey = "karya" | "produk";
@@ -186,7 +186,7 @@ export function OriginalStudioEditor({ site, change, section }: EditProps) {
           <div className="studio-media__asset">
             <strong>Foto untuk kartu ini (rasio 19:6)</strong>
             {site.media.cards[item.id]
-              ? <img className="studio-media__image" src={site.media.cards[item.id]} alt={"Preview foto " + item.title} width={570} height={180} />
+              ? <img className="studio-media__image" src={playableDropboxMediaUrl(site.media.cards[item.id])} alt={"Preview foto " + item.title} width={570} height={180} />
               : <div className="studio-media__placeholder">Belum ada foto</div>}
             <label className="studio-original__field">
               <span>URL foto (opsional)</span>
