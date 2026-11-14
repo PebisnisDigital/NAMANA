@@ -21,6 +21,15 @@
   },
   "headers": [
     {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -56,6 +65,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/",
+      "destination": "/intro.html"
+    },
     {
       "source": "/vinihtml",
       "destination": "/vinihtml/index.html"
