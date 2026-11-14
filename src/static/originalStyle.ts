@@ -1,4 +1,14 @@
-import type { OriginalStyle } from "../domain/content.js";
+import type { OriginalLogo, OriginalStyle } from "../domain/content.js";
+
+export const originalLogoDefaults: OriginalLogo = {
+  mode: "default",
+  text: "NAMINA",
+  color: "#fff5ed",
+  fontFamily: "montserrat",
+  fontSize: 34,
+  imageUrl: "",
+  imageWidth: 180,
+};
 
 export const originalStyleDefaults: OriginalStyle = {
   backgroundColor: "#08080c",
