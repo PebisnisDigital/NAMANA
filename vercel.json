@@ -66,10 +66,6 @@
   ],
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/intro.html"
-    },
-    {
       "source": "/vinihtml",
       "destination": "/vinihtml/index.html"
     },
